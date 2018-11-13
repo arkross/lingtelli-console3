@@ -1,0 +1,35 @@
+[
+    {
+        "model": "acctype.paidtype",
+        "pk": 1,
+        "fields": {
+            "name": "Trail",
+            "duration": "0_0",
+            "bot_amount": "1",
+            "faq_amount": "50",
+            "thirdparty": [4]
+        }
+    },
+    {
+        "model": "acctype.paidtype",
+        "pk": 2,
+        "fields": {
+            "name": "Basic",
+            "duration": "1_y",
+            "bot_amount": "1",
+            "faq_amount": "100",
+            "thirdparty": [1,2,3,4,5]
+        }
+    },
+    {
+        "model": "acctype.paidtype",
+        "pk": 3,
+        "fields": {
+            "name": "Pro",
+            "duration": "1_y",
+            "bot_amount": "5",
+            "faq_amount": "500",
+            "thirdparty": [1,2,3,4,5]
+        }
+    }
+]

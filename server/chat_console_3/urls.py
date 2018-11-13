@@ -15,7 +15,30 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rest_framework import routers
+from account import views as acc_view
+
+# member_router = routers.DefaultRouter()
+# member_router.register('<int:pk>',)
+
+# agent_router = routers.DefaultRouter()
+
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # Member related urls
+    # path('member/', include(member_router.urls), name='member_related'),
+    path('member/login/', acc_view.member_login),
+    # path('member/logout'),
+    path('member/register/', acc_view.member_register),
+    path('member/confirm/', acc_view.confirm_user_view),
+    path('member/resend/', acc_view.resend_email_view),
+
+    # Agent related urls
+    # path('agent/', include(account.urls.agent_urls), name='agent_account'),
+    # path('agent/login'),
+    # path('agent/logout'),
+    # path('agent/register'),
 ]

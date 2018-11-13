@@ -13,8 +13,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -27,10 +26,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CORS_ORIGIN_ALLOW_ALL = False
+
 
 # Application definition
 
-INSTALLED_APPS = [
+INITIAL = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,6 +39,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+THIRD_PARTY = [
+    'rest_framework',
+]
+
+OUR_APP =[
+    'account',
+    'acctype',
+    'chatbot',
+    'thirdparty',
+]
+
+INSTALLED_APPS = INITIAL + THIRD_PARTY + OUR_APP
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -54,7 +68,9 @@ ROOT_URLCONF = 'chat_console_3.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates').replace('\\','/')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -118,3 +134,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Email confirmation related
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'contact@lingtelli.com'
+EMAIL_HOST_PASSWORD = 'gong1si1mi4ma3'
+EMAIL_PORT = 587
+
+CONFIRM_URL_EXPIRE = 30 # Expire after 30 minutes
+URL_ENCODE_KEY = 'FuckingChatbot!!' # Need to be length 16 long
+CONFIRM_DOMAIN = 'http://127.0.0.1:3000/confirm/?code='
