@@ -11,7 +11,7 @@ class ThirdParty(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
 
     class Meta:
-        db_table='thrid_party'
+        db_table='third_party'
     
     def __str__(self):
         return self.name

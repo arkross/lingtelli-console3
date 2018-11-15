@@ -14,7 +14,7 @@ from rest_framework.decorators import api_view
 import chat_console_3.utils as utils
 from django.contrib.auth.models import User
 from account.models import AccountInfo
-from acctype.models import PaidType
+from paidtype.models import PaidType
 
 
 @csrf_exempt
@@ -58,7 +58,7 @@ def member_register(request):
         user = User.objects.create_user(**user_create_obj)
 
         acc_create_obj['user'] = user
-        acc_create_obj['acc_type'] = PaidType.objects.get(pk=1)
+        acc_create_obj['paid_type'] = PaidType.objects.get(pk=1)
         acc_create_obj['confirmation_code'] = \
             utils.generate_confirmation_code(user)
         acc_create_obj['code_reset_time'] = \
@@ -111,7 +111,7 @@ def resend_email_view(request):
                         'No need to get confirmation email again')},
                         status=status.HTTP_403_FORBIDDEN)
 
-    # TODO: Login errors here
+    # TODO: Logic errors here
     acc_info_obj = user.acc_user.first()
     if acc_info_obj.code_send_times > 3 and \
         datetime.now(timezone.utc) <= acc_info_obj.code_reset_time:
@@ -119,7 +119,7 @@ def resend_email_view(request):
             (acc_info_obj.code_reset_time - \
              datetime.now(timezone.utc)).total_seconds()
         return Response({'errors':\
-                        _('Please wait for 30 minutes to resend the code'),
+                        _('Please wait for a while to resend the code'),
                         'time': int(time_delta)},
                         status=status.HTTP_403_FORBIDDEN)
     if acc_info_obj.code_send_times > 3 and \
@@ -135,10 +135,7 @@ def resend_email_view(request):
             datetime.now(timezone.utc) + timedelta(minutes=30)
         acc_info_obj.save()
 
-    if user.email:
-        send_successed = utils.send_confirmation_email(user, True)
-    else:
-        send_successed = utils.send_confirmation_email(user, False)
+    send_successed = utils.send_confirmation_email(user, False)
 
     if send_successed:
         return Response({'success':_('Confirmation email has been sent')},
@@ -160,15 +157,15 @@ def confirm_user_view(request):
     data = confirm_info.get('code')
     username = utils.url_decoder(data)
     if username is False:
-        return Response({'errors': _('Invalid code.')},
+        return Response({'errors': _('Invalid code')},
                         status=status.HTTP_403_FORBIDDEN)
     user = User.objects.filter(username=username).first()
 
     if user:
         if user.is_active and not user.email:
             return Response({'errors':_('Account has been confirmed. ' +\
-                            'No need to get confirmation email again.')},
-                            status=status.HTTP_403_FORBIDDEN)
+                            'No need to get confirmation email again')},
+                            status=status.HTTP_400_BAD_REQUEST)
         elif user.is_active and user.email:
             user.username = user.email
             user.email = ""

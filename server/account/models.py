@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from acctype.models import PaidType
+from paidtype.models import PaidType
 
 LANGUAGE_CHOICE = {
     ('en', 'en'),
@@ -27,7 +27,7 @@ class AccountInfo(models.Model):
 
     user = models.ForeignKey(User, related_name='acc_user', 
                              on_delete=models.CASCADE)
-    acc_type = models.ForeignKey(PaidType, related_name='acc_type',
+    paid_type = models.ForeignKey(PaidType, related_name='acc_type',
                                 on_delete=models.CASCADE)
     start_date = models.DateTimeField(auto_now_add=False, auto_now=False,
                                       blank=True, null=True)

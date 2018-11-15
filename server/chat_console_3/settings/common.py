@@ -42,13 +42,14 @@ INITIAL = [
 
 THIRD_PARTY = [
     'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 OUR_APP =[
     'account',
-    'acctype',
     'chatbot',
     'thirdparty',
+    'paidtype',
 ]
 
 INSTALLED_APPS = INITIAL + THIRD_PARTY + OUR_APP

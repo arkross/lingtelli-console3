@@ -1,6 +1,6 @@
 [
     {
-        "model": "acctype.paidtype",
+        "model": "paidtype.paidtype",
         "pk": 1,
         "fields": {
             "name": "Trail",
@@ -11,7 +11,7 @@
         }
     },
     {
-        "model": "acctype.paidtype",
+        "model": "paidtype.paidtype",
         "pk": 2,
         "fields": {
             "name": "Basic",
@@ -22,7 +22,7 @@
         }
     },
     {
-        "model": "acctype.paidtype",
+        "model": "paidtype.paidtype",
         "pk": 3,
         "fields": {
             "name": "Pro",

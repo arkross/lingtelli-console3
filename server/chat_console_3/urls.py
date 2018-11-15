@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from rest_framework import routers
+from rest_framework.authtoken import views
 from account import views as acc_view
 
 # member_router = routers.DefaultRouter()
@@ -30,7 +31,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # Member related urls
     # path('member/', include(member_router.urls), name='member_related'),
-    path('member/login/', acc_view.member_login),
+    path('member/login/', views.obtain_auth_token),
     # path('member/logout'),
     path('member/register/', acc_view.member_register),
     path('member/confirm/', acc_view.confirm_user_view),
