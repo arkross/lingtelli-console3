@@ -31,5 +31,16 @@
             "faq_amount": "500",
             "thirdparty": [1,2,3,4,5]
         }
+    },
+    {
+        "model": "paidtype.paidtype",
+        "pk": 4,
+        "fields": {
+            "name": "Staff",
+            "duration": "0_0",
+            "bot_amount": "0",
+            "faq_amount": "0",
+            "thirdparty": [1,2,3,4,5]
+        }
     }
 ]

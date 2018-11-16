@@ -9,7 +9,10 @@ from django.core.validators import EmailValidator
 
 from rest_framework import status, viewsets
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import (api_view, authentication_classes,
+                                       permission_classes)
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 import chat_console_3.utils as utils
 from django.contrib.auth.models import User
@@ -19,6 +22,8 @@ from paidtype.models import PaidType
 
 @csrf_exempt
 @api_view(['POST'])
+@authentication_classes([])
+@permission_classes([])
 def member_register(request):
     '''Member register
 
@@ -76,23 +81,10 @@ def member_register(request):
     return Response({'errors':_('User name has existed')},
                         status=status.HTTP_403_FORBIDDEN)
 
-
-
-
-@csrf_exempt
-def member_login(request):
-    '''Member login
-
-    Page for member to login. Agent can also login this page
-    '''
-
-    login_info = json.loads(request.body)
-    print(login_info['username'])
-    print(login_info.get("password"))
-    return HttpResponse("Really nice")
-
 @csrf_exempt
 @api_view(['GET'])
+@authentication_classes([])
+@permission_classes([])
 def resend_email_view(request):
     '''Resend the confrimation email if user has not got it
 
@@ -146,6 +138,8 @@ def resend_email_view(request):
 
 @csrf_exempt
 @api_view(['POST'])
+@authentication_classes([])
+@permission_classes([])
 def confirm_user_view(request):
     '''Confirm the email address
 

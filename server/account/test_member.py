@@ -407,19 +407,15 @@ class MemberAccessTest(TestCase):
     
     def test_logout(self):
         # Login to get token first
-        c = Client()
-        response = c.post('/member/login/',
-                          json.dumps({'username': 'cosmo.hu@lingtelli.com',
-                                      'password': 'thisispassword'}),
-                          content_type='application/json')
-        res_data = json.loads(response.content)
-        accesstoken = res_data.get('accesstoken')
+        user_obj = User.objects.get(username='cosmo.hu@lingtelli.com')
+        accesstoken = Token.objects.create(user=user_obj)
 
         # Logout the user
-        header = {'HTTP_AUTHORIZATION', 'bearer ' + accesstoken}
+        c = Client()
+        header = {'HTTP_AUTHORIZATION': 'bearer ' + accesstoken.key}
         response = c.get('/member/logout/', **header)
         res_data = json.loads(response.content)
-        old_token = Token.objects.filter(key=accesstoken).first()
+        old_token = Token.objects.filter(key=accesstoken.key).first()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(res_data.get('success'), 'Logout successfully')
         self.assertIs(old_token, None)
@@ -468,7 +464,12 @@ class MemberProfileTest(TestCase):
         # Create account info
         acc_data = {'user': user_obj, 'paid_type': paidtype_obj,
                     'confirmation_code': 'confirmationcode', 
-                    'code_reset_time': '2019/12/12 00:00:00', }
+                    'code_reset_time': '2019-12-12 00:00:00', }
+        AccountInfo.objects.create(**acc_data)
+
+        # Initial user id uri
+        user_id = user_obj.id
+        self.uri = '/member/' + str(user_id) + '/'
 
         # Login User
         token_obj = Token.objects.create(user=user_obj)
@@ -480,7 +481,7 @@ class MemberProfileTest(TestCase):
                        'expire_date', 'language']
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
-        response = c.get('/member/2/', **header)
+        response = c.get(self.uri, **header)
         res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 200)
         for k in profile_key:
@@ -489,15 +490,25 @@ class MemberProfileTest(TestCase):
     
     def test_not_login_read_profile(self):
         c = Client()
-        response = c.get('/member/2/')
+        response = c.get(self.uri)
         res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(res_data.get('errors'), 'Please login')
     
+    def test_update_empty(self):
+        c = Client()
+        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        response = c.put(self.uri,
+                         json.dumps({}),
+                         content_type='application/json', **header)
+        res_data = json.loads(response.content)
+        # self.assertEqual(response.status_code, 400)
+        self.assertEqual(res_data.get('errors'), 'Updating nothing')
+    
     def test_update_username(self):
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
-        response = c.put('/member/2/',
+        response = c.put(self.uri,
                          json.dumps({'username': 'test@lingtelli.com'}),
                          content_type='application/json', **header)
         res_data = json.loads(response.content)
@@ -508,17 +519,17 @@ class MemberProfileTest(TestCase):
     def test_update_username_duplicated(self):
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
-        response = c.put('/member/2/',
+        response = c.put(self.uri,
                          json.dumps({'username': 'cosmo.hu@lingtelli.com'}),
                          content_type='application/json', **header)
         res_data = json.loads(response.content)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(res_data.get('errors'),
                          'Username has been used, please try another one')
     
     def test_no_login_update_username(self):
         c = Client()
-        response = c.put('/member/2/', 
+        response = c.put(self.uri, 
                          json.dumps({'username': 'test@lingtelli.com'}),
                          content_type='application/json')
         res_data = json.loads(response.content)
@@ -528,31 +539,39 @@ class MemberProfileTest(TestCase):
     def test_update_password(self):
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
-        response = c.put('/member/2/', 
+        response = c.put(self.uri, 
                          json.dumps({'password': 'thisispassword',
                                      'new_password': 'newpassword'}),
                          content_type='application/json', **header)
         res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(res_data.get('success'),
-                                      'Successfully reset password.' +\
-                                      'Please login again')
-        
+                        'Successfully reset password. Please login again')
     
     def test_no_login_update_password(self):
         c = Client()
-        response = c.put('/member/2/', 
-                         json.dumps({'password': 'thisispassword',
+        response = c.put(self.uri, 
+                         json.dumps({'old_password': 'thisispassword',
                                      'new_password': 'newpassword'}),
                          content_type='application/json')
         res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(res_data.get('errors'), 'Please login')
+    
+    def test_wrong_old_password(self):
+        c = Client()
+        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        response = c.put(self.uri, json.dumps({'old_password': 'thisiswrong',
+                                               'new_password': 'newpassword'}),
+                         content_type='application/json', **header)
+        res_data = json.loads(response.content)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(res_data.get('errors'), 'Old password is not correct')
 
     def test_update_nickname(self):
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
-        response = c.put('/member/2/',
+        response = c.put(self.uri,
                          json.dumps({'first_name': 'test'}),
                          content_type='application/json', **header)
         res_data = json.loads(response.content)
@@ -562,7 +581,7 @@ class MemberProfileTest(TestCase):
     
     def test_no_login_update_nickname(self):
         c = Client()
-        response = c.put('/member/2/', 
+        response = c.put(self.uri, 
                          json.dumps({'first_name': 'test'}),
                          content_type='application/json')
         res_data = json.loads(response.content)
@@ -572,12 +591,12 @@ class MemberProfileTest(TestCase):
     def test_delete_account(self):
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
-        response = c.delete('/member/2/', **header)
+        response = c.delete(self.uri, **header)
         self.assertEqual(response.status_code, 204)
 
     def test_no_login_delete_account(self):
         c = Client()
-        response = c.delete('/member/2/')
+        response = c.delete(self.uri)
         res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(res_data.get('errors'), 'Please login')

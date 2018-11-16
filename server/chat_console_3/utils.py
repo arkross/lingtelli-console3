@@ -57,7 +57,6 @@ def generate_confirmation_code(user):
 
     confirmation_code_data = user.username + ',' + str(datetime.now())
     encoded = url_encoder(confirmation_code_data)
-    print(encoded)
     return encoded
 
 def send_confirmation_email(user, update_user):
