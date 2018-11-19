@@ -50,6 +50,10 @@ OUR_APP =[
     'chatbot',
     'thirdparty',
     'paidtype',
+    'faq',
+    'history',
+    'report',
+    'taskbot',
 ]
 
 INSTALLED_APPS = INITIAL + THIRD_PARTY + OUR_APP

@@ -40,6 +40,7 @@ class AccountInfo(models.Model):
     code_send_times = models.IntegerField(default=0)
     language = models.CharField(max_length=10, choices=LANGUAGE_CHOICE,
                                 default='tw')
+    delete_confirm = models.BooleanField(default=False)
     
     class Meta:
         db_table='account_info'

@@ -20,15 +20,15 @@ from rest_framework.authtoken import views
 from account import views as acc_view
 
 # Member account related
-# member_router = routers.DefaultRouter()
+# member_router = routers.DefaultRouter(trailing_slash=True)
 # member_router.register('',)
 
 # Agent account related
-# agent_router = routers.DefaultRouter()
+# agent_router = routers.DefaultRouter(trailing_slash=True)
 # agent_router.register('',)
 
 # Member page chatbot related. Not specifiy member cause agent can also use it.
-# chatbot_router = routers.DefaultRouter()
+# chatbot_router = routers.DefaultRouter(trailing_slash=True)
 # chatbot_router.register('',)
 # chatbot_router.register('<int:pk>/history/',)
 # chatbot_router.register('<int:pk>/report/',)
@@ -36,18 +36,25 @@ from account import views as acc_view
 # chatbot_router.register('<int:pk>/answer/',)
 # chatbot_router.register('<int:pk>/question/',)
 # chatbot_router.register('<int:pk>/matching/',)
+# XXX These three added inside chatbot view. For operating csv file. XXX
+# upload(POST): chatbot/{pk}/upload/
+# export(GET): chatbot/{pk}/export/
+# train(GET): chatbot/{pk}/train/
+
 
 # TODO: Do not have the exact feature for now. Need to make sure first.
 # Agent page chatbot. Use for checking member analysis and creating task chatbot for member
-# agent_bot_router = routers.DefaultRouter()
+# agent_bot_router = routers.DefaultRouter(trailing_slash=True)
 # agent_bot_router.register('',)
-# agent_bot_router.register('<int:pk>/history/',)
-# agent_bot_router.register('<int:pk>/report/',)
+# agent_bot_router.register('<int:pk>/history',)
+# agent_bot_router.register('<int:pk>/report',)
 
 # Both using api
-# project_router = routers.DefaultRouter()
-# project_router.register('thirdparty/',)
-# project_router.register('paidtype/',)
+# thirdparty_router = routers.DefaultRouter(trailing_slash=True)
+# thirdparty_router.register('',)
+
+# paidtype_router = routers.DefaultRouter(trailing_slash=True)
+# paidtype_router.register('',)
 
 
 
@@ -57,13 +64,14 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Common urls(Could use by both member and agent)
-    # path('chatbot/', include(chatbot_router.urls), name='chatbot')
-    # path('', include(project_router.urls), name='project')
+    # path('chatbot/', include(chatbot_router.urls), name='chatbot'),
+    # path('thirdparty/', include(thirdparty_router.urls), name='thirdparty'),
+    # path('paidtype/', include(paidtype_router.urls), name='paidtype')
 
     # Member related urls
     # path('member/', include(member_router.urls), name='member_account'),
     # path('member/login/'),
-    # path('member/logout'),
+    # path('member/logout/'),
     path('member/register/', acc_view.member_register),
     path('member/confirm/', acc_view.confirm_user_view),
     path('member/resend/', acc_view.resend_email_view),
@@ -71,9 +79,9 @@ urlpatterns = [
     # Agent related urls
     # path('agent/<int:pk>/chatbot/', include(agent_bot_router.urls), name='agent_chatbot')
     # path('agent/', include(account.urls.agent_urls), name='agent_account'),
-    # path('agent/login'),
-    # path('agent/logout'),
-    # path('agent/register'),
-    # path('agent/online_member/'),
-    # path('agent/report/')
+    # path('agent/login/'),
+    # path('agent/logout/'),
+    # path('agent/register/'),
+    # XXX no spec XXX path('agent/online_member/'),
+    # XXX no spec XXX path('agent/report/')
 ]

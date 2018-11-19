@@ -54,9 +54,12 @@ class Chatbot(models.Model):
     activate = models.BooleanField(default=True)
     language = models.CharField(max_length=10, choices=LANGUAGE_CHOICE,
                                 default='tw')
+    postback_activate = models.BooleanField(default=True)
     postback_title = \
         models.CharField(max_length=255, 
                          default='請選擇跟你問題類似的問題，如果沒有請繼續問其他問題。')
+    delete_confirm = models.BooleanField(default=False)
+
     class Meta:
         db_table = 'chatbot'
 
@@ -65,6 +68,7 @@ class Chatbot(models.Model):
 
     def get_third_parties(self):
         return ",\n".join([t.name for t in self.third_party.all()])
+
 
 class BotThirdPartyGroup(models.Model):
     '''Chatbot connect to third party
@@ -83,3 +87,51 @@ class BotThirdPartyGroup(models.Model):
 
     class Meta:
         db_table = 'bot_third_party_group'
+
+
+class Line(models.Model):
+    '''Datat for line webhook
+
+    Args:
+        secret: Secret generated from line.
+        token: Token generated from line.
+        chatbot: Chatbot object.
+    '''
+
+    secret = models.CharField(max_length=255, blank=True, null=False)
+    token = models.CharField(max_length=255, blank=True, null=False)
+    chatbot = models.ForeignKey(Chatbot, related_name='line_chatbot',
+                                on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'line'
+
+    def __str__(self):
+        return self.chatbot.robot_name
+    
+    def chatbot_user(self):
+        return self.chatbot.user.username
+
+
+class Facebook(models.Model):
+    '''Data for facebook webhook
+
+    Args:
+        token: Token generated from facebook.
+        verify_str: Created by user.
+        chatbot: Chatbot object.
+    '''
+
+    token = models.CharField(max_length=255, blank=True, null=False)
+    verify_str = models.CharField(max_length=255, blank=True, null=False)
+    chatbot = models.ForeignKey(Chatbot, related_name='facebook_chatbot',
+                                on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'facebook'
+
+    def __str__(self):
+        return self.chatbot.robot_name
+
+    def chatbot_user(self):
+        return self.chatbot.user.username

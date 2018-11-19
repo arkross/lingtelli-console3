@@ -19,7 +19,7 @@ from django.contrib.auth.models import User
 from account.models import AccountInfo
 from paidtype.models import PaidType
 
-
+# MEMBER PART
 @csrf_exempt
 @api_view(['POST'])
 @authentication_classes([])
@@ -73,11 +73,11 @@ def member_register(request):
         if send_successed:
             return Response({'success':_('User has successfully created. ' +\
                             'Please check email for account validation')},
-                            status=status.HTTP_200_OK)
+                            status=status.HTTP_201_CREATED)
         else:
             return Response({'success':_('User has successfully created. ' +\
                         'Email sent failed. Please resend the email to validate ' +\
-                        'the account')}, status=status.HTTP_200_OK)
+                        'the account')}, status=status.HTTP_201_CREATED)
     return Response({'errors':_('User name has existed')},
                         status=status.HTTP_403_FORBIDDEN)
 
@@ -174,3 +174,5 @@ def confirm_user_view(request):
     return Response({'errors': _('Account validation failed')},
                     status=status.HTTP_400_BAD_REQUEST)
 
+
+# AGENT PART
