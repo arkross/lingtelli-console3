@@ -22,10 +22,14 @@ from account import views as acc_view
 # Member account related
 # member_router = routers.DefaultRouter(trailing_slash=True)
 # member_router.register('',)
+# member_router.register('<int:pk>/confrim/')
 
 # Agent account related
 # agent_router = routers.DefaultRouter(trailing_slash=True)
 # agent_router.register('',)
+# agent_router.register('<int:pk>/confrim/',)
+# agent_router.register('/member/',)
+# agent_router.register('/report/',)
 
 # Member page chatbot related. Not specifiy member cause agent can also use it.
 # chatbot_router = routers.DefaultRouter(trailing_slash=True)
@@ -36,10 +40,12 @@ from account import views as acc_view
 # chatbot_router.register('<int:pk>/answer/',)
 # chatbot_router.register('<int:pk>/question/',)
 # chatbot_router.register('<int:pk>/matching/',)
-# XXX These three added inside chatbot view. For operating csv file. XXX
-# upload(POST): chatbot/{pk}/upload/
-# export(GET): chatbot/{pk}/export/
-# train(GET): chatbot/{pk}/train/
+# chatbot_router.register('<int:pk>/confirm/',)
+# chatbot_router.register('<int:pk>/line/',)
+# chatbot_router.register('<int:pk>/facebook/',)
+# chatbot_router.register('<int:pk>/upload/',)
+# chatbot_router.register('<int:pk>/export/',)
+# chatbot_router.register('<int:pk>/train/',)
 
 
 # TODO: Do not have the exact feature for now. Need to make sure first.
@@ -47,7 +53,13 @@ from account import views as acc_view
 # agent_bot_router = routers.DefaultRouter(trailing_slash=True)
 # agent_bot_router.register('',)
 # agent_bot_router.register('<int:pk>/history',)
-# agent_bot_router.register('<int:pk>/report',)
+# agent_bot_router.register('<int:pk>/faq/',)
+# agent_bot_router.register('<int:pk>/answer/',)
+# agent_bot_router.register('<int:pk>/question/',)
+# agent_bot_router.register('<int:pk>/confirm/',)
+# agent_bot_router.register('<int:pk>/upload/',)
+# agent_bot_router.register('<int:pk>/export/',)
+# agent_bot_router.register('<int:pk>/train/',)
 
 # Both using api
 # thirdparty_router = routers.DefaultRouter(trailing_slash=True)
@@ -70,8 +82,8 @@ urlpatterns = [
 
     # Member related urls
     # path('member/', include(member_router.urls), name='member_account'),
-    # path('member/login/'),
-    # path('member/logout/'),
+    # path('member/login/',),
+    # path('member/logout/',),
     path('member/register/', acc_view.member_register),
     path('member/confirm/', acc_view.confirm_user_view),
     path('member/resend/', acc_view.resend_email_view),
@@ -79,9 +91,7 @@ urlpatterns = [
     # Agent related urls
     # path('agent/<int:pk>/chatbot/', include(agent_bot_router.urls), name='agent_chatbot')
     # path('agent/', include(account.urls.agent_urls), name='agent_account'),
-    # path('agent/login/'),
-    # path('agent/logout/'),
-    # path('agent/register/'),
-    # XXX no spec XXX path('agent/online_member/'),
-    # XXX no spec XXX path('agent/report/')
+    # path('agent/login/',),
+    # path('agent/logout/',),
+    # path('agent/register/',),
 ]

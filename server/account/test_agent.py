@@ -13,7 +13,6 @@ class AgentRegisterTest(TestCase):
 
     Only for agent to use
     '''
-
     def test_register_duplicated(self):
         agent_data = {'username': 'admin', 'password': 'adminpassword'}
         User.objects.create(**agent_data)
@@ -22,9 +21,9 @@ class AgentRegisterTest(TestCase):
 
         response = c.post('/agent/register/', json.dumps(agent_data),
                          content_type='application/json')
-        # res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 403)
-        # self.assertIn('errors', res_data)
+        res_data = json.loads(response.content)
+        self.assertIn('errors', res_data)
 
     def test_register_successed(self):
         c = Client()
@@ -32,11 +31,11 @@ class AgentRegisterTest(TestCase):
                           json.dumps({'username': 'admin',
                                       'password': 'adminpassword'}),
                           content_type='application/json')
-        # res_data = json.loads(response.content)
-        # user_obj = User.objects.get(username='admin')
         self.assertEqual(response.status_code, 201)
-        # self.assertIn('success', res_data)
-        # self.assertEqual(user_obj.is_staff, True)
+        res_data = json.loads(response.content)
+        user_obj = User.objects.get(username='admin')
+        self.assertIn('success', res_data)
+        self.assertEqual(user_obj.is_staff, True)
         
 
 class AgentAccessTest(TestCase):
@@ -44,7 +43,6 @@ class AgentAccessTest(TestCase):
 
     Contain login and logout features
     '''
-
     def setUp(self):
         # Initial an agent
         self.agent_data = {'username': 'admin', 'password': 'adminpassword'}
@@ -55,9 +53,9 @@ class AgentAccessTest(TestCase):
         c = Client()
         response = c.post('/agent/login/', json.dumps(self.agent_data),
                           content_type='application/json')
-        # res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 200)
-        # self.assertIn('accesstoken', res_data)
+        res_data = json.loads(response.content)
+        self.assertIn('accesstoken', res_data)
     
     def test_login_user_not_found(self):
         c = Client()
@@ -65,18 +63,18 @@ class AgentAccessTest(TestCase):
                             'password': 'newadminpassword'}
         response = c.post('/agent/login/', json.dumps(not_regist_agent),
                           content_type='application/json')
-        # res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 404)
-        # self.assertIn('errors', res_data)
+        res_data = json.loads(response.content)
+        self.assertIn('errors', res_data)
     
     def test_login_wrong_password(self):
         c = Client()
         wrong_passwd_agent = {'username': 'admin', 'password': 'thisiswrong'}
         response = c.post('/agent/login/', json.dumps(wrong_passwd_agent),
                           content_type='application/json')
-        # res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 403)
-       # self.assertIn('errors', res_data)
+        res_data = json.loads(response.content)
+        self.assertIn('errors', res_data)
     
     def test_logout(self):
         # Login to get token first
@@ -87,17 +85,17 @@ class AgentAccessTest(TestCase):
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'bearer ' + accesstoken.key}
         response = c.get('/agent/logout/', **header)
-        # res_data = json.loads(response.content)
-        # old_token = Token.objects.filter(key=accesstoken.key).first()
         self.assertEqual(response.status_code, 200)
-        # self.assertIn('success', res_data)
-        # self.assertIs(old_token, None)
+        res_data = json.loads(response.content)
+        old_token = Token.objects.filter(key=accesstoken.key).first()
+        self.assertIn('success', res_data)
+        self.assertIs(old_token, None)
 
     def test_logout_no_auth(self):
         c = Client()
         response = c.get('/agent/logout/')
-        # res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 401)
+
 
 class AgentProfileTest(TestCase):
     '''Agent profile operations
@@ -109,7 +107,7 @@ class AgentProfileTest(TestCase):
     '''
     def setUp(self):
         # Initial package
-        trail_obj = {
+        trial_data = {
             'pk': 1,
             'name': 'Staff',
             'duration': '0_0',
@@ -117,30 +115,31 @@ class AgentProfileTest(TestCase):
             'faq_amount': '0'
         }
 
-        demo_obj = {
+        demo_data = {
             'pk': 4,
             'name': 'demo'
         }
-        paidtype_obj = PaidType.objects.create(**trail_obj)
-        thirdparty_obj = ThirdParty.objects.create(**demo_obj)
-        paidtype_obj.thirdparty.add(thirdparty_obj)
+        trial_obj = PaidType.objects.create(**trial_data)
+        demo_obj = ThirdParty.objects.create(**demo_data)
+        trial_obj.thirdparty.add(demo_obj)
 
         # Initial agent account
         self.agent_data = {'username': 'admin', 'password': 'adminpassword'}
         user_obj = User.objects.create(**self.agent_data)
 
         # Initial account info (only need language here but still create it)
-        agent_acc_data = {'user': user_obj, 'paid_type': paidtype_obj,
+        agent_acc_data = {'user': user_obj, 'paid_type': trial_obj,
                           'confirmation_code': 'no_need',
                           'code_reset_time': '2010-10-10 00:00:00'}
         AccountInfo.objects.create(**agent_acc_data)
+
+        # Login agent
+        token_obj = Token.objects.create(user=user_obj)
+        self.accesstoken = token_obj.key
         
         # Initial agent uri
         user_id = user_obj.id
         self.uri = '/agent/' + str(user_id) + '/'
-
-        # Create token to fake login
-        self.accesstoken = Token.objects.create(user=user_obj)
 
     def test_no_auth(self):
         '''Agent profile action no authorization
@@ -161,71 +160,99 @@ class AgentProfileTest(TestCase):
         # Delete
         response = c.delete(self.uri)
         self.assertEqual(response.status_code, 401)
+    
+    def test_not_existed(self):
+        '''Agent account not existed
+
+        GET, PUT, DELETE
+        '''
+        c = Client()
+        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        # GET
+        response = c.get(self.uri, header)
+        self.assertEqual(response.status_code, 404)
+        res_data = json.loads(response.content)
+        self.assertIn('errors', res_data)
+
+        # PUT
+        new_agent_name = {'username': 'new_admin'}
+        response = c.put(self.uri, json.dumps(new_agent_name),
+                         content_type='application/json', **header)
+        self.assertEqual(response.status_code, 404)
+        res_data = json.loads(response.content)
+        self.assertIn('errors', res_data)
+
+        # Delete
+        response = c.delete(self.uri, **header)
+        self.assertEqual(response.status_code, 404)
+        res_data = json.loads(response.content)
+        self.assertIn('errors', res_data)
 
     def test_read(self):
         agent_profile_key = ['username', 'paid_type', 'language']
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken.key}
+        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
         response = c.get(self.uri, **header)
-        # res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 200)
-        # for k in agent_profile_key:
-        #     self.assertIn(k, res_data)
+        res_data = json.loads(response.content)
+        self.assertEqual(len(res_data), len(agent_profile_key))
+        for k in agent_profile_key:
+            self.assertIn(k, res_data)
     
     def test_update_username(self):
         new_agent_username = {'username': 'newadmin'}
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken.key}
+        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(new_agent_username), 
                          content_type='application/json', **header)
-        # res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 200)
-        # self.assertIn('success', res_data)
+        res_data = json.loads(response.content)
+        self.assertIn('success', res_data)
 
     def test_update_username_duplicated(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken.key}
+        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(self.agent_data.get('username')),
                          content_type='application/json', **header)
-        # res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 400)
-        # self.assertEqual(res_data.get('errors'), 'Useranme has been used')
+        res_data = json.loads(response.content)
+        self.assertEqual(res_data.get('errors'), 'Useranme has been used')
     
     def test_update_password(self):
         new_agent_passwd = {'old_password': 'adminpassword',
                             'new_password': 'newadminpassword'}
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken.key}
+        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(new_agent_passwd),
                          content_type='application/json', **header)
-        # res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 200)
-        # self.assertIn('success',res_data)
+        res_data = json.loads(response.content)
+        self.assertIn('success',res_data)
     
     def test_update_wrong_old_password(self):
         new_agent_passwd = {'old_password': 'thisiswrong',
                             'new_password': 'newagentpassword'}
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken.key}
+        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(new_agent_passwd),
                          content_type='application/json', **header)
-        # res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 403)
-        # self.assertIn('errors', res_data)
+        res_data = json.loads(response.content)
+        self.assertIn('errors', res_data)
 
     def test_delete(self):
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken.key}
+        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
         c = Client()
         response = c.delete(self.uri, **header)
         self.assertEqual(response.status_code, 204)
     
     def test_delete_no_confirm(self):
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken.key}
+        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
         c = Client()
         response = c.delete(self.uri, **header)
-        # res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 403)
-        # self.assertIn('errors', res_data)
+        res_data = json.loads(response.content)
+        self.assertIn('errors', res_data)
 
 
 class DeleteAccountConfirmTest(TestCase):
@@ -235,7 +262,7 @@ class DeleteAccountConfirmTest(TestCase):
     '''
     def setUp(self):
         # Initial thirdparty and paidtype
-        trail_obj = {
+        trial_data = {
             'pk': 1,
             'name': 'Trail',
             'duration': '0_0',
@@ -243,13 +270,13 @@ class DeleteAccountConfirmTest(TestCase):
             'faq_amount': '50'
         }
 
-        demo_obj = {
+        demo_data = {
             'pk': 4,
             'name': 'demo'
         }
-        paidtype_obj = PaidType.objects.create(**trail_obj)
-        thirdparty_obj = ThirdParty.objects.create(**demo_obj)
-        paidtype_obj.thirdparty.add(thirdparty_obj)
+        trial_obj = PaidType.objects.create(**trial_data)
+        demo_obj = ThirdParty.objects.create(**demo_data)
+        trial_obj.thirdparty.add(demo_obj)
 
         # Initial an account
         user_data = {'username': 'cosmo.hu@lingtelli.com',
@@ -258,14 +285,14 @@ class DeleteAccountConfirmTest(TestCase):
         user_obj = User.objects.create(**user_data)
 
         # Create account info
-        acc_data = {'user': user_obj, 'paid_type': paidtype_obj,
+        acc_data = {'user': user_obj, 'paid_type': trial_obj,
                     'confirmation_code': 'confirmationcode', 
                     'code_reset_time': '2019-12-12 00:00:00', }
         AccountInfo.objects.create(**acc_data)
 
         # Initial user id uri
         user_id = user_obj.id
-        self.uri = '/agent/' + str(user_id) + '/'
+        self.uri = '/agent/' + str(user_id) + '/confirm/'
 
         # Login User
         token_obj = Token.objects.create(user=user_obj)
@@ -286,11 +313,11 @@ class DeleteAccountConfirmTest(TestCase):
                           content_type='application/json', **header)
         user_obj = User.objects.get(username='cosmo.hu@lingtelli.com')
         acc_info = AccountInfo.objects.get(user=user_obj)
-        # res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(acc_info.delete_confirm, True)
-        # self.assertEqual(res_data.get('success'),
-                        #  'Account deleting has confirmed')
+        res_data = json.loads(response.content)
+        self.assertEqual(res_data.get('success'),
+                         'Account deleting has confirmed')
 
     def test_update_confirm_wrong_password(self):
         c = Client()
@@ -298,7 +325,7 @@ class DeleteAccountConfirmTest(TestCase):
         header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(correct_password), 
                           content_type='application/json', **header)
-        # res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 403)
-        # self.assertEqual(res_data.get('errors'), 'Password is not correct')
+        res_data = json.loads(response.content)
+        self.assertEqual(res_data.get('errors'), 'Password is not correct')
         

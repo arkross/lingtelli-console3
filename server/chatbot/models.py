@@ -16,6 +16,11 @@ LANGUAGE_CHOICE = {
     ('cn', 'cn')
 }
 
+BOT_TYPE = {
+    ('TASK', 'TASK'),
+    ('NORMAL', 'NORMAL')
+}
+
 
 class Chatbot(models.Model):
     '''Chatbot object
@@ -59,6 +64,11 @@ class Chatbot(models.Model):
         models.CharField(max_length=255, 
                          default='請選擇跟你問題類似的問題，如果沒有請繼續問其他問題。')
     delete_confirm = models.BooleanField(default=False)
+    bot_type = models.CharField(max_length=10, choices=BOT_TYPE,
+                                default='NORMAL')
+    assign_user = models.ForeignKey(User, related_name='assign_user',
+                                    blank=True, null=True,
+                                    on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'chatbot'

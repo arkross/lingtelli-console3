@@ -1,7 +1,15 @@
 from django.db import models
 
 from chatbot.models import Chatbot
+''''
+*** IMPORTANT MESSAGE ***
+2 Types of bot using the same faq structure
+NORMAL bot will have many questions to many answers
+TASK bot will have many questions to one answer only
 
+When creating new answer with more than one should check if the bot type is
+NORMAL. If not, should not allow create additional answer.
+'''
 
 class FAQGroup(models.Model):
     '''Question and answer group
