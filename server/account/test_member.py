@@ -339,7 +339,7 @@ class MemberAccessTest(TestCase):
         user_data = {'username': 'cosmo.hu@lingtelli.com',
                      'password': 'thisispassword',
                      'first_name': 'cosmo'}
-        user_obj = User.objects.create(**user_data)
+        user_obj = User.objects.create_user(**user_data)
 
         # Create another account for not confirmed testing
         other_user_data = {'username': 'test@lingtelli.com',
@@ -356,7 +356,15 @@ class MemberAccessTest(TestCase):
                           content_type='application/json')
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
-        self.assertIn('token', res_data)
+        self.assertIn('success', res_data)
+    
+    def test_login_empty_input(self):
+        c = Client()
+        response = c.post('/member/login/', json.dumps({}),
+                          content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        res_data = json.loads(response.content)
+        self.assertIn('errors', res_data)
     
     def test_login_user_not_found(self):
         c = Client()
@@ -388,6 +396,26 @@ class MemberAccessTest(TestCase):
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
     
+    def test_login_again(self):
+        '''User has logged in but tried to login again
+        '''
+        c = Client()
+        response = c.post('/member/login/',
+                          json.dumps({'username': 'cosmo.hu@lingtelli.com',
+                                      'password': 'thisispassword'}),
+                          content_type='application/json')
+        res_data = json.loads(response.content)
+        token = res_data.get('success')
+        header = {'HTTP_AUTHORIZATION': 'Token ' + token}
+        response = c.post('/member/login/',
+                          json.dumps({'username': 'cosmo.hu@lingtelli.com',
+                                      'password': 'thisispassword'}),
+                          content_type='application/json', **header)
+        self.assertEqual(response.status_code, 400)
+        res_data = json.loads(response.content)
+        self.assertIn('errors', res_data)
+
+    
     def test_logout(self):
         # Login to get token first
         user_obj = User.objects.get(username='cosmo.hu@lingtelli.com')
@@ -395,7 +423,7 @@ class MemberAccessTest(TestCase):
 
         # Logout the user
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + accesstoken.key}
+        header = {'HTTP_AUTHORIZATION': 'Token ' + accesstoken.key}
         response = c.get('/member/logout/', **header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)

@@ -37,7 +37,15 @@ class Chatbot(models.Model):
         user: User who's owning the chatbot.
         expired_at: Expire time for chatbot.
         activate: Chatbot is activated or not.
+        postback_activate: For forcing giving similar questions to client.
         postback_title: Showing postback title message.
+        delete_confrim: When deleting, use this flag to make sure the client
+                        has confirmed to delete this bot.
+        bot_type: The normal bot and task bot are now using the same model. Use
+                  this flag to separate between normal and task bot.
+        assign_user: Only can be assigned when the bot type is task and the 
+                     user type is staff. For assigning the task bot created by
+                     the staff to client to use.
     '''
 
     robot_name = models.CharField(max_length=100, blank=False, null=False)

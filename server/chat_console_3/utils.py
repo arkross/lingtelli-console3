@@ -1,7 +1,7 @@
 '''Put any functional tool in here
 '''
 import base64, urllib
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from Crypto.Cipher import AES
 
 from django.template.loader import render_to_string
@@ -9,7 +9,9 @@ from django.utils.html import strip_tags
 from django.core.mail import send_mail
 
 from chat_console_3.settings.common import (URL_ENCODE_KEY, CONFIRM_DOMAIN,
-                                            EMAIL_HOST_USER)
+                                            EMAIL_HOST_USER, TOKEN_DURATION)
+
+from rest_framework.authtoken.models import Token
 
 
 def url_encoder(data):
@@ -102,3 +104,17 @@ def key_validator(key_list, input_dict):
         if not input_dict.get(k, None):
             return 'Key missing: ' + k, False
     return '', True
+
+def check_token_expired(token):
+    if token == None:
+        return True
+    if token.created + timedelta(minutes=TOKEN_DURATION) \
+        > datetime.now(timezone.utc):
+        return False
+    token.delete()
+    return True
+
+def create_token_with_expire_time(user):
+    token_data = {'user': user, 'created': datetime.now(timezone.utc)}
+    new_token = Token.objects.create(**token_data)
+    return new_token

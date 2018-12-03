@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+# from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -156,6 +157,8 @@ EMAIL_HOST_USER = 'contact@lingtelli.com'
 EMAIL_HOST_PASSWORD = 'gong1si1mi4ma3'
 EMAIL_PORT = 587
 
-CONFIRM_URL_EXPIRE = 30 # Expire after 30 minutes
+CONFIRM_URL_EXPIRE = 30 # Expires after 30 minutes
 URL_ENCODE_KEY = 'FuckingChatbot!!' # Need to be length 16 long
 CONFIRM_DOMAIN = 'http://127.0.0.1:3000/confirm/?code='
+
+TOKEN_DURATION = 10080 # Expires every week

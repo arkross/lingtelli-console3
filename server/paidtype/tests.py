@@ -37,6 +37,7 @@ class PaidTypeTest(TestCase):
             'name': 'demo'
         }
         self.trial_obj = PaidType.objects.create(**trial_data)
+        staff_obj = PaidType.objects.create(**staff_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
         self.trial_obj.thirdparty.add(demo_obj)
 
@@ -52,12 +53,29 @@ class PaidTypeTest(TestCase):
                     'code_reset_time': '2019-12-12 00:00:00'}
         AccountInfo.objects.create(**acc_data)
 
+        # Create new agent account
+        agent_data = {'username': 'superuser', 'password': 'agentpassword',
+                      'is_staff': True}
+        self.agent_obj = User.objects.create(**agent_data)
+
+        # Create agent account info
+        acc_data = {'user': self.agent_obj, 'paid_type': staff_obj,
+                    'confirmation_code': 'confirmationcode', 
+                    'code_reset_time': '2019-12-12 00:00:00'}
+        AccountInfo.objects.create(**acc_data)
+
         # Login User
         token_obj = Token.objects.create(user=self.user_obj)
         self.accesstoken = token_obj.key
 
+         # Login Agent
+        agent_token_obj = Token.objects.create(user=self.agent_obj)
+        self.agent_token = agent_token_obj.key
+
         # Initial header
         self.header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        self.agent_header =\
+            {'HTTP_AUTHORIZATION': 'bearer ' + self.agent_token}
 
         # Initial uri
         self.paidtype_uri = '/paidtype/'
@@ -84,13 +102,48 @@ class PaidTypeTest(TestCase):
 
         GET, PUT
         '''
-        pass
+        c = Client()
+        the_paidtype = self.paidtype_uri + '100/'
+
+        # GET
+        response = c.get(the_paidtype, **self.header)
+        self.assertEqual(response.status_code, 404)
+        res_data = json.loads(response.content)
+        self.assertIn('errors', res_data)
+
+        # PUT
+        response = c.put(the_paidtype, json.dumps({'name': 'NewName'}),
+                         content_type='application/json', **self.header)
+        self.assertEqual(response.status_code, 404)
+        res_data = json.loads(response.content)
+        self.assertIn('errors', res_data)
     
     def test_read(self):
-        pass
+        c = Client()
+        paidtype_keys = ['name', 'duration', 'bot_amount', 'faq_amount',
+                         'thirdparty']
+        the_paidtype = self.paidtype_uri + '1/'
+        response = c.get(the_paidtype, **self.header)
+        self.assertEqual(response.status_code, 200)
+        res_data = json.loads(response.content)
+        self.assertEqual(len(paidtype_keys), len(res_data))
+        for k in paidtype_keys:
+            self.assertIn(k, res_data)
 
     def test_update_member_not_allowed(self):
-        pass
+        c = Client()
+        the_paidtype = self.paidtype_uri + '1/'
+        response = c.put(the_paidtype, json.dumps({'name': 'NewName'}),
+                         content_type='application/json', **self.header)
+        self.assertEqual(response.status_code, 403)
+        res_data = json.loads(response.content)
+        self.assertIn('errors', res_data)
 
     def test_update_only_agent(self):
-        pass
+        c = Client()
+        the_paidtype = self.paidtype_uri + '1/'
+        response = c.put(the_paidtype, json.dumps({'name': 'NewName'}),
+                         content_type='application/json', **self.agent_header)
+        self.assertEqual(response.status_code, 200)
+        res_data = json.loads(response.content)
+        self.assertIn('success', res_data)

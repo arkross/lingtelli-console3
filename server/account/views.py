@@ -6,20 +6,101 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import gettext as _
 from django.core.validators import EmailValidator
+from django.contrib.auth import authenticate
 
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import (api_view, authentication_classes,
                                        permission_classes)
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 import chat_console_3.utils as utils
+from account.serializers import MemberSerializer
+
 from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
 from account.models import AccountInfo
 from paidtype.models import PaidType
 
 # MEMBER PART
+@csrf_exempt
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([AllowAny])
+def member_login(request):
+    '''Member login
+
+    Can be login using member's account or agent's account
+
+    Input format example:
+
+    {
+        "username": "Jack@gmail.com",
+        "password": "thisispassword"
+    }
+    '''
+    required_key = ['username', 'password']
+    login_data = json.loads(request.body)
+    for k in required_key:
+        if not k in login_data:
+            return \
+                Response({'errors': 'Username and password cannot be empty'},
+                         status=status.HTTP_400_BAD_REQUEST)
+
+    username = login_data.get('username')
+    password = login_data.get('password')
+
+    user = None # Initial user object to None
+    if not request.user.is_anonymous:
+        # To check if user has logged in and tried to login again
+        old_token_obj = Token.objects.filter(user=request.user).first()
+        expired = utils.check_token_expired(old_token_obj)
+        if expired == False:
+            return Response({'errors': 'You have logged in.' +\
+                            'Do not need to login again'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    user = User.objects.filter(username=username).first()
+    if not user:
+        return Response({'errors': 'User does not exist.' +\
+                                   'Please register an account first.'},
+                        status=status.HTTP_404_NOT_FOUND)
+
+    user = authenticate(request, username=username, password=password)
+
+    if user:
+        old_token_obj = Token.objects.filter(user=user).first()
+        expired = utils.check_token_expired(old_token_obj)
+        if expired == True:
+            new_token = utils.create_token_with_expire_time(user)
+            if new_token:
+                return \
+                    Response({'success': new_token.key}, status=status.HTTP_200_OK)
+            else:
+                return Response({'errors': 'Something went wrong.'+\
+                    'Please try again'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'success': old_token_obj.key},
+                            status=status.HTTP_200_OK)
+    else:
+        return Response({'errors': 'Username or password is not correct'},
+                         status=status.HTTP_403_FORBIDDEN) 
+
+@csrf_exempt
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def member_logout(request):
+    user = request.user
+    if not user:
+        return Response({'errors': 'You have not logged in yet'}, 
+                        status=status.HTTP_403_FORBIDDEN)
+    Token.objects.filter(user=user).delete()
+    return Response({'success': 'You have successfully logged out'},
+                    status=status.HTTP_200_OK)
+
+
 @csrf_exempt
 @api_view(['POST'])
 @authentication_classes([])
@@ -85,10 +166,10 @@ def member_register(request):
 @api_view(['GET'])
 @authentication_classes([])
 @permission_classes([])
-def resend_email_view(request):
+def resend_email(request):
     '''Resend the confrimation email if user has not got it
 
-    Get method got header with:
+    Get method got parameters with:
     ?username=Jack@gmail.com
     '''
 
@@ -140,7 +221,7 @@ def resend_email_view(request):
 @api_view(['POST'])
 @authentication_classes([])
 @permission_classes([])
-def confirm_user_view(request):
+def confirm_user(request):
     '''Confirm the email address
 
     From request data get key "code" data. Code data is encoded with user
@@ -173,6 +254,37 @@ def confirm_user_view(request):
 
     return Response({'errors': _('Account validation failed')},
                     status=status.HTTP_400_BAD_REQUEST)
+
+
+class MemberProfileViewset(viewsets.ModelViewSet):
+    '''Member Profile Viewset
+
+    Using RUD with member related data.
+
+    Request format example:
+    PUT:
+    {
+        "username": "thisisnewemail@test.com",
+        "password": "thisisnewpassword",
+        "first_name": "new nick name"
+    }
+
+    Response format example:
+    GET:
+    {
+        "username": "testuser@test.com",
+        "first_name": "nick name",
+        "paid_type": "Trail",
+        "start_date": "2010-10-10 00:00:00"
+        "expire_date": "2012-10-10 00:00:00"
+        "language": "tw"
+    }
+    '''
+    authentication_classes = (TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
+    queryset = User.objects.all()
+    serializer_class = MemberSerializer
+    pass
 
 
 # AGENT PART

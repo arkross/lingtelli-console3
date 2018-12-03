@@ -29,7 +29,8 @@ from account import views as acc_view
 # agent_router.register('',)
 # agent_router.register('<int:pk>/confrim/',)
 # agent_router.register('/member/',)
-# agent_router.register('/report/',)
+# agent_router.register('/report/',) #Not sure what to provide yet
+
 
 # Member page chatbot related. Not specifiy member cause agent can also use it.
 # chatbot_router = routers.DefaultRouter(trailing_slash=True)
@@ -52,7 +53,7 @@ from account import views as acc_view
 # Agent page chatbot. Use for checking member analysis and creating task chatbot for member
 # agent_bot_router = routers.DefaultRouter(trailing_slash=True)
 # agent_bot_router.register('',)
-# agent_bot_router.register('<int:pk>/history',)
+# agent_bot_router.register('<int:pk>/history/',)
 # agent_bot_router.register('<int:pk>/faq/',)
 # agent_bot_router.register('<int:pk>/answer/',)
 # agent_bot_router.register('<int:pk>/question/',)
@@ -69,9 +70,6 @@ from account import views as acc_view
 # paidtype_router.register('',)
 
 
-
-
-
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -82,11 +80,11 @@ urlpatterns = [
 
     # Member related urls
     # path('member/', include(member_router.urls), name='member_account'),
-    # path('member/login/',),
-    # path('member/logout/',),
+    path('member/login/', acc_view.member_login),
+    path('member/logout/', acc_view.member_logout),
     path('member/register/', acc_view.member_register),
-    path('member/confirm/', acc_view.confirm_user_view),
-    path('member/resend/', acc_view.resend_email_view),
+    path('member/confirm/', acc_view.confirm_user),
+    path('member/resend/', acc_view.resend_email),
 
     # Agent related urls
     # path('agent/<int:pk>/chatbot/', include(agent_bot_router.urls), name='agent_chatbot')

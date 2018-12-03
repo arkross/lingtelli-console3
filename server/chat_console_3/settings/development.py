@@ -25,3 +25,13 @@ DATABASES = {
         }
     }
 }
+
+# Celery related settings
+CELERY_BROKER_URL = 'redis://localhost:6379'
+
+CELERY_BEAT_SCHEDULE = {
+    'check_token_expired_every_minutes': {
+        'task': 'delete_token',
+        'schedule': 60.0
+    }
+}
