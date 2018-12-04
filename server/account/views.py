@@ -280,11 +280,85 @@ class MemberProfileViewset(viewsets.ModelViewSet):
         "language": "tw"
     }
     '''
-    authentication_classes = (TokenAuthentication)
-    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
     queryset = User.objects.all()
+    permission_classes = (IsAuthenticated,)
     serializer_class = MemberSerializer
-    pass
+
+    def get_queryset(self):
+        user = self.request.user
+        return User.objects.filter(username=user.username)
+
+    def update(self, request, *args, **kwargs):
+        '''Update user data
+
+        Username: Need to logout user and send confirmation email
+        Password: Need to logout user
+        First_name, Language: Just update directly
+        '''
+        # Update username
+        pk = kwargs.get('pk')
+        user_obj = None
+        if pk:
+            user_obj = User.objects.filter(id=pk).first()
+        if not user_obj:
+            return Response({'errors':_('Not found')},
+                             status=status.HTTP_404_NOT_FOUND)
+        update_data = json.loads(request.body)
+
+        if update_data.get('username') and update_data.get('username') != '':
+            new_email = update_data.get('username')
+            email_validator = EmailValidator()
+            try:
+                email_validator(new_email)
+            except:
+                return Response({'errors':_('Invalid email address')},
+                                status=status.HTTP_400_BAD_REQUEST)
+            same_user = User.objects.filter(username=new_email)
+            if same_user:
+                return Response({'errors':_('Username has existed.' +\
+                                 'Please use other one')},
+                                 status=status.HTTP_400_BAD_REQUEST)
+            user_obj.email = new_email
+            user_obj.save()
+            send_status = utils.send_confirmation_email(user_obj, True)
+            if not send_status:
+                return \
+                    Response({'errors':_('Sending confirmation email failed')},
+                             status=status.HTTP_400_BAD_REQUEST)
+
+            user_obj.is_active = False
+            user_obj.save()
+            Token.objects.filter(user=user_obj).delete()
+            return Response({'success':_('Confirmation email has sent.' +\
+                             'Please check your mailbox and login again')},
+                             status=status.HTTP_200_OK)
+
+        # Update password
+        if update_data.get('password') and update_data.get('password') != '':
+            if not update_data.get('old_password') or\
+                update_data.get('old_password') == '':
+                return Response({'errors':_('Old password cannot be empty')},
+                                 status=status.HTTP_400_BAD_REQUEST)
+            passwd = update_data.get('password')
+            old_passwd = update_data.get('old_password')
+            if not user_obj.check_password(old_passwd):
+                return Response({'errors':_('Old password is not correct')},
+                                 status=status.HTTP_403_FORBIDDEN)
+            user_obj.set_password(passwd)
+            user_obj.save()
+            Token.objects.filter(user=user_obj).delete()
+            return Response({'success':_('Password has updated.' +\
+                             'Please login again')}, status=status.HTTP_200_OK)
+
+        # Update first_name and language
+        if update_data.get('first_name') or update_data.get('language'):
+            acc_obj = AccountInfo.objects.filter(user=instance.id).first()
+
+        return Response({'errors':_('No Content')},
+                         status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 # AGENT PART

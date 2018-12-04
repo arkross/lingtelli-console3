@@ -14,14 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.conf.urls import include
 from django.urls import path
 from rest_framework import routers
 from rest_framework.authtoken import views
 from account import views as acc_view
 
 # Member account related
-# member_router = routers.DefaultRouter(trailing_slash=True)
-# member_router.register('',)
+member_router = routers.DefaultRouter(trailing_slash=True)
+member_router.register('', acc_view.MemberProfileViewset)
 # member_router.register('<int:pk>/confrim/')
 
 # Agent account related
@@ -79,12 +80,12 @@ urlpatterns = [
     # path('paidtype/', include(paidtype_router.urls), name='paidtype')
 
     # Member related urls
-    # path('member/', include(member_router.urls), name='member_account'),
     path('member/login/', acc_view.member_login),
     path('member/logout/', acc_view.member_logout),
     path('member/register/', acc_view.member_register),
     path('member/confirm/', acc_view.confirm_user),
     path('member/resend/', acc_view.resend_email),
+    path('member/', include(member_router.urls)),
 
     # Agent related urls
     # path('agent/<int:pk>/chatbot/', include(agent_bot_router.urls), name='agent_chatbot')

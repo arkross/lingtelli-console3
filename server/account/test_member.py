@@ -467,20 +467,20 @@ class MemberProfileTest(TestCase):
         user_data = {'username': 'cosmo.hu@lingtelli.com',
                      'password': 'thisispassword',
                      'first_name': 'cosmo'}
-        user_obj = User.objects.create(**user_data)
+        self.user_obj = User.objects.create_user(**user_data)
 
         # Create account info
-        acc_data = {'user': user_obj, 'paid_type': trial_obj,
+        acc_data = {'user': self.user_obj, 'paid_type': trial_obj,
                     'confirmation_code': 'confirmationcode', 
                     'code_reset_time': '2019-12-12 00:00:00', }
         AccountInfo.objects.create(**acc_data)
 
         # Initial user id uri
-        user_id = user_obj.id
+        user_id = self.user_obj.id
         self.uri = '/member/' + str(user_id) + '/'
 
         # Login User
-        token_obj = Token.objects.create(user=user_obj)
+        token_obj = Token.objects.create(user=self.user_obj)
         self.accesstoken = token_obj.key
 
     def test_no_auth(self):
@@ -497,7 +497,7 @@ class MemberProfileTest(TestCase):
         # PUT
         response = c.put(self.uri, 
                          json.dumps({'old_password': 'thisispassword',
-                                     'new_password': 'newpassword'}),
+                                     'password': 'newpassword'}),
                          content_type='application/json')
         self.assertEqual(response.status_code, 401)
 
@@ -506,38 +506,39 @@ class MemberProfileTest(TestCase):
         self.assertEqual(response.status_code, 401)
     
     def test_not_existed(self):
-        '''Agent account not existed
+        '''Member account not existed
 
         GET, PUT, DELETE
         '''
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        not_existed_uri = '/member/123/'
         # GET
-        response = c.get(self.uri, header)
+        response = c.get(not_existed_uri, **header)
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
 
         # PUT
-        response = c.put(self.uri, 
+        response = c.put(not_existed_uri,
                          json.dumps({'old_password': 'thisispassword',
-                                     'new_password': 'newpassword'}),
+                                     'password': 'newpassword'}),
                          content_type='application/json', **header)
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
 
         # Delete
-        response = c.delete(self.uri, **header)
+        response = c.delete(not_existed_uri, **header)
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
         
     def test_read(self):
-        profile_key = ['username', 'first_name', 'paid_type', 'start_date',
-                       'expire_date', 'language']
+        profile_key = ['id','username', 'first_name', 'paid_type',
+                       'start_date', 'expire_date', 'language']
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
         response = c.get(self.uri, **header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
@@ -547,7 +548,7 @@ class MemberProfileTest(TestCase):
     
     def test_update_empty(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
         response = c.put(self.uri,
                          json.dumps({}),
                          content_type='application/json', **header)
@@ -557,48 +558,56 @@ class MemberProfileTest(TestCase):
     
     def test_update_username(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
         response = c.put(self.uri,
                          json.dumps({'username': 'test@lingtelli.com'}),
                          content_type='application/json', **header)
+        token = Token.objects.filter(user=self.user_obj).first()
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
+        self.assertEqual(token, None)
 
     def test_update_username_duplicated(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
         response = c.put(self.uri,
                          json.dumps({'username': 'cosmo.hu@lingtelli.com'}),
                          content_type='application/json', **header)
+        token = Token.objects.filter(user=self.user_obj).first()
         self.assertEqual(response.status_code, 400)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
+        self.assertEqual(token.key, self.accesstoken)
     
     def test_update_password(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
         response = c.put(self.uri, 
-                         json.dumps({'password': 'thisispassword',
-                                     'new_password': 'newpassword'}),
+                         json.dumps({'old_password': 'thisispassword',
+                                     'password': 'newpassword'}),
                          content_type='application/json', **header)
+        token = Token.objects.filter(user=self.user_obj).first()
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
+        self.assertEqual(token, None)
     
     def test_update_wrong_old_password(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
         response = c.put(self.uri, json.dumps({'old_password': 'thisiswrong',
-                                               'new_password': 'newpassword'}),
+                                               'password': 'newpassword'}),
                          content_type='application/json', **header)
+        token = Token.objects.filter(user=self.user_obj).first()
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
+        self.assertEqual(token.key, self.accesstoken)
 
     def test_update_nickname(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
         response = c.put(self.uri,
                          json.dumps({'first_name': 'test'}),
                          content_type='application/json', **header)
@@ -612,13 +621,13 @@ class MemberProfileTest(TestCase):
         acc_obj.delete_confirm = True
         acc_obj.save()
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
         response = c.delete(self.uri, **header)
         self.assertEqual(response.status_code, 204)
     
     def test_delete_no_confirm(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
         response = c.delete(self.uri, **header)
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
