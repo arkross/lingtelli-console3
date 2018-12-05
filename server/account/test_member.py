@@ -549,9 +549,7 @@ class MemberProfileTest(TestCase):
     def test_update_empty(self):
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
-        response = c.put(self.uri,
-                         json.dumps({}),
-                         content_type='application/json', **header)
+        response = c.put(self.uri, content_type='application/json', **header)
         self.assertEqual(response.status_code, 400)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
@@ -567,6 +565,7 @@ class MemberProfileTest(TestCase):
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
         self.assertEqual(token, None)
+        self.assertEqual(self.user_obj.email, '')
 
     def test_update_username_duplicated(self):
         c = Client()
@@ -611,9 +610,36 @@ class MemberProfileTest(TestCase):
         response = c.put(self.uri,
                          json.dumps({'first_name': 'test'}),
                          content_type='application/json', **header)
+        new_user_obj = User.objects.filter(id=self.user_obj.id).first()
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
+        self.assertEqual(new_user_obj.first_name, 'test')
+
+    def test_update_language(self):
+        c = Client()
+        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        response = c.put(self.uri,
+                         json.dumps({'language': 'en'}),
+                         content_type='application/json', **header)
+        new_acc_obj = AccountInfo.objects.filter(user=self.user_obj).first()
+        self.assertEqual(response.status_code, 200)
+        res_data = json.loads(response.content)
+        self.assertIn('success', res_data)
+        self.assertEqual(new_acc_obj.language, 'en')
+
+    def test_update_language_empty(self):
+        c = Client()
+        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        ori_acc_obj = AccountInfo.objects.filter(user=self.user_obj).first()
+        response = c.put(self.uri,
+                         json.dumps({'language':''}),
+                         content_type='application/json', **header)
+        new_acc_obj = AccountInfo.objects.filter(user=self.user_obj).first()
+        self.assertEqual(response.status_code, 400)
+        res_data = json.loads(response.content)
+        self.assertIn('errors', res_data)
+        self.assertEqual(new_acc_obj.language, ori_acc_obj.language)
 
     def test_delete(self):
         user_obj = User.objects.get(username='cosmo.hu@lingtelli.com')
@@ -623,15 +649,21 @@ class MemberProfileTest(TestCase):
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
         response = c.delete(self.uri, **header)
+        check_delete_user = \
+            User.objects.filter(username='cosmo.hu@lingtelli.com').first()
         self.assertEqual(response.status_code, 204)
+        self.assertEqual(check_delete_user, None)
     
     def test_delete_no_confirm(self):
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
         response = c.delete(self.uri, **header)
+        check_delete_user = \
+            User.objects.filter(username='cosmo.hu@lingtelli.com').first()
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
+        self.assertNotEqual(check_delete_user, None)
 
 class DeleteAccountConfirmTest(TestCase):
     '''Deleting account confirm
@@ -660,7 +692,7 @@ class DeleteAccountConfirmTest(TestCase):
         user_data = {'username': 'cosmo.hu@lingtelli.com',
                      'password': 'thisispassword',
                      'first_name': 'cosmo'}
-        user_obj = User.objects.create(**user_data)
+        user_obj = User.objects.create_user(**user_data)
 
         # Create account info
         acc_data = {'user': user_obj, 'paid_type': trial_obj,
@@ -686,7 +718,7 @@ class DeleteAccountConfirmTest(TestCase):
     def test_update_confirm_correct_password(self):
         c = Client()
         correct_password = {'password': 'thisispassword'}
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(correct_password), 
                           content_type='application/json', **header)
         user_obj = User.objects.get(username='cosmo.hu@lingtelli.com')
@@ -694,15 +726,14 @@ class DeleteAccountConfirmTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(acc_info.delete_confirm, True)
         res_data = json.loads(response.content)
-        self.assertEqual(res_data.get('success'),
-                         'Account deleting has confirmed')
+        self.assertIn('success', res_data)
 
     def test_update_confirm_wrong_password(self):
         c = Client()
         correct_password = {'password': 'wrongpassword'}
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(correct_password), 
                           content_type='application/json', **header)
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
-        self.assertEqual(res_data.get('errors'), 'Password is not correct')
+        self.assertIn('errors', res_data)

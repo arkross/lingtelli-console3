@@ -11,7 +11,7 @@ from django.contrib.auth import authenticate
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import (api_view, authentication_classes,
-                                       permission_classes)
+                                       permission_classes, detail_route)
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
@@ -64,7 +64,7 @@ def member_login(request):
     user = User.objects.filter(username=username).first()
     if not user:
         return Response({'errors': 'User does not exist.' +\
-                                   'Please register an account first.'},
+                                   'Please register an account first'},
                         status=status.HTTP_404_NOT_FOUND)
 
     user = authenticate(request, username=username, password=password)
@@ -78,7 +78,7 @@ def member_login(request):
                 return \
                     Response({'success': new_token.key}, status=status.HTTP_200_OK)
             else:
-                return Response({'errors': 'Something went wrong.'+\
+                return Response({'errors': 'Something went wrong'+\
                     'Please try again'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'success': old_token_obj.key},
@@ -120,31 +120,32 @@ def member_register(request):
     '''
 
     required_key = ['username', 'password', 'first_name']
-    register_info = json.loads(request.body)
-    err_msg, valid = utils.key_validator(required_key, register_info)
+    register_data = json.loads(request.body)
+    err_msg, valid = utils.key_validator(required_key, register_data)
     if valid != True:
         return Response({'errors':_(err_msg)},
                         status=status.HTTP_400_BAD_REQUEST)
-    user_email = register_info.get('username')
+    user_email = register_data.get('username')
     email_validator = EmailValidator()
     try:
         email_validator(user_email)
     except:
         return Response({'errors':_('Invalid email address')},
                         status=status.HTTP_400_BAD_REQUEST)
-    user = User.objects.filter(username=register_info.get("username")).first()
+    user = User.objects.filter(username=register_data.get("username")).first()
     if not user:
         user_create_obj = {}
         acc_create_obj = {}
 
-        user_create_obj['username'] = register_info.get('username')
-        user_create_obj['password'] = register_info.get('password')
-        user_create_obj['first_name'] = register_info.get('first_name')
+        user_create_obj['username'] = register_data.get('username')
+        user_create_obj['password'] = register_data.get('password')
+        user_create_obj['first_name'] = register_data.get('first_name')
         user_create_obj['is_active'] = False
         user = User.objects.create_user(**user_create_obj)
 
+        trail_obj = PaidType.objects.get(pk=1)
         acc_create_obj['user'] = user
-        acc_create_obj['paid_type'] = PaidType.objects.get(pk=1)
+        acc_create_obj['paid_type'] = trail_obj
         acc_create_obj['confirmation_code'] = \
             utils.generate_confirmation_code(user)
         acc_create_obj['code_reset_time'] = \
@@ -287,7 +288,7 @@ class MemberProfileViewset(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return User.objects.filter(username=user.username)
+        return User.objects.filter(id=user.id)
 
     def update(self, request, *args, **kwargs):
         '''Update user data
@@ -296,68 +297,116 @@ class MemberProfileViewset(viewsets.ModelViewSet):
         Password: Need to logout user
         First_name, Language: Just update directly
         '''
-        # Update username
-        pk = kwargs.get('pk')
-        user_obj = None
-        if pk:
-            user_obj = User.objects.filter(id=pk).first()
-        if not user_obj:
-            return Response({'errors':_('Not found')},
-                             status=status.HTTP_404_NOT_FOUND)
-        update_data = json.loads(request.body)
-
-        if update_data.get('username') and update_data.get('username') != '':
-            new_email = update_data.get('username')
-            email_validator = EmailValidator()
-            try:
-                email_validator(new_email)
-            except:
-                return Response({'errors':_('Invalid email address')},
+        # To check if request body is empty
+        if request.body:
+            # Prevent from user updating other user's profile
+            if request.user.id != int(kwargs.get('pk')):
+                return Response({'errors':_('Not found')},
+                                status=status.HTTP_404_NOT_FOUND)
+            update_data = json.loads(request.body)
+            user_obj = request.user
+            # Update username
+            if update_data.get('username') and update_data.get('username') != '':
+                new_email = update_data.get('username')
+                email_validator = EmailValidator()
+                try:
+                    email_validator(new_email)
+                except:
+                    return Response({'errors':_('Invalid email address')},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                same_user = User.objects.filter(username=new_email)
+                if same_user:
+                    return Response({'errors':_('Username has existed.' +\
+                                    'Please use other one')},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                user_obj.email = new_email
+                user_obj.save()
+                send_status = utils.send_confirmation_email(user_obj, True)
+                if not send_status:
+                    return \
+                        Response({'errors':_('Sending confirmation email failed')},
                                 status=status.HTTP_400_BAD_REQUEST)
-            same_user = User.objects.filter(username=new_email)
-            if same_user:
-                return Response({'errors':_('Username has existed.' +\
-                                 'Please use other one')},
-                                 status=status.HTTP_400_BAD_REQUEST)
-            user_obj.email = new_email
-            user_obj.save()
-            send_status = utils.send_confirmation_email(user_obj, True)
-            if not send_status:
-                return \
-                    Response({'errors':_('Sending confirmation email failed')},
-                             status=status.HTTP_400_BAD_REQUEST)
 
-            user_obj.is_active = False
-            user_obj.save()
-            Token.objects.filter(user=user_obj).delete()
-            return Response({'success':_('Confirmation email has sent.' +\
-                             'Please check your mailbox and login again')},
-                             status=status.HTTP_200_OK)
+                user_obj.is_active = False
+                user_obj.username = user_obj.email
+                user_obj.email = ''
+                user_obj.save()
+                Token.objects.filter(user=user_obj).delete()
+                return Response({'success':_('Confirmation email has sent.' +\
+                                'Please check your mailbox and login again')},
+                                status=status.HTTP_200_OK)
 
-        # Update password
-        if update_data.get('password') and update_data.get('password') != '':
-            if not update_data.get('old_password') or\
-                update_data.get('old_password') == '':
-                return Response({'errors':_('Old password cannot be empty')},
-                                 status=status.HTTP_400_BAD_REQUEST)
-            passwd = update_data.get('password')
-            old_passwd = update_data.get('old_password')
-            if not user_obj.check_password(old_passwd):
-                return Response({'errors':_('Old password is not correct')},
-                                 status=status.HTTP_403_FORBIDDEN)
-            user_obj.set_password(passwd)
-            user_obj.save()
-            Token.objects.filter(user=user_obj).delete()
-            return Response({'success':_('Password has updated.' +\
-                             'Please login again')}, status=status.HTTP_200_OK)
+            # Update password
+            if update_data.get('password') and update_data.get('password') != '':
+                if not update_data.get('old_password') or\
+                    update_data.get('old_password') == '':
+                    return Response({'errors':_('Old password cannot be empty')},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                passwd = update_data.get('password')
+                old_passwd = update_data.get('old_password')
+                if not user_obj.check_password(old_passwd):
+                    return Response({'errors':_('Old password is not correct')},
+                                    status=status.HTTP_403_FORBIDDEN)
+                user_obj.set_password(passwd)
+                user_obj.save()
+                Token.objects.filter(user=user_obj).delete()
+                return Response({'success':_('Password has updated.' +\
+                                'Please login again')}, status=status.HTTP_200_OK)
 
-        # Update first_name and language
-        if update_data.get('first_name') or update_data.get('language'):
-            acc_obj = AccountInfo.objects.filter(user=instance.id).first()
+            # Update first_name
+            if update_data.get('first_name'):
+                user_obj.first_name = update_data.get('first_name')
+                user_obj.save()
 
-        return Response({'errors':_('No Content')},
+            # Update language
+            if update_data.get('language'):
+                acc_obj = AccountInfo.objects.filter(user=user_obj).first()
+                acc_obj.language = update_data.get('language')
+                acc_obj.save()
+            elif update_data.get('language') == '': # Cannot be empty
+                return Response({'errors':_('Please select one language')},
+                                    status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({'success':_('Update successed')},
+                            status=status.HTTP_200_OK)
+
+        return Response({'errors':_('No content')},
                          status=status.HTTP_400_BAD_REQUEST)
 
+    def destroy(self, request, *arg, **kwargs):
+        if request.user.id != int(kwargs.get('pk')):
+            return Response({'errors':_('Not found')},
+                                status=status.HTTP_404_NOT_FOUND)
+        user_obj = request.user
+        acc_obj = AccountInfo.objects.filter(user=user_obj).first()
+        if acc_obj.delete_confirm != True:
+            return Response({'errors':_('Please confirm the deletion first')},
+                            status=status.HTTP_403_FORBIDDEN)
+        user_obj.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @detail_route(methods=['put'], permission_classes=[IsAuthenticated])
+    def confirm(self, request, pk=None):
+        if request.body:
+            if request.user.id != int(pk):
+                return Response({'errors':_('Not found')},
+                                status=status.HTTP_404_NOT_FOUND)
+
+            request_data = json.loads(request.body)
+            user_obj = request.user
+            if not request_data.get('password'):
+                return Response({'errors':_('Please enter the password')},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if user_obj.check_password(request_data.get('password')):
+                acc_obj = AccountInfo.objects.filter(user=user_obj).first()
+                acc_obj.delete_confirm = True
+                acc_obj.save()
+                return Response({'success':_('Delete confirmed')},
+                                status=status.HTTP_200_OK)
+            return Response({'errors':_('Password is not correct')},
+                            status=status.HTTP_403_FORBIDDEN)
+        return Response({'errors':_('No content')},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 

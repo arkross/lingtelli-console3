@@ -23,7 +23,7 @@ from account import views as acc_view
 # Member account related
 member_router = routers.DefaultRouter(trailing_slash=True)
 member_router.register('', acc_view.MemberProfileViewset)
-# member_router.register('<int:pk>/confrim/')
+#XXX /member/pk/confirm/ for delete confirmation api(detail_route)
 
 # Agent account related
 # agent_router = routers.DefaultRouter(trailing_slash=True)
