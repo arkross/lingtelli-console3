@@ -1,5 +1,7 @@
 from rest_framework import serializers, status
 
+from chat_console_3 import utils
+
 from django.contrib.auth.models import User
 from account.models import AccountInfo
 
@@ -14,13 +16,15 @@ class MemberSerializer(serializers.Serializer):
 
     id = serializers.IntegerField(read_only=True)
     username = serializers.CharField(required=False)
-    password = serializers.CharField(required=False)
     first_name = serializers.CharField(required=False)
 
-    def validate(self, data):
-        pass
-
-    def update(self, instance, validated_data):
-        pass
+    def to_representation(self, instance):
+        user_data = super().to_representation(instance)
+        acc_obj = AccountInfo.objects.filter(user=user_data.get('id')).first()
+        user_data['paid_type'] = acc_obj.paid_type.name
+        user_data['start_date'] = acc_obj.start_date
+        user_data['expire_date'] = acc_obj.expire_date
+        user_data['language'] = acc_obj.language
+        return user_data
         
 
