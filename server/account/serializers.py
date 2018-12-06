@@ -1,6 +1,4 @@
-from rest_framework import serializers, status
-
-from chat_console_3 import utils
+from rest_framework import serializers
 
 from django.contrib.auth.models import User
 from account.models import AccountInfo

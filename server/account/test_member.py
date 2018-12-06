@@ -702,7 +702,7 @@ class DeleteAccountConfirmTest(TestCase):
 
         # Initial user id uri
         user_id = user_obj.id
-        self.uri = '/member/' + str(user_id) + '/confirm/'
+        self.uri = '/member/' + str(user_id) + '/delete_confirm/'
 
         # Login User
         token_obj = Token.objects.create(user=user_obj)

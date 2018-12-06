@@ -116,6 +116,17 @@ def key_validator(key_list, input_dict):
             return 'Key missing: ' + k, False
     return '', True
 
+def value_not_empty_validator(key_list, input_dict):
+    '''Given key's value cannot be empty
+    '''
+
+    for k in key_list:
+        if input_dict.get(k, None):
+            continue
+        if input_dict.get(k) == '' or input_dict.get(k) == []:
+            return 'Value empty: ' + k, False
+    return '', True
+
 def check_token_expired(token):
     '''Check if the token has expired
 

@@ -19,18 +19,21 @@ from django.urls import path
 from rest_framework import routers
 from rest_framework.authtoken import views
 from account import views as acc_view
+from paidtype import views as paid_view
+
+from django.contrib.auth.models import User
 
 # Member account related
 member_router = routers.DefaultRouter(trailing_slash=True)
 member_router.register('', acc_view.MemberProfileViewset)
-#XXX /member/pk/confirm/ for delete confirmation api(detail_route)
+#XXX /member/pk/delete_confirm/ for delete confirmation api(detail_route)
 
 # Agent account related
 # agent_router = routers.DefaultRouter(trailing_slash=True)
 # agent_router.register('',)
 # agent_router.register('<int:pk>/confrim/',)
-# agent_router.register('/member/',)
-# agent_router.register('/report/',) #Not sure what to provide yet
+# agent_router.register('member/',)
+# agent_router.register('report/',) #Not sure what to provide yet
 
 
 # Member page chatbot related. Not specifiy member cause agent can also use it.
@@ -67,8 +70,8 @@ member_router.register('', acc_view.MemberProfileViewset)
 # thirdparty_router = routers.DefaultRouter(trailing_slash=True)
 # thirdparty_router.register('',)
 
-# paidtype_router = routers.DefaultRouter(trailing_slash=True)
-# paidtype_router.register('',)
+paidtype_router = routers.DefaultRouter(trailing_slash=True)
+paidtype_router.register('', paid_view.PaidTypeViewset)
 
 
 urlpatterns = [
@@ -77,7 +80,7 @@ urlpatterns = [
     # Common urls(Could use by both member and agent)
     # path('chatbot/', include(chatbot_router.urls), name='chatbot'),
     # path('thirdparty/', include(thirdparty_router.urls), name='thirdparty'),
-    # path('paidtype/', include(paidtype_router.urls), name='paidtype')
+    path('paidtype/', include(paidtype_router.urls), name='paidtype'),
 
     # Member related urls
     path('member/login/', acc_view.member_login),
@@ -88,9 +91,9 @@ urlpatterns = [
     path('member/', include(member_router.urls)),
 
     # Agent related urls
-    # path('agent/<int:pk>/chatbot/', include(agent_bot_router.urls), name='agent_chatbot')
-    # path('agent/', include(account.urls.agent_urls), name='agent_account'),
     # path('agent/login/',),
     # path('agent/logout/',),
     # path('agent/register/',),
+    # path('agent/<int:pk>/chatbot/', include(agent_bot_router.urls), name='agent_chatbot')
+    # path('agent/', include(account.urls.agent_urls), name='agent_account'),
 ]

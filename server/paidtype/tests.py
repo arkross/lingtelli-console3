@@ -73,9 +73,9 @@ class PaidTypeTest(TestCase):
         self.agent_token = agent_token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
         self.agent_header =\
-            {'HTTP_AUTHORIZATION': 'bearer ' + self.agent_token}
+            {'HTTP_AUTHORIZATION': 'Token ' + self.agent_token}
 
         # Initial uri
         self.paidtype_uri = '/paidtype/'
@@ -113,14 +113,14 @@ class PaidTypeTest(TestCase):
 
         # PUT
         response = c.put(the_paidtype, json.dumps({'name': 'NewName'}),
-                         content_type='application/json', **self.header)
+                         content_type='application/json', **self.agent_header)
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
     
     def test_read(self):
         c = Client()
-        paidtype_keys = ['name', 'duration', 'bot_amount', 'faq_amount',
+        paidtype_keys = ['id', 'name', 'duration', 'bot_amount', 'faq_amount',
                          'thirdparty']
         the_paidtype = self.paidtype_uri + '1/'
         response = c.get(the_paidtype, **self.header)
@@ -142,7 +142,8 @@ class PaidTypeTest(TestCase):
     def test_update_only_agent(self):
         c = Client()
         the_paidtype = self.paidtype_uri + '1/'
-        response = c.put(the_paidtype, json.dumps({'name': 'NewName'}),
+        response = c.put(the_paidtype, json.dumps({'name': 'NewName',
+                                                   'thridparty': [1,2,3,4]}),
                          content_type='application/json', **self.agent_header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)

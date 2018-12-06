@@ -11,7 +11,7 @@ from django.contrib.auth import authenticate
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import (api_view, authentication_classes,
-                                       permission_classes, detail_route)
+                                       permission_classes, action)
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
@@ -262,6 +262,9 @@ class MemberProfileViewset(viewsets.ModelViewSet):
 
     Using RUD with member related data.
 
+    detail_route: 
+        delete_confirm
+
     Request format example:
     PUT:
     {
@@ -282,15 +285,15 @@ class MemberProfileViewset(viewsets.ModelViewSet):
     }
     '''
     authentication_classes = (TokenAuthentication,)
-    queryset = User.objects.all()
     permission_classes = (IsAuthenticated,)
+    queryset = User.objects.all()
     serializer_class = MemberSerializer
 
     def get_queryset(self):
         user = self.request.user
         return User.objects.filter(id=user.id)
 
-    def update(self, request, *args, **kwargs):
+    def update(self, request, pk=None):
         '''Update user data
 
         Username: Need to logout user and send confirmation email
@@ -300,7 +303,7 @@ class MemberProfileViewset(viewsets.ModelViewSet):
         # To check if request body is empty
         if request.body:
             # Prevent from user updating other user's profile
-            if request.user.id != int(kwargs.get('pk')):
+            if request.user.id != int(pk):
                 return Response({'errors':_('Not found')},
                                 status=status.HTTP_404_NOT_FOUND)
             update_data = json.loads(request.body)
@@ -373,8 +376,8 @@ class MemberProfileViewset(viewsets.ModelViewSet):
         return Response({'errors':_('No content')},
                          status=status.HTTP_400_BAD_REQUEST)
 
-    def destroy(self, request, *arg, **kwargs):
-        if request.user.id != int(kwargs.get('pk')):
+    def destroy(self, request, pk=None):
+        if request.user.id != int(pk):
             return Response({'errors':_('Not found')},
                                 status=status.HTTP_404_NOT_FOUND)
         user_obj = request.user
@@ -385,8 +388,19 @@ class MemberProfileViewset(viewsets.ModelViewSet):
         user_obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @detail_route(methods=['put'], permission_classes=[IsAuthenticated])
-    def confirm(self, request, pk=None):
+    @action(methods=['put'], detail=True, permission_classes=[IsAuthenticated])
+    def delete_confirm(self, request, pk=None):
+        '''Delete account confirmation
+
+        Before deleting the account, ask user to confirm the action
+
+        detail:
+            True means having {lookup} pk in url. False the other way around.
+        '''
+
+        # TODO: Need to check if the account has really been deleted. 
+        # If not should add a task to check and set delete_confirm back to 
+        # False
         if request.body:
             if request.user.id != int(pk):
                 return Response({'errors':_('Not found')},
