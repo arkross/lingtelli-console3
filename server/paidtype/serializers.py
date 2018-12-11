@@ -8,4 +8,4 @@ class PaidTypeSerializer(serializers.Serializer):
     duration = serializers.CharField()
     bot_amount = serializers.CharField()
     faq_amount = serializers.CharField()
-    thirdparty = ThirdPartySerializer(many=True)
+    third_party = ThirdPartySerializer(many=True)

@@ -20,7 +20,7 @@ class ChatbotTest(TestCase):
             'pk': 1,
             'name': 'Trail',
             'duration': '0_0',
-            'bot_amount': '1',
+            'bot_amount': '2',
             'faq_amount': '50'
         }
 
@@ -30,7 +30,7 @@ class ChatbotTest(TestCase):
         }
         trial_obj = PaidType.objects.create(**trial_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.thirdparty.add(demo_obj)
+        trial_obj.third_party.add(demo_obj)
 
         # Create new account
         user_data = {'username': 'cosmo.hu@lingtelli.com',
@@ -49,7 +49,7 @@ class ChatbotTest(TestCase):
         self.accesstoken = token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
@@ -114,7 +114,8 @@ class ChatbotTest(TestCase):
 
     def test_create(self):
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
-                    'failed_msg': 'Cannot understand'}
+                    'failed_msg': 'Cannot understand', 'language': 'tw',
+                    'postback_title': 'postback'}
         bot_return_key = ['id', 'robot_name']
         c = Client()
         response = c.post('/chatbot/', json.dumps(bot_data),
@@ -150,12 +151,26 @@ class ChatbotTest(TestCase):
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
     
-    def test_read(self):
+    def test_read_list(self):
+        bot_data = ['id', 'robot_name']
+        c = Client()
+        response = c.get('/chatbot/', **self.header)
+        self.assertEqual(response.status_code, 200)
+        res_data = json.loads(response.content)
+        for k in bot_data:
+            self.assertIn(k, res_data[0])
+
+    def test_read_retrieve(self):
+        bot_data = ['robot_name', 'greeting_msg', 'failed_msg',
+                    'postback_title', 'created_at', 'updated_at', 'expired_at',
+                    'vendor_id', 'postback_activate', 'delete_confirm',
+                    'bot_type', 'assign_user', 'activate', 'language',
+                    'third_party', 'user']
         c = Client()
         response = c.get(self.bot_uri, **self.header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
-        for k, v in bot_obj:
+        for k in bot_data:
             self.assertIn(k, res_data)
     
     def test_update(self):

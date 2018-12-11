@@ -20,6 +20,8 @@ from rest_framework import routers
 from rest_framework.authtoken import views
 from account import views as acc_view
 from paidtype import views as paid_view
+from thirdparty import views as third_view
+from chatbot import views as bot_view
 
 from django.contrib.auth.models import User
 
@@ -37,8 +39,8 @@ member_router.register('', acc_view.MemberProfileViewset)
 
 
 # Member page chatbot related. Not specifiy member cause agent can also use it.
-# chatbot_router = routers.DefaultRouter(trailing_slash=True)
-# chatbot_router.register('',)
+chatbot_router = routers.DefaultRouter(trailing_slash=True)
+chatbot_router.register('', bot_view.ChatbotViewset)
 # chatbot_router.register('<int:pk>/history/',)
 # chatbot_router.register('<int:pk>/report/',)
 # chatbot_router.register('<int:pk>/faq/',)
@@ -66,9 +68,9 @@ member_router.register('', acc_view.MemberProfileViewset)
 # agent_bot_router.register('<int:pk>/export/',)
 # agent_bot_router.register('<int:pk>/train/',)
 
-# Both using api
-# thirdparty_router = routers.DefaultRouter(trailing_slash=True)
-# thirdparty_router.register('',)
+# Both used api
+thirdparty_router = routers.DefaultRouter(trailing_slash=True)
+thirdparty_router.register('',third_view.ThirdpartyViewset)
 
 paidtype_router = routers.DefaultRouter(trailing_slash=True)
 paidtype_router.register('', paid_view.PaidTypeViewset)
@@ -78,8 +80,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Common urls(Could use by both member and agent)
-    # path('chatbot/', include(chatbot_router.urls), name='chatbot'),
-    # path('thirdparty/', include(thirdparty_router.urls), name='thirdparty'),
+    path('chatbot/', include(chatbot_router.urls), name='chatbot'),
+    path('thirdparty/', include(thirdparty_router.urls), name='thirdparty'),
     path('paidtype/', include(paidtype_router.urls), name='paidtype'),
 
     # Member related urls

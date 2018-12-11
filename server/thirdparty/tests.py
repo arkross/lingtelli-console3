@@ -38,7 +38,7 @@ class ThirdpartyTest(TestCase):
         self.trial_obj = PaidType.objects.create(**trial_data)
         staff_obj = PaidType.objects.create(**staff_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        self.trial_obj.thirdparty.add(demo_obj)
+        self.trial_obj.third_party.add(demo_obj)
 
         # Create new member account
         user_data = {'username': 'cosmo.hu@lingtelli.com',
@@ -72,9 +72,9 @@ class ThirdpartyTest(TestCase):
         self.agent_token = agent_token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
         self.agent_header =\
-            {'HTTP_AUTHORIZATION': 'bearer ' + self.agent_token}
+            {'HTTP_AUTHORIZATION': 'Token ' + self.agent_token}
 
         # Initial uri
         self.thridparty_uri = '/thirdparty/'

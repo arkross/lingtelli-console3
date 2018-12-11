@@ -31,7 +31,7 @@ class MemberRegisterTest(TestCase):
         }
         trial_obj = PaidType.objects.create(**trial_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.thirdparty.add(demo_obj)
+        trial_obj.third_party.add(demo_obj)
 
     def test_key_amount_not_correct(self):
         c = Client()
@@ -135,7 +135,7 @@ class ResendEmail(TestCase):
 
         trial_obj = PaidType.objects.create(**trial_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.thirdparty.add(demo_obj)
+        trial_obj.third_party.add(demo_obj)
 
     def test_cannot_find_user(self):
         c = Client()
@@ -208,7 +208,7 @@ class ConfirmEmail(TestCase):
 
         trial_obj = PaidType.objects.create(**trial_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.thirdparty.add(demo_obj)
+        trial_obj.third_party.add(demo_obj)
 
     def test_first_confirm_successed(self):
         # Initial a member account first(This part is not good. Should not 
@@ -333,7 +333,7 @@ class MemberAccessTest(TestCase):
         }
         trial_obj = PaidType.objects.create(**trial_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.thirdparty.add(demo_obj)
+        trial_obj.third_party.add(demo_obj)
 
         # Create new account
         user_data = {'username': 'cosmo.hu@lingtelli.com',
@@ -461,7 +461,7 @@ class MemberProfileTest(TestCase):
         }
         trial_obj = PaidType.objects.create(**trial_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.thirdparty.add(demo_obj)
+        trial_obj.third_party.add(demo_obj)
 
         # Create new account
         user_data = {'username': 'cosmo.hu@lingtelli.com',
@@ -686,7 +686,7 @@ class DeleteAccountConfirmTest(TestCase):
         }
         trial_obj = PaidType.objects.create(**trial_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.thirdparty.add(demo_obj)
+        trial_obj.third_party.add(demo_obj)
 
         # Initial an account
         user_data = {'username': 'cosmo.hu@lingtelli.com',

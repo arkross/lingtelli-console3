@@ -3,6 +3,8 @@ import json
 from django.shortcuts import render
 from django.utils.translation import gettext as _
 from rest_framework import viewsets, status
+from rest_framework.mixins import (RetrieveModelMixin, ListModelMixin,
+                                   UpdateModelMixin)
 from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -13,7 +15,8 @@ from chat_console_3 import utils
 from .models import PaidType
 
 
-class PaidTypeViewset(viewsets.ModelViewSet):
+class PaidTypeViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
+                      viewsets.GenericViewSet):
     '''Paid type viewset
 
     Using RU with paid type related data
@@ -25,7 +28,7 @@ class PaidTypeViewset(viewsets.ModelViewSet):
         "duration": "100_y",
         "bot_amount": "20",
         "faq_amount": "1000",
-        "thirdparty": [1,2,3]
+        "third_party": [1,2,3]
     }
 
     Response format example:
@@ -34,7 +37,7 @@ class PaidTypeViewset(viewsets.ModelViewSet):
         "duration": "1_d",
         "bot_amount": "1",
         "faq_amount": "50",
-        "thirdparty": [1]
+        "third_party": [1]
     }
     '''
 
@@ -62,14 +65,14 @@ class PaidTypeViewset(viewsets.ModelViewSet):
 
             paidtype_data = json.loads(request.body)
             paidtype_keys = ['name', 'duration', 'bot_amount', 'faq_amount',
-                             'thirdparty']
+                             'third_party']
             err_msg, validate_status = \
                 utils.value_not_empty_validator(paidtype_keys, paidtype_data)
             if not validate_status:
                 return Response({'errors':_('Cannot be empty. ') + err_msg},
                                  status=status.HTTP_400_BAD_REQUEST)
             for k in paidtype_data:
-                if k == 'thirdparty':
+                if k == 'third_party':
                         paidtype_obj.thirdparty.set(paidtype_data.get(k))
                         continue
                 setattr(paidtype_obj, k, paidtype_data.get(k))

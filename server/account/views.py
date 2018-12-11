@@ -386,6 +386,12 @@ class MemberProfileViewset(viewsets.ModelViewSet):
             return Response({'errors':_('Please confirm the deletion first')},
                             status=status.HTTP_403_FORBIDDEN)
         user_obj.delete()
+        check_user_deleted = User.objects.filter(id=user_obj.id).first()
+        if check_user_deleted:
+            acc_obj.delete_confirm = False
+            acc_obj.save()
+            return Response({'errors':_('Deleting account failed')},
+                             status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['put'], detail=True, permission_classes=[IsAuthenticated])

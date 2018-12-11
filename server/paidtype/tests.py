@@ -39,7 +39,7 @@ class PaidTypeTest(TestCase):
         self.trial_obj = PaidType.objects.create(**trial_data)
         staff_obj = PaidType.objects.create(**staff_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        self.trial_obj.thirdparty.add(demo_obj)
+        self.trial_obj.third_party.add(demo_obj)
 
         # Create new member account
         user_data = {'username': 'cosmo.hu@lingtelli.com',
@@ -121,7 +121,7 @@ class PaidTypeTest(TestCase):
     def test_read(self):
         c = Client()
         paidtype_keys = ['id', 'name', 'duration', 'bot_amount', 'faq_amount',
-                         'thirdparty']
+                         'third_party']
         the_paidtype = self.paidtype_uri + '1/'
         response = c.get(the_paidtype, **self.header)
         self.assertEqual(response.status_code, 200)
@@ -143,7 +143,7 @@ class PaidTypeTest(TestCase):
         c = Client()
         the_paidtype = self.paidtype_uri + '1/'
         response = c.put(the_paidtype, json.dumps({'name': 'NewName',
-                                                   'thridparty': [1,2,3,4]}),
+                                                   'thrid_party': [1,2,3,4]}),
                          content_type='application/json', **self.agent_header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)

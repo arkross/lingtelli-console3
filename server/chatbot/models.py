@@ -100,7 +100,7 @@ class BotThirdPartyGroup(models.Model):
 
     chatbot = models.ForeignKey(Chatbot, related_name='group_chatbot',
                                 on_delete=models.CASCADE)
-    thirdparty = models.ForeignKey(ThirdParty, related_name='group_thirdparty',
+    third_party = models.ForeignKey(ThirdParty, related_name='group_thirdparty',
                                    on_delete=models.CASCADE)
 
     class Meta:

@@ -1,6 +1,6 @@
 '''Put any functional tool in here
 '''
-import base64, urllib
+import base64, urllib, uuid
 from datetime import datetime, timedelta, timezone
 from Crypto.Cipher import AES
 
@@ -190,3 +190,19 @@ def transfer_paidtype_duration_to_time(paid_obj):
     if the_unit == 'd':
         return timedelta(days=count)
     return None
+
+def generate_uuid(s_1, s_2):
+    '''Generate uuid
+
+    Creating the vender id when creating a new chatbot.
+
+    Args:
+        s_1: The id of the chatbot.
+        s_2: The name of the chatbot.
+
+    Returns:
+        Vender id for the chatbot.
+    '''
+
+    combine_str = s_1 + s_2
+    return uuid.uuid3(uuid.NAMESPACE_DNS, combine_str)
