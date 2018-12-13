@@ -37,10 +37,12 @@ class ChatbotSerializer(serializers.Serializer):
 
 
 class LineSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
     secret = serializers.CharField()
     token = serializers.CharField()
 
 
 class FacebookSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
     token = serializers.CharField()
     verify_str = serializers.CharField()

@@ -77,7 +77,7 @@ class PaidTypeViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
                         continue
                 setattr(paidtype_obj, k, paidtype_data.get(k))
             paidtype_obj.save()
-            return Response({'success':_('Update succeed')},
+            return Response({'success':_('Update succeeded')},
                             status=status.HTTP_200_OK)
         return Response({'errors':_('No content')},
                         status=status.HTTP_400_BAD_REQUEST)

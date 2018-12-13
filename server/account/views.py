@@ -370,7 +370,7 @@ class MemberProfileViewset(viewsets.ModelViewSet):
                 return Response({'errors':_('Please select one language')},
                                     status=status.HTTP_400_BAD_REQUEST)
 
-            return Response({'success':_('Update successed')},
+            return Response({'success':_('Update succeeded')},
                             status=status.HTTP_200_OK)
 
         return Response({'errors':_('No content')},

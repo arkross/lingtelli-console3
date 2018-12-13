@@ -5,9 +5,12 @@ from rest_framework import viewsets, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.decorators import action
+from rest_framework.mixins import (RetrieveModelMixin, ListModelMixin,
+                                   UpdateModelMixin)
 from chat_console_3 import utils, nlumodel
 
-from .serilalizers import ChatbotSerializer
+from .serilalizers import ChatbotSerializer, LineSerializer, FacebookSerializer
 
 from .models import Chatbot, Line, Facebook, BotThirdPartyGroup
 from account.models import AccountInfo
@@ -20,7 +23,7 @@ class ChatbotViewset(viewsets.ModelViewSet):
     Using CRUD with chatbot related data
 
     detail_route:
-        Train bot
+        delete_confirm 
     
     Request format example:
     POST
@@ -36,16 +39,7 @@ class ChatbotViewset(viewsets.ModelViewSet):
         "robot_name": "Jarvis",
         "greeting_msg": "hi",
         "failed_msg": "I do not understand",
-        "postback_title": "Please chose the similar questoin",
-        "third_party": [1,2],
-        "line":{
-            "token":"thetokenforline",
-            "secret:"thesecretforline"
-        },
-        "facebook":{
-            "token":"thetokenforfacebook",
-            "verify_str:"theverifystrforfacebook"
-        }
+        "postback_title": "Please chose the similar questoin"
     }
 
     Response format example:
@@ -57,6 +51,7 @@ class ChatbotViewset(viewsets.ModelViewSet):
 
     GET(Retrieve)
     {
+        "id": 1,
         "robot_name": "Jarvis",
         "greeting_msg": "hi",
         "failed_msg": "I do not understand",
@@ -72,14 +67,6 @@ class ChatbotViewset(viewsets.ModelViewSet):
         "activate": True,
         "language": "tw",
         "third_party": [2,3],
-        "line": {
-            "token":"thetokenforline",
-            "secret:"thesecretforline"
-        },
-        "facebook":{
-            "token":"thetokenforfacebook",
-            "verify_str:"theverifystrforfacebook"
-        },
         "user": 2
     }
     '''
@@ -150,9 +137,75 @@ class ChatbotViewset(viewsets.ModelViewSet):
                 return Response(res, status=status.HTTP_201_CREATED)
             return Response({'errors':_('Create bot failed')},
                              status=status.HTTP_400_BAD_REQUEST)
+        return Response({'errors':_('No content')},
+                        status=status.HTTP_400_BAD_REQUEST)
 
-            
+    def update(self, request, pk=None):
+        if request.body:
+            user_obj = request.user
+            bot_obj = Chatbot.objects.filter(id=pk, user=user_obj).first()
+            if not bot_obj:
+                return Response({'errors':_('Not found')},
+                                 status=status.HTTP_404_NOT_FOUND)
+            update_data = json.loads(request.body)
+            valid_update_key = ['robot_name', 'greeting_msg', 'failed_msg',
+                                'postback_title']
+            err_msg, key_status = utils.key_validator(valid_update_key,
+                                                      update_data)
+            if not key_status:
+                return Response({'errors':_(err_msg)},
+                                 status=status.HTTP_403_FORBIDDEN)
+            for k, v in update_data.items():
+                setattr(bot_obj, k, v)
+            bot_obj.save()
+            return Response({'success':_('Update succeeded')},
+                             status=status.HTTP_200_OK)
+        return Response({'errors':_('No content')},
+                         status=status.HTTP_400_BAD_REQUEST)
 
+    def destroy(self, request, pk=None):
+        '''Delete chatbot
+
+        Need to check if delete_confirm has become True first
+        '''
+        user_obj = request.user
+        bot_obj = Chatbot.objects.filter(id=pk, user=user_obj).first()
+        if not bot_obj:
+            return Response({'errors':_('Not found')},
+                             status=status.HTTP_404_NOT_FOUND)
+        if not bot_obj.delete_confirm:
+            return Response({'errors':_('Please confirm the deletion first')},
+                            status=status.HTTP_403_FORBIDDEN)
+        bot_obj.delete()
+        check_bot_delete = Chatbot.objects.filter(id=pk, user=user_obj).first()
+        if check_bot_delete:
+            check_bot_delete.delete_confirm = False
+            check_bot_delete.save()
+            return Response({'errors':_('Deleting bot failed')},
+                            status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['put'], detail=True, permission_classes=[IsAuthenticated])
+    def delete_confirm(self, request, pk=None):
+        '''Chatbot delete confirmation
+        '''
+        if request.body:
+            user_obj = request.user
+            bot_obj = Chatbot.objects.filter(id=pk, user=user_obj).first()
+            if not bot_obj:
+                return Response({'errors':_('Not found')},
+                                status=status.HTTP_404_NOT_FOUND)
+            request_data = json.loads(request.body)
+            if not request_data.get('password'):
+                return Response({'errors':_('Please enter the password')},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if user_obj.check_password(request_data.get('password')):
+                bot_obj.delete_confirm = True
+                bot_obj.save()
+                return Response({'success':_('Delete confirmed')},
+                                status=status.HTTP_200_OK)
+            return Response({'errors':_('Password is not correct')},
+                            status=status.HTTP_403_FORBIDDEN)
         return Response({'errors':_('No content')},
                         status=status.HTTP_400_BAD_REQUEST)
     
@@ -181,5 +234,111 @@ class ChatbotViewset(viewsets.ModelViewSet):
             chatbot_obj.delete()
             create_obj = None
         return create_obj
-        
 
+
+class LineViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
+                  viewsets.GenericViewSet):
+    '''Line viewset
+
+    READ, UPDATE
+
+    Request format example:
+    PUT
+    {
+        "secret": "thisissecret",
+        "token": "thisistoken"
+    }
+
+    Response format example:
+    GET
+    {
+        "id": 1,
+        "secret": "thisissecret",
+        "token": "thisistoken"
+    }
+    '''
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    queryset = Line.objects.all()
+    serializer_class = LineSerializer
+
+    def get_queryset(self):
+        user_obj = self.request.user
+        bot_id = self.kwargs.get('id')
+        return Line.objects.filter(chatbot=bot_id)
+
+    def update(self, request, id=None, pk=None):
+        '''Update line data
+
+        Args:
+            id = Chatbot object id
+            pk = Line object id
+        '''
+        if request.body:
+            user_obj = request.user
+            line_obj = Line.objects.filter(id=pk, chatbot=id).first()
+            if not line_obj:
+                return Response({'errors':_('Not found')},
+                                status=status.HTTP_404_NOT_FOUND)
+            update_data = json.loads(request.body)
+            for k, v in update_data.items():
+                setattr(line_obj, k, v)
+            line_obj.save()
+            return Response({'success':_('Update succeeded')},
+                            status=status.HTTP_200_OK)
+        return Response({'errors':_('No content')},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+class FacebookViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
+                      viewsets.GenericViewSet):
+    '''Facebook viewset
+
+    READ, UPDATE
+
+    Request format example:
+    PUT
+    {
+        "token": "thisistoken",
+        "verify_str": "thisisverifystr"
+    }
+
+    Response format example:
+    GET
+    {
+        "id": 1,
+        "token": "thisistoken",
+        "verify_str": "thisisverifystr"
+    }
+    '''
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    queryset = Facebook.objects.all()
+    serializer_class = FacebookSerializer
+
+    def get_queryset(self):
+        user_obj = self.request.user
+        bot_id = self.kwargs.get('id')
+        return Facebook.objects.filter(chatbot=bot_id)
+
+    def update(self, request, id=None, pk=None):
+        '''Update line data
+
+        Args:
+            id = Chatbot object id
+            pk = Line object id
+        '''
+        if request.body:
+            user_obj = request.user
+            fb_obj = Facebook.objects.filter(id=pk, chatbot=id).first()
+            if not fb_obj:
+                return Response({'errors':_('Not found')},
+                                status=status.HTTP_404_NOT_FOUND)
+            update_data = json.loads(request.body)
+            for k, v in update_data.items():
+                setattr(fb_obj, k, v)
+            fb_obj.save()
+            return Response({'success':_('Update succeeded')},
+                            status=status.HTTP_200_OK)
+        return Response({'errors':_('No content')},
+                        status=status.HTTP_400_BAD_REQUEST)

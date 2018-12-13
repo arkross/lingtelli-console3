@@ -33,40 +33,40 @@ member_router.register('', acc_view.MemberProfileViewset)
 # Agent account related
 # agent_router = routers.DefaultRouter(trailing_slash=True)
 # agent_router.register('',)
-# agent_router.register('<int:pk>/confrim/',)
-# agent_router.register('member/',)
-# agent_router.register('report/',) #Not sure what to provide yet
+# agent_router.register(r'(?P<id>\d+)/confrim',)
+# agent_router.register('member',)
+# agent_router.register('report',) #Not sure what to provide yet
 
 
 # Member page chatbot related. Not specifiy member cause agent can also use it.
 chatbot_router = routers.DefaultRouter(trailing_slash=True)
 chatbot_router.register('', bot_view.ChatbotViewset)
-# chatbot_router.register('<int:pk>/history/',)
-# chatbot_router.register('<int:pk>/report/',)
-# chatbot_router.register('<int:pk>/faq/',)
-# chatbot_router.register('<int:pk>/answer/',)
-# chatbot_router.register('<int:pk>/question/',)
-# chatbot_router.register('<int:pk>/matching/',)
-# chatbot_router.register('<int:pk>/confirm/',)
-# chatbot_router.register('<int:pk>/line/',)
-# chatbot_router.register('<int:pk>/facebook/',)
-# chatbot_router.register('<int:pk>/upload/',)
-# chatbot_router.register('<int:pk>/export/',)
-# chatbot_router.register('<int:pk>/train/',)
+#XXX /chatbot/pk/delete_confirm/ for delete confirmation api(detail_route)
+# chatbot_router.register(r'(?P<id>\d+)/history',)
+# chatbot_router.register(r'(?P<id>\d+)/report',)
+# chatbot_router.register(r'(?P<id>\d+)/faq',)
+# chatbot_router.register(r'(?P<id>\d+)/answer',)
+# chatbot_router.register(r'(?P<id>\d+)/question',)
+# chatbot_router.register(r'(?P<id>\d+)/matching',)
+chatbot_router.register(r'(?P<id>\d+)/line', bot_view.LineViewset)
+chatbot_router.register(r'(?P<id>\d+)/facebook', bot_view.FacebookViewset)
+# chatbot_router.register(r'(?P<id>\d+)/upload',)
+# chatbot_router.register(r'(?P<id>\d+)/export',)
+# chatbot_router.register(r'(?P<id>\d+)/train',)
 
 
 # TODO: Do not have the exact feature for now. Need to make sure first.
 # Agent page chatbot. Use for checking member analysis and creating task chatbot for member
 # agent_bot_router = routers.DefaultRouter(trailing_slash=True)
 # agent_bot_router.register('',)
-# agent_bot_router.register('<int:pk>/history/',)
-# agent_bot_router.register('<int:pk>/faq/',)
-# agent_bot_router.register('<int:pk>/answer/',)
-# agent_bot_router.register('<int:pk>/question/',)
-# agent_bot_router.register('<int:pk>/confirm/',)
-# agent_bot_router.register('<int:pk>/upload/',)
-# agent_bot_router.register('<int:pk>/export/',)
-# agent_bot_router.register('<int:pk>/train/',)
+# agent_bot_router.register(r'(?P<id>\d+)/history',)
+# agent_bot_router.register(r'(?P<id>\d+)/faq',)
+# agent_bot_router.register(r'(?P<id>\d+)/answer',)
+# agent_bot_router.register(r'(?P<id>\d+)/question',)
+# agent_bot_router.register(r'(?P<id>\d+)/confirm',)
+# agent_bot_router.register(r'(?P<id>\d+)/upload',)
+# agent_bot_router.register(r'(?P<id>\d+)/export',)
+# agent_bot_router.register(r'(?P<id>\d+)/train',)
 
 # Both used api
 thirdparty_router = routers.DefaultRouter(trailing_slash=True)
