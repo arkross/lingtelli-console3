@@ -1,0 +1,446 @@
+{
+  "login": {
+    "loginBtn": "登入",
+    "description": "還沒有帳號？ ",
+    "signUp": "註冊"
+  },
+  "demo": {
+    "button": "測試聊天機器人",
+    "title": "測試機器人",
+    "input": "請輸入訊息 ",
+    "warning": "請選擇機器人"
+  },
+  "menu": {
+    "dashboard": "總覽",
+    "account": "帳號管理",
+    "logout": "登出",
+    "bot": "機器人清單",
+    "create": "新增",
+    "facebook": "Facebook",
+    "line": "LINE",
+    "web": "網站"
+  },
+  "chatbot": {
+    "name": "機器人名稱",
+    "greetingMsg": "開頭問候語",
+    "failedMsg": "失敗回覆",
+    "postbackMsg": "推薦開頭",
+    "expiredAt": "截止日期",
+    "placeholder": {
+      "name": "機器人的名字",
+      "greetingMsg": "開始聊天時會講出來的一句話",
+      "failedMsg": "無法理解時會講出來的一句話",
+      "postbackMsg": "推薦開頭的一句話"
+    },
+    "update": "儲存變更",
+    "delete": {
+      "title": "確認刪除機器人",
+      "button": "刪除機器人",
+      "warning": "您確定要刪除機器人 <0><0></0></0> 嗎? 刪除後資料無法恢復",
+      "cancel": "取消",
+      "success": "機器人刪除成功",
+      "prompt_password": "請輸入您的密碼"
+    },
+    "create": {
+      "text": "建立機器人",
+      "close": "關閉",
+      "btns": {
+        "create": "建立",
+        "cancel": "取消"
+      }
+    },
+    "copy": "複製",
+    "copied": "已複製",
+    "success": "機器人資料儲存成功!",
+    "setting": {
+      "text": "基本設定",
+      "line": {
+        "title": "Line 設定",
+        "secret": "Channel Secret",
+        "webhookURL": "Webhook 網址",
+        "token": "Channel Access Token",
+        "description": "當你成功在我們平台建立好機器人之後，請按啟用後按照以下步驟將機器人連接到你的 LINE 平台。",
+        "steps": {
+          "_1": "如果你沒有 LINE 帳號，請創建一個帳號。",
+          "_2": "如果你有帳號，請直接在 <0>LINE Developers頁面</0> 點 <1>Messaging API</1>。",
+          "_3": "點選右邊選單的 <0>Add new Provider</0>，建立一個 Provider",
+          "_4": "創完 Provider 之後，點選 <0>Messaging API</0> 並將資料填妥來創建新的 Channel。",
+          "_5": "在 Channel 建立完成之後，請點選你創建的 Channel。",
+          "_6": "在 <0>Message Settings</0> 區塊，選擇 <1>Use webhooks</1> 並使他狀態為 <2>Enabled</2>。",
+          "_7": "在 <0>Channel access token</0>欄位點選 Issue 並獲得新的 token，請將他複製並貼到平台上對應的欄位 <1></1>。",
+          "_8": "在 <0>Basic Information</0> 區塊複製 <1>Channel secret</1> 到我們平台相對應的欄位 <2></2>。",
+          "_9": "從我們平台複製 <0></0> 並貼到LINE頁面上的 <1>Webhook URL</1>，點選 <2>Verify</2> 來認證他。",
+          "_10": "成功認證後你將可以在 LINE 上使用我們的聊天機器人。"
+        }
+      },
+      "facebook": {
+        "title": "Facebook 設定",
+        "token": "存取權杖",
+        "verify": "驗證權杖",
+        "webhookURL": "Webhook 網址",
+        "description": "當你成功在我們平台建立好機器人後，請按啟用後再按照以下步驟將機器人連接到你的粉絲專頁。",
+        "steps": {
+          "_1": "如果尚未擁有粉絲專頁，請去創立一個。",
+          "_2": "如果尚未擁有 Facebook 帳號，請去創立一個。",
+          "_3": "請連結至 <0>Facebook 開發者</0> 平台。",
+          "_4": "至開發者平台後，請點選右上選單<0>我的應用程式</0>，選擇<2>新增應用程式</2>",
+          "_5": "建立完成後，在 <1>Messenger</1> 上點擊<0>設定</0>。",
+          "_6": "在 Facebook 設定頁面，請找到<0>權杖產生</0>位置，並在粉絲專頁的選單內挑選您的粉絲專頁。",
+          "_7": "選擇完專頁後，會自動產生一組<0>權杖</0>，請將權杖複製貼上至我們平台上的<1></1>欄位。",
+          "_8": "在我們平台, 請至 <0></0> 填入 Hello.",
+          "_9": "回到 Facebook 設定頁面，找到 <0>Webhooks</0>，點選<1>設定 Webhooks</1>。",
+          "_10": "將我們平台上的 <0><0>，複製貼上至Facebook設定頁面的<1>回呼網址</1>。",
+          "_11": "請在 Facebook 設定頁面，填入 Hello 至 <1>驗證權杖</1>, 最後確認兩平台的驗證權杖是相同的。",
+          "_12": "回到 Facebook 設定頁面，在<0>訂閱欄位</0>中勾選 <1>messages</1> 服務，最後點擊<2>驗證並儲存</2>。",
+          "_13": "若以上沒有任何問題，在 Webhooks 內選擇<0>訂閱</0>你的粉絲專頁。",
+          "_14": "最後移動到 <0>Messenger應用程式審查</0>，在 <2>page_messaging</2> 欄位點擊<1>新增提交內容</1>。",
+          "_15": "成功後你將可以在粉絲專頁上使用我們的聊天機器人，若有任何問題請聯繫我們。"
+        }
+      },
+      "web": {
+        "title": "Web機器人設定",
+        "description": "複製下面的程式碼，啟用後貼至您網站的<body> HTML標籤內。",
+        "customizations": "客製化",
+        "custHeader": "注意",
+        "custDescription": "系統不存任何客製化資料。離開此頁面前請記得複製您的 Script。",
+        "preview": "預覽",
+        "robotIcon": "機器人圖像 (PNG, SVG, GIF, JPEG)",
+        "chatIcon": "縮圖像 (PNG, SVG, GIF, JPEG)",
+        "headerBackgroundColor": "主題背景顏色",
+        "headerTextColor": "主題文字顏色",
+        "chatLabel": "縮圖標題文字"
+      },
+      "api": {
+        "title": "API 設定",
+        "description": "啟用後可開始使用API.",
+        "noData": "無資料",
+        "object": "物件",
+        "objectList": "物件串列",
+        "table": {
+          "name": "名稱",
+          "value": "值",
+          "description": "描述",
+          "optional": "選填"
+        },
+        "headers": "Headers",
+        "params": "要求參數",
+        "paramSamples": "要求範例",
+        "responses": "回傳內容",
+        "respSamples": "回傳範例"
+      }
+    },
+    "top_page": {
+      "text": "首頁"
+    },
+    "integration": {
+      "text": "連接",
+      "facebook": "Facebook",
+      "line": "LINE",
+      "web": "網站",
+      "api": "API",
+      "see_tutorial": "查看連接說明",
+      "hide_tutorial": "關閉連接說明",
+      "activated": "已啟用",
+      "inactive": "未啟用"
+    },
+    "analysis": {
+      "text": "統計分析",
+      "questions": "每日問題的數量",
+      "unhandled": "無法處理的問題",
+      "label": "問題數",
+      "top_5": "最常見的5個問題",
+      "options": {
+        "_7": "7天內對話",
+        "_14": "14內對話",
+        "_30": "30天內對話"
+      }
+    },
+    "history": {
+      "text": "對話紀錄",
+      "sender": "對話角色",
+      "content": "對話內容",
+      "datetime": "對話時間",
+      "empty": "無資料"
+    },
+    "faq": {
+      "text": "問答設定",
+      "export": "下載 CSV",
+      "import": "上傳 CSV",
+      "train": "訓練模型",
+      "add": "新增問答",
+      "question": "新增問題",
+      "search": "搜尋答案",
+      "form": {
+        "question": "點擊輸入問題",
+        "answer": "點擊輸入答案"
+      },
+      "delete_modal": {
+        "title": "刪除問答群組",
+        "message": "您確定要刪除此問答群組嗎?"
+      },
+      "enable_postback": "啟用相似問題輸出",
+      "disable_postback": "停用相似問題輸出"
+    },
+    "recommendations": {
+      "text": "推薦紀錄",
+      "ori_question": "原問題",
+      "selected_question": "已選問題",
+      "group": "群組"
+    },
+    "pricing": {
+      "text": "計費方案",
+      "selected": "已選"
+    },
+    "selectLanguage": "語言",
+    "language": {
+      "en": "English",
+      "cn": "简体中文",
+      "tw": "繁體中文"
+    },
+    "tile": {
+      "last_7_days": "最近7天",
+      "total_questions": "問題數量",
+      "success_count": "成功數量",
+      "success_rate": "成功率",
+      "today": "今天",
+      "yesterday": "昨天",
+      "this_week": "今週",
+      "last_week": "上週",
+      "this_month": "今月",
+      "last_month": "上個月",
+      "detail": "內容"
+    },
+    "test": {
+      "text": "測試"
+    }
+  },
+  "api": {
+    "info": {
+      "title": "機器人基本資料",
+      "responses": {
+        "reply": {
+          "title": "Reply",
+          "robotName_value": "",
+          "robotName_desc": "機器人名稱",
+          "activate_value": "",
+          "activate_desc": "固定為 true",
+          "failedMsg_value": "",
+          "failedMsg_desc": "機器人不了解時的回覆",
+          "greetingMsg_value": "",
+          "greetingMsg_desc": "機器人開頭問候語",
+          "chatbotId_value": "",
+          "chatbotId_desc": "機器人主鍵",
+          "postbackTitle_value": "",
+          "postbackTitle_desc": "選項標題"
+        } 
+      },
+      "responseSamples": {
+        "success": "Success",
+        "notFound": "Bot Not Found"
+      }
+    },
+    "message": {
+      "title": "訊息",
+      "params": {
+        "root": {
+          "title": "Payload Structure",
+          "userId_value": "",
+          "userId_desc": "使用者 ID",
+          "message_value": "Message 物件",
+          "message_desc": "請參考表格 Message Structure",
+          "type_value": "\"message\" 或 \"postback\"",
+          "type_desc": "回傳資料為字串則 type 是 message，如果是選擇相似問題選項則是 postback"
+        },
+        "message": {
+          "title": "Message Structure",
+          "text_value": "",
+          "text_desc": "使用者詢問的問題內容",
+          "id_value": "",
+          "id_desc": "選擇問題的ID。當 type 為 postback 時使用",
+          "oriQue_value": "",
+          "oriQue_desc": "使用者原本詢問的問題。當 type 為 postback 時使用"
+        }
+      },
+      "responses": {
+        "reply": {
+          "title": "Reply",
+          "sender_value": "",
+          "sender_desc": "固定為 \"BOT\"",
+          "type_value": "\"text\" 或 \"list\"",
+          "type_desc": "請參考表格 Choice Structure",
+          "state_value": "\"start\", \"in_progress\", 或 \"completed\"",
+          "state_desc": "對話進行狀態",
+          "success_value": "true 或 false",
+          "success_desc": "代表問題是否被機器人了解，是的話回傳 true，不了解的話回傳 false",
+          "uid_value": "",
+          "uid_desc": "使用者 ID",
+          "sid_value": "",
+          "sid_desc": "會話 ID",
+          "oriQue_value": "",
+          "oriQue_desc": "使用者原本的問題",
+          "data_value": "Data 物件",
+          "data_desc": "請參考表格 Data Structure"
+        },
+        "data": {
+          "title": "Data Structure",
+          "text_value": "",
+          "text_desc": "回覆訊息。當 type 是 text 時使用",
+          "title_value": "",
+          "title_desc": "選項的標題。當 type 是 list 時使用",
+          "buttons_value": "Choice 物件的串列",
+          "buttons_desc": "選擇物件的串列，請參考表格 Choice Structure。當 type 是 list 時使用"
+        },
+        "choice": {
+          "title": "Choice Structure - type=\"list\"",
+          "id_value": "",
+          "id_desc": "相似問題的 ID",
+          "oriQue_value": "",
+          "oriQue_desc": "使用者原始問的問題",
+          "text_value": "",
+          "text_desc": "跟使用者問題相似的問題內容"
+        }
+      },
+      "responseSamples": {
+        "messageSuccess": "Success - Message",
+        "postbackSuccess": "Success - List",
+        "errorNotActivated": "Error - Platform is not activated"
+      }
+    },
+    "history": {
+      "title": "歷史",
+      "params": {
+        "payload": {
+          "title": "Payload Structure",
+          "userId_value": "",
+          "userId_desc": "使用者 ID"
+        }
+      },
+      "responseSamples": {
+        "success": "Success",
+        "notFound": "Error - Not Found"
+      }
+    }
+  },
+  "register": {
+    "mail": "信箱",
+    "registerBtn": "註冊",
+    "nickname": "暱稱",
+    "password": "密碼",
+    "password2": "確認密碼",
+    "description": {
+      "context": "返回",
+      "title": "登入頁面"
+    }
+  },
+  "errors": {
+    "token": "權杖請勿空白",
+    "secret": "密鑰請勿空白",
+    "verify": "驗證權杖請勿空白",
+    "nickname": "暱稱請勿空白",
+    "message": {
+      "header": "錯誤"
+    },
+    "robotName": {
+      "blank": "機器人名稱請勿空白"
+    },
+    "greetingMsg": {
+      "blank": "問候語請勿空白"
+    },
+    "failedMsg": {
+      "blank": "失敗回覆請勿空白"
+    },
+    "language": {
+      "blank": "機器人語言請勿空白"
+    },
+    "package": {
+      "invalid": "必須選擇一項計價方案"
+    },
+    "password": {
+      "blank": "密碼請勿空白",
+      "invalid": "密碼格式錯誤"
+    },
+    "password2": {
+      "blank": "密碼請勿空白",
+      "invalid": "密碼不一致"
+    },
+    "mail": {
+      "blank": "信箱請勿空白",
+      "invalid": "信箱格式錯誤"
+    },
+    "analysis": {
+      "fetch": "抓取資料發生錯誤，請重新整理頁面。"
+    },
+    "demo": {
+      "ask": "網路發生問題，請再試一次。",
+      "recommendations_title": "您的問題是.."
+    },
+    "faq": {
+      "upload": "上傳失敗，請檢查您的檔案是否符合格式。",
+      "train": "資料訓練失敗。",
+      "export": "輸出檔案發生錯誤，請重試。"
+    },
+    "global": {
+      "network": "資料查詢失敗. 請刷新網頁. 如果仍有錯誤請聯絡系統管理人.",
+      "bot_not_found": "此機器人不存在.",
+      "page_not_found": "此網頁不存在.",
+      "go_back": "請回去",
+      "integration_not_activated": "此平台尚未啟用"
+    }
+  },
+  "success": {
+    "faq": {
+      "upload": "上傳成功。",
+      "train": "訓練成功。"
+    }
+  },
+  "account": {
+    "profile": "基本資料",
+    "plan": "方案",
+    "activation_date": "啟用日期",
+    "expiration_date": "截止日期",
+    "bot_limit": "機器人數量",
+    "faq_limit": "問答組總數量",
+    "edit": "編輯帳號",
+    "success": "帳號編輯成功!",
+    "confirmation": {
+      "description": "請去信箱收取驗證信，尚未收到驗證信之前，請勿離開此頁面。",
+      "status": {
+        "wait": "請靜待<1><0>{{minutes}}</0></1>分鐘後再重傳驗證信",
+        "resend": "點此重傳驗證信"
+      },
+      "reset_password": "密碼更改成功. 請重新登入."
+    },
+    "validation": {
+      "loading": "驗證中，請稍後．．．",
+      "fail": "驗證失敗，請重新點擊驗證信連結",
+      "login": "點此進入登入頁面",
+      "success": "驗證成功"
+    },
+    "form": {
+      "mail": "信箱",
+      "nickname": "暱稱",
+      "password_reset": "更改密碼",
+      "password": "舊密碼",
+      "password2": "新密碼",
+      "repassword": "確認新密碼",
+      "submit": "更新",
+      "mail_placeholder": "信箱",
+      "nickname_placeholder": "請輸入暱稱",
+      "password_placeholder": "如果不需要更改密碼, 請保留空白",
+      "password2_placeholder": "如果不需要更改密碼, 請保留空白",
+      "repassword_placeholder": "如果不需要更改密碼, 請保留空白"
+    }
+  },
+
+  "validation": {
+    "required": "{{field}} 為必填",
+    "email": "{{field}} 格式不正確",
+    "regex": "{{field}} 格式不正確",
+    "length": "{{field}} 長度必須為 {{param1}} 字元",
+    "min": "{{field}} 長度必須為 {{param1}} 字元以上",
+    "max": "{{field}} 長度必須為 {{param1}} 字元以下",
+    "range": "{{field}} 長度必須為 {{param1}} 至 {{param2}} 字元",
+    "match": "{{field}} 與 {{param1}} 必須相同"
+  }
+
+}
