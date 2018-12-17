@@ -106,6 +106,9 @@ def key_validator(key_list, input_dict):
     '''Checking request key correctness
 
     Checking if the input amount is correct and the key name is correct
+
+    Return:
+        err_msg, valid_status
     '''
 
     if len(key_list) != len(input_dict):
@@ -113,18 +116,7 @@ def key_validator(key_list, input_dict):
     
     for k in key_list:
         if not input_dict.get(k, None):
-            return 'Key missing: ' + k, False
-    return '', True
-
-def value_not_empty_validator(key_list, input_dict):
-    '''Given key's value cannot be empty
-    '''
-
-    for k in key_list:
-        if input_dict.get(k, None):
-            continue
-        if input_dict.get(k) == '' or input_dict.get(k) == []:
-            return 'Value empty: ' + k, False
+            return 'Key missing or empty: ' + k, False
     return '', True
 
 def check_token_expired(token):

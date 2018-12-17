@@ -67,9 +67,9 @@ class PaidTypeViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
             paidtype_keys = ['name', 'duration', 'bot_amount', 'faq_amount',
                              'third_party']
             err_msg, validate_status = \
-                utils.value_not_empty_validator(paidtype_keys, paidtype_data)
+                utils.key_validator(paidtype_keys, paidtype_data)
             if not validate_status:
-                return Response({'errors':_('Cannot be empty. ') + err_msg},
+                return Response({'errors':_(err_msg)},
                                  status=status.HTTP_400_BAD_REQUEST)
             for k in paidtype_data:
                 if k == 'third_party':

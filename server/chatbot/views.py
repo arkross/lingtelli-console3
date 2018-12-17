@@ -84,7 +84,8 @@ class ChatbotViewset(viewsets.ModelViewSet):
         '''Create chatbot
 
         Steps:
-            1. Check if the chatbot amount is over the limitation
+            1. Check if the chatbot amount is over the limitation. If the
+                limitation is 0 means the user has unlimited amount.
             2. Check if chatbot required keys are provided
             3. Assign the thirdparty demo to the bot with trail paidtype
             4. Create the bot and make sure NLU trains model succeed. If not,
@@ -95,7 +96,8 @@ class ChatbotViewset(viewsets.ModelViewSet):
             acc_obj = AccountInfo.objects.filter(user=user_obj).first()
             bot_create_limit = acc_obj.paid_type.bot_amount
             bot_owned_amount = Chatbot.objects.filter(user=user_obj).count()
-            if bot_owned_amount >= int(bot_create_limit):
+            if str(bot_create_limit) != 0 and\
+                bot_owned_amount >= int(bot_create_limit):
                 return Response({'errors':_('Reach bot create limitation')},
                                  status=status.HTTP_403_FORBIDDEN)
             

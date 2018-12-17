@@ -22,6 +22,7 @@ from account import views as acc_view
 from paidtype import views as paid_view
 from thirdparty import views as third_view
 from chatbot import views as bot_view
+from faq import views as faq_view
 
 from django.contrib.auth.models import User
 
@@ -44,9 +45,9 @@ chatbot_router.register('', bot_view.ChatbotViewset)
 #XXX /chatbot/pk/delete_confirm/ for delete confirmation api(detail_route)
 # chatbot_router.register(r'(?P<id>\d+)/history',)
 # chatbot_router.register(r'(?P<id>\d+)/report',)
-# chatbot_router.register(r'(?P<id>\d+)/faq',)
-# chatbot_router.register(r'(?P<id>\d+)/answer',)
-# chatbot_router.register(r'(?P<id>\d+)/question',)
+chatbot_router.register(r'(?P<id>\d+)/faq', faq_view.FAQGrouptViewset)
+chatbot_router.register(r'(?P<id>\d+)/answer', faq_view.AnswerViewset)
+chatbot_router.register(r'(?P<id>\d+)/question', faq_view.QuestionViewset)
 # chatbot_router.register(r'(?P<id>\d+)/matching',)
 chatbot_router.register(r'(?P<id>\d+)/line', bot_view.LineViewset)
 chatbot_router.register(r'(?P<id>\d+)/facebook', bot_view.FacebookViewset)
