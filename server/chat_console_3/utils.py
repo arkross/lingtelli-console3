@@ -198,3 +198,20 @@ def generate_uuid(s_1, s_2):
 
     combine_str = s_1 + s_2
     return uuid.uuid3(uuid.NAMESPACE_DNS, combine_str)
+
+def check_upload_file_type(upload_file):
+        '''Deal with both utf-8 and big5 files
+        '''
+        file_result = None
+
+        try:
+            file_result = upload_file.decode('utf-8-sig')
+        except:
+            print('====WARNING====: The upload file is not utf8')
+
+        if not file_result:
+            try:
+                file_result = upload_file.decode('big5')
+            except:
+                print('====WARNING====: The upload file is not big5')
+        return file_result

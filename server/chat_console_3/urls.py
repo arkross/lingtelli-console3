@@ -51,9 +51,7 @@ chatbot_router.register(r'(?P<id>\d+)/question', faq_view.QuestionViewset)
 # chatbot_router.register(r'(?P<id>\d+)/matching',)
 chatbot_router.register(r'(?P<id>\d+)/line', bot_view.LineViewset)
 chatbot_router.register(r'(?P<id>\d+)/facebook', bot_view.FacebookViewset)
-# chatbot_router.register(r'(?P<id>\d+)/upload',)
-# chatbot_router.register(r'(?P<id>\d+)/export',)
-# chatbot_router.register(r'(?P<id>\d+)/train',)
+
 
 
 # TODO: Do not have the exact feature for now. Need to make sure first.
@@ -81,6 +79,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Common urls(Could use by both member and agent)
+    path('chatbot/<int:pk>/upload/', faq_view.upload_faq_csv),
+    path('chatbot/<int:pk>/export/', faq_view.export_faq_csv),
+    path('chatbot/<int:pk>/train/', faq_view.train_bot_faq),
     path('chatbot/', include(chatbot_router.urls), name='chatbot'),
     path('thirdparty/', include(thirdparty_router.urls), name='thirdparty'),
     path('paidtype/', include(paidtype_router.urls), name='paidtype'),

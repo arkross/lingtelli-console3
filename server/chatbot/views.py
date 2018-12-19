@@ -96,7 +96,7 @@ class ChatbotViewset(viewsets.ModelViewSet):
             acc_obj = AccountInfo.objects.filter(user=user_obj).first()
             bot_create_limit = acc_obj.paid_type.bot_amount
             bot_owned_amount = Chatbot.objects.filter(user=user_obj).count()
-            if str(bot_create_limit) != 0 and\
+            if str(bot_create_limit) != '0' and\
                 bot_owned_amount >= int(bot_create_limit):
                 return Response({'errors':_('Reach bot create limitation')},
                                  status=status.HTTP_403_FORBIDDEN)
@@ -178,6 +178,7 @@ class ChatbotViewset(viewsets.ModelViewSet):
         if not bot_obj.delete_confirm:
             return Response({'errors':_('Please confirm the deletion first')},
                             status=status.HTTP_403_FORBIDDEN)
+        nlumodel.delete_model(bot_obj)
         bot_obj.delete()
         check_bot_delete = Chatbot.objects.filter(id=pk, user=user_obj).first()
         if check_bot_delete:

@@ -37,7 +37,8 @@ def create_model(chatbot_obj):
             return True, ''
         else:
             print('==== Create model failed ====')
-            return False, 'Create model failed: ' + str(response.content)
+            return False, 'Create model failed: ' +\
+                str(json.loads(response.content))
 
 
 def train_model(chatbot_obj):
@@ -72,7 +73,8 @@ def train_model(chatbot_obj):
             return True, ''
         else:
             print('==== NLU server error ====')
-            return False, 'NLU server error: ' + str(response.content)
+            return False, 'NLU server error: ' +\
+                str(json.loads(response.content))
 
 def delete_model(chatbot_obj):
     '''Delete NLU model

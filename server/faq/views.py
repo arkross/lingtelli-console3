@@ -1,13 +1,17 @@
-import json
+import json, csv
+from io import StringIO
 from django.shortcuts import render
 from django.utils.translation import gettext as _
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework.decorators import (action, api_view,
+                                       authentication_classes,
+                                       permission_classes)
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from chat_console_3 import utils
+from chat_console_3 import utils, nlumodel
 from .serializers import (FAQGrouptSerializer, AnswerSerializer,
                           QuestionSerializer)
 
@@ -312,3 +316,123 @@ class QuestionViewset(viewsets.ModelViewSet):
                             status=status.HTTP_200_OK)
         return Response({'errors':_('No content')},
                         status=status.HTTP_400_BAD_REQUEST)
+
+@csrf_exempt
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def upload_faq_csv(request, pk=None):
+    '''Upload FAQ from CSV file
+
+    Upload file with the key 'file'
+
+    File format:
+    "Group", "Question", "Answer"
+    "1", "How are you", "Good"
+    "1", "Are you okey", ""
+    "2", "Hi", "Hello"
+    "2", "Hi Hi", "Hello Hello"
+    '''
+    if request.FILES.get('file'):
+        bot_obj = Chatbot.objects.filter(id=pk, user=request.user).first()
+        if bot_obj:
+            FAQGroup.objects.filter(chatbot=bot_obj).delete()
+            f = request.FILES.get('file')
+            f_s = f.read()
+            f_s_result = utils.check_upload_file_type(f_s)
+            if not f_s_result:
+                return Response({'errors': _('File type is not correct. ' +
+                                'Should be type utf8 or big5.')},
+                                status=status.HTTP_400_BAD_REQUEST)
+            buff = StringIO(str(f_s_result))
+            data = csv.reader(buff, delimiter=',', quotechar='|')
+            next(data) # Skip header
+            acc_obj = AccountInfo.objects.filter(user=request.user).first()
+            faq_limit = acc_obj.paid_type.faq_amount
+            group_count = 0
+            for row in data:
+                faq_group = row[0]
+                que = row[1]
+                ans = row[2]
+                group_obj, created = \
+                    FAQGroup.objects.get_or_create(csv_group=int(faq_group),
+                                                   chatbot=bot_obj)
+                if created:
+                    group_count += 1
+                    if group_count > int(faq_limit):
+                        FAQGroup.objects.filter(chatbot=bot_obj).delete()
+                        return Response({'errors':_('Group over limitation')},
+                                        status=status.HTTP_403_FORBIDDEN)
+                if ans != '':
+                    Answer.objects.create(group=group_obj, content=ans,
+                                        chatbot=bot_obj)
+                if que != '':
+                    Question.objects.create(group=group_obj, content=que,
+                                            chatbot=bot_obj)
+            return Response({'success':_('Upload succeeded')},
+                            status=status.HTTP_201_CREATED)
+                
+        return Response({'errors':_('Bot not found')},
+                        status=status.HTTP_404_NOT_FOUND)
+    return Response({'errors':_('No content')},
+                    status=status.HTTP_404_NOT_FOUND)
+
+                
+            
+
+@csrf_exempt
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def export_faq_csv(request, pk=None):
+    '''Export FAQ data to CSV file
+    '''
+    bot_obj = Chatbot.objects.filter(id=pk, user=request.user).first()
+    if bot_obj:
+        faqgroups = FAQGroup.objects.filter(chatbot=bot_obj)
+        rows = [['Group', 'Question', 'Answer']]
+        for faqgroup in faqgroups:
+            answers = Answer.objects.filter(group=faqgroup)
+            questions = Question.objects.filter(group=faqgroup)
+            if len(answers) >= len(questions):
+                for a in range(len(answers)):
+                    ans = answers[a].content
+                    que = ''
+                    if a < len(questions) - 1:
+                        que = questions[a].content
+                    rows.append([faqgroup.csv_group, que, ans])
+            else:
+                for q in range(len(questions)):
+                    que = questions[q].content
+                    ans = ''
+                    if q < len(answers) - 1:
+                        ans = answers[q].content
+                    rows.append([faqgroup.csv_group, que, ans])
+        csv_file = StringIO()
+        writer = csv.writer(csv_file, delimiter=',')
+        for row in rows:
+            writer.writerow(row)
+        headers = {'Content-Disposition': 'attachment;filename=faq.csv'}
+        return Response(csv_file.getvalue(), headers=headers,
+                        content_type='text/csv')
+    return Response({'errors':_('Bot not found')},
+                        status=status.HTTP_404_NOT_FOUND)
+
+@csrf_exempt
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def train_bot_faq(request, pk=None):
+    '''Train bot based on FAQ data
+    '''
+    user_obj = request.user
+    bot_obj = Chatbot.objects.filter(id=pk, user=user_obj).first()
+    if not bot_obj:
+        return Response({'errors':_('Not found')},
+                        status=status.HTTP_404_NOT_FOUND)
+    train_status, err_msg = nlumodel.train_model(bot_obj)
+    if not train_status:
+        return Response({'errors': err_msg},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return Response({'success':_('Training bot succeeded')},
+                    status=status.HTTP_200_OK)
