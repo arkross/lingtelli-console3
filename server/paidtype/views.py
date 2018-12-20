@@ -2,12 +2,18 @@ import json
 
 from django.shortcuts import render
 from django.utils.translation import gettext as _
-from rest_framework import viewsets, status
+from rest_framework import viewsets
 from rest_framework.mixins import (RetrieveModelMixin, ListModelMixin,
                                    UpdateModelMixin)
 from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.status import (
+    HTTP_200_OK,
+    HTTP_400_BAD_REQUEST,
+    HTTP_403_FORBIDDEN,
+    HTTP_404_NOT_FOUND
+)
 
 from .serializers import PaidTypeSerializer
 from chat_console_3 import utils
@@ -56,21 +62,14 @@ class PaidTypeViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
             # Only agent can update paidtype
             if not request.user.is_staff:
                 return Response({'errors':_('Not allowed')},
-                                status=status.HTTP_403_FORBIDDEN)
+                                status=HTTP_403_FORBIDDEN)
 
             paidtype_obj = PaidType.objects.filter(id=pk).first()
             if not paidtype_obj:
                 return Response({'errors':_('Not found')},
-                                status=status.HTTP_404_NOT_FOUND)
+                                status=HTTP_404_NOT_FOUND)
 
             paidtype_data = json.loads(request.body)
-            paidtype_keys = ['name', 'duration', 'bot_amount', 'faq_amount',
-                             'third_party']
-            err_msg, validate_status = \
-                utils.key_validator(paidtype_keys, paidtype_data)
-            if not validate_status:
-                return Response({'errors':_(err_msg)},
-                                 status=status.HTTP_400_BAD_REQUEST)
             for k in paidtype_data:
                 if k == 'third_party':
                         paidtype_obj.thirdparty.set(paidtype_data.get(k))
@@ -78,6 +77,6 @@ class PaidTypeViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
                 setattr(paidtype_obj, k, paidtype_data.get(k))
             paidtype_obj.save()
             return Response({'success':_('Update succeeded')},
-                            status=status.HTTP_200_OK)
+                            status=HTTP_200_OK)
         return Response({'errors':_('No content')},
-                        status=status.HTTP_400_BAD_REQUEST)
+                        status=HTTP_400_BAD_REQUEST)

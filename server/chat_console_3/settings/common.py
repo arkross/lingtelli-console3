@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-# from celery.schedules import crontab
+from chat_console_3.token_setting import BearerTokenAuthentication
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -61,7 +61,9 @@ INSTALLED_APPS = INITIAL + THIRD_PARTY + OUR_APP
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication'
+        # 'rest_framework.authentication.TokenAuthentication'
+        # Set the token parameter to Bearer
+        BearerTokenAuthentication
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',

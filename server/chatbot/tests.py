@@ -49,7 +49,7 @@ class ChatbotTest(TestCase):
         self.accesstoken = token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
@@ -269,7 +269,7 @@ class DeleteBotConfirmTest(TestCase):
         self.accesstoken = token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
 
         # Initial bot
         bot_data = {'robot_name': 'test', 'user': self.user_obj}
@@ -353,7 +353,7 @@ class LineTest(TestCase):
         self.accesstoken = token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
 
         # Initial bot
         bot_data = {'robot_name': 'test', 'user': self.user_obj}
@@ -445,7 +445,7 @@ class FacebookTest(TestCase):
         self.accesstoken = token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
 
         # Initial bot
         bot_data = {'robot_name': 'test', 'user': self.user_obj}

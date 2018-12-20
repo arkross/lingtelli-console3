@@ -406,7 +406,7 @@ class MemberAccessTest(TestCase):
                           content_type='application/json')
         res_data = json.loads(response.content)
         token = res_data.get('success')
-        header = {'HTTP_AUTHORIZATION': 'Token ' + token}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + token}
         response = c.post('/member/login/',
                           json.dumps({'username': 'cosmo.hu@lingtelli.com',
                                       'password': 'thisispassword'}),
@@ -423,7 +423,7 @@ class MemberAccessTest(TestCase):
 
         # Logout the user
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'Token ' + accesstoken.key}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + accesstoken.key}
         response = c.get('/member/logout/', **header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
@@ -511,7 +511,7 @@ class MemberProfileTest(TestCase):
         GET, PUT, DELETE
         '''
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         not_existed_uri = '/member/123/'
         # GET
         response = c.get(not_existed_uri, **header)
@@ -538,7 +538,7 @@ class MemberProfileTest(TestCase):
         profile_key = ['id','username', 'first_name', 'paid_type',
                        'start_date', 'expire_date', 'language']
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.get(self.uri, **header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
@@ -548,7 +548,7 @@ class MemberProfileTest(TestCase):
     
     def test_update_empty(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri, content_type='application/json', **header)
         self.assertEqual(response.status_code, 400)
         res_data = json.loads(response.content)
@@ -556,7 +556,7 @@ class MemberProfileTest(TestCase):
     
     def test_update_username(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri,
                          json.dumps({'username': 'test@lingtelli.com'}),
                          content_type='application/json', **header)
@@ -569,7 +569,7 @@ class MemberProfileTest(TestCase):
 
     def test_update_username_duplicated(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri,
                          json.dumps({'username': 'cosmo.hu@lingtelli.com'}),
                          content_type='application/json', **header)
@@ -581,7 +581,7 @@ class MemberProfileTest(TestCase):
     
     def test_update_password(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri, 
                          json.dumps({'old_password': 'thisispassword',
                                      'password': 'newpassword'}),
@@ -594,7 +594,7 @@ class MemberProfileTest(TestCase):
     
     def test_update_wrong_old_password(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri, json.dumps({'old_password': 'thisiswrong',
                                                'password': 'newpassword'}),
                          content_type='application/json', **header)
@@ -606,7 +606,7 @@ class MemberProfileTest(TestCase):
 
     def test_update_nickname(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri,
                          json.dumps({'first_name': 'test'}),
                          content_type='application/json', **header)
@@ -618,7 +618,7 @@ class MemberProfileTest(TestCase):
 
     def test_update_language(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri,
                          json.dumps({'language': 'en'}),
                          content_type='application/json', **header)
@@ -630,7 +630,7 @@ class MemberProfileTest(TestCase):
 
     def test_update_language_empty(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         ori_acc_obj = AccountInfo.objects.filter(user=self.user_obj).first()
         response = c.put(self.uri,
                          json.dumps({'language':''}),
@@ -647,7 +647,7 @@ class MemberProfileTest(TestCase):
         acc_obj.delete_confirm = True
         acc_obj.save()
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.delete(self.uri, **header)
         check_delete_user = \
             User.objects.filter(username='cosmo.hu@lingtelli.com').first()
@@ -656,7 +656,7 @@ class MemberProfileTest(TestCase):
     
     def test_delete_no_confirm(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.delete(self.uri, **header)
         check_delete_user = \
             User.objects.filter(username='cosmo.hu@lingtelli.com').first()
@@ -718,7 +718,7 @@ class DeleteAccountConfirmTest(TestCase):
     def test_update_confirm_correct_password(self):
         c = Client()
         correct_password = {'password': 'thisispassword'}
-        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(correct_password), 
                           content_type='application/json', **header)
         user_obj = User.objects.get(username='cosmo.hu@lingtelli.com')
@@ -731,7 +731,7 @@ class DeleteAccountConfirmTest(TestCase):
     def test_update_confirm_wrong_password(self):
         c = Client()
         correct_password = {'password': 'wrongpassword'}
-        header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(correct_password), 
                           content_type='application/json', **header)
         self.assertEqual(response.status_code, 403)

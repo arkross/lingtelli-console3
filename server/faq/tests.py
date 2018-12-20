@@ -73,9 +73,9 @@ class FAQGroupTest(TestCase):
         self.agent_token = agent_token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         self.agent_header =\
-            {'HTTP_AUTHORIZATION': 'Token ' + self.agent_token}
+            {'HTTP_AUTHORIZATION': 'Bearer ' + self.agent_token}
 
         # Initial bot
         bot_data = {'robot_name': 'test', 'user': self.user_obj}
@@ -257,9 +257,9 @@ class CSVTest(TestCase):
         self.agent_token = agent_token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         self.agent_header =\
-            {'HTTP_AUTHORIZATION': 'Token ' + self.agent_token}
+            {'HTTP_AUTHORIZATION': 'Bearer ' + self.agent_token}
 
         # Initial bot
         bot_data = {'robot_name': 'test', 'user': self.user_obj}
@@ -477,9 +477,9 @@ class AnswerTest(TestCase):
         self.agent_token = agent_token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         self.agent_header =\
-            {'HTTP_AUTHORIZATION': 'Token ' + self.agent_token}
+            {'HTTP_AUTHORIZATION': 'Bearer ' + self.agent_token}
 
         # Initial bot
         bot_data = {'robot_name': 'test', 'user': self.user_obj}
@@ -733,9 +733,9 @@ class QuestionTest(TestCase):
         self.agent_token = agent_token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         self.agent_header =\
-            {'HTTP_AUTHORIZATION': 'Token ' + self.agent_token}
+            {'HTTP_AUTHORIZATION': 'Bearer ' + self.agent_token}
 
         # Initial bot
         bot_data = {'robot_name': 'test', 'user': self.user_obj}

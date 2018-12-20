@@ -50,7 +50,7 @@ class ChatbotTest(TestCase):
 
         # Initial header
         self.agent_header =\
-            {'HTTP_AUTHORIZATION': 'bearer ' + self.agent_token}
+            {'HTTP_AUTHORIZATION': 'Bearer ' + self.agent_token}
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
@@ -224,7 +224,7 @@ class DeleteBotConfirmTest(TestCase):
 
         # Initial header
         self.agent_header =\
-            {'HTTP_AUTHORIZATION': 'bearer ' + self.agent_token}
+            {'HTTP_AUTHORIZATION': 'Bearer ' + self.agent_token}
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
@@ -310,7 +310,7 @@ class LineTest(TestCase):
 
         # Initial header
         self.agent_header =\
-            {'HTTP_AUTHORIZATION': 'bearer ' + self.agent_token}
+            {'HTTP_AUTHORIZATION': 'Bearer ' + self.agent_token}
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
@@ -401,7 +401,7 @@ class FacebookTest(TestCase):
 
         # Initial header
         self.agent_header =\
-            {'HTTP_AUTHORIZATION': 'bearer ' + self.agent_token}
+            {'HTTP_AUTHORIZATION': 'Bearer ' + self.agent_token}
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',

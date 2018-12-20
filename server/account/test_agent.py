@@ -83,7 +83,7 @@ class AgentAccessTest(TestCase):
 
         # Logout
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + accesstoken.key}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + accesstoken.key}
         response = c.get('/agent/logout/', **header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
@@ -167,7 +167,7 @@ class AgentProfileTest(TestCase):
         GET, PUT, DELETE
         '''
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         # GET
         response = c.get(self.uri, header)
         self.assertEqual(response.status_code, 404)
@@ -191,7 +191,7 @@ class AgentProfileTest(TestCase):
     def test_read(self):
         agent_profile_key = ['username', 'paid_type', 'language']
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.get(self.uri, **header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
@@ -202,7 +202,7 @@ class AgentProfileTest(TestCase):
     def test_update_username(self):
         new_agent_username = {'username': 'newadmin'}
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(new_agent_username), 
                          content_type='application/json', **header)
         self.assertEqual(response.status_code, 200)
@@ -211,7 +211,7 @@ class AgentProfileTest(TestCase):
 
     def test_update_username_duplicated(self):
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(self.agent_data.get('username')),
                          content_type='application/json', **header)
         self.assertEqual(response.status_code, 400)
@@ -222,7 +222,7 @@ class AgentProfileTest(TestCase):
         new_agent_passwd = {'old_password': 'adminpassword',
                             'new_password': 'newadminpassword'}
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(new_agent_passwd),
                          content_type='application/json', **header)
         self.assertEqual(response.status_code, 200)
@@ -233,7 +233,7 @@ class AgentProfileTest(TestCase):
         new_agent_passwd = {'old_password': 'thisiswrong',
                             'new_password': 'newagentpassword'}
         c = Client()
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(new_agent_passwd),
                          content_type='application/json', **header)
         self.assertEqual(response.status_code, 403)
@@ -241,13 +241,13 @@ class AgentProfileTest(TestCase):
         self.assertIn('errors', res_data)
 
     def test_delete(self):
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         c = Client()
         response = c.delete(self.uri, **header)
         self.assertEqual(response.status_code, 204)
     
     def test_delete_no_confirm(self):
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         c = Client()
         response = c.delete(self.uri, **header)
         self.assertEqual(response.status_code, 403)
@@ -308,7 +308,7 @@ class DeleteAccountConfirmTest(TestCase):
     def test_update_confirm_correct_password(self):
         c = Client()
         correct_password = {'password': 'thisispassword'}
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(correct_password), 
                           content_type='application/json', **header)
         user_obj = User.objects.get(username='cosmo.hu@lingtelli.com')
@@ -322,7 +322,7 @@ class DeleteAccountConfirmTest(TestCase):
     def test_update_confirm_wrong_password(self):
         c = Client()
         correct_password = {'password': 'wrongpassword'}
-        header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(correct_password), 
                           content_type='application/json', **header)
         self.assertEqual(response.status_code, 403)
@@ -390,7 +390,7 @@ class AgentMemberTest(TestCase):
 
         # Initial header
         self.agent_header =\
-            {'HTTP_AUTHORIZATION': 'bearer ' + self.agent_token}
+            {'HTTP_AUTHORIZATION': 'Bearer ' + self.agent_token}
 
         # Initial uri
         self.member_uri = '/agent/' + str(self.agent_obj.id) + '/member/'

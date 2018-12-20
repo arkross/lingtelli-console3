@@ -32,13 +32,13 @@ class HistoryTest(TestCase):
         }
         trial_obj = PaidType.objects.create(**trial_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.thirdparty.add(demo_obj)
+        trial_obj.third_party.add(demo_obj)
 
         # Create new member account
         user_data = {'username': 'cosmo.hu@lingtelli.com',
                      'password': 'thisispassword',
                      'first_name': 'cosmo'}
-        self.user_obj = User.objects.create(**user_data)
+        self.user_obj = User.objects.create_user(**user_data)
 
         # Create account info
         acc_data = {'user': self.user_obj, 'paid_type': trial_obj,
@@ -51,7 +51,7 @@ class HistoryTest(TestCase):
         self.accesstoken = token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
 
         # Initial bot
         bot_data = {'robot_name': 'test', 'user': self.user_obj}
@@ -122,7 +122,7 @@ class MatchingQuestionTest(TestCase):
         }
         trial_obj = PaidType.objects.create(**trial_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.thirdparty.add(demo_obj)
+        trial_obj.third_party.add(demo_obj)
 
         # Create new member account
         user_data = {'username': 'cosmo.hu@lingtelli.com',
@@ -141,7 +141,7 @@ class MatchingQuestionTest(TestCase):
         self.accesstoken = token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
 
         # Initial bot
         bot_data = {'robot_name': 'test', 'user': self.user_obj}
@@ -193,4 +193,7 @@ class MatchingQuestionTest(TestCase):
         res_data = json.loads(response.content)
         for k in matching_keys:
             self.assertIn(k, res_data)
+
+
+    # TODO:def test_update
 

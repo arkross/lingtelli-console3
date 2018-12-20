@@ -72,9 +72,9 @@ class ThirdpartyTest(TestCase):
         self.agent_token = agent_token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'Token ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         self.agent_header =\
-            {'HTTP_AUTHORIZATION': 'Token ' + self.agent_token}
+            {'HTTP_AUTHORIZATION': 'Bearer ' + self.agent_token}
 
         # Initial uri
         self.thridparty_uri = '/thirdparty/'
