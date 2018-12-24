@@ -2,6 +2,7 @@ import * as types from '../types'
 import { fromJS } from 'immutable'
 
 const initState = fromJS({
+	info: {},
 	token: '',
 	packages: []
 })
@@ -20,6 +21,10 @@ export default function user(state = initState, action = {}) {
 		return state.withMutations(s => s
 			.set('username', action.detail.username)
 			.set('first_name', action.detail.first_name)
+			.set('language', action.detail.language)
+			.set('paid_type', action.detail.paid_type)
+			.set('start_date', action.detail.start_date)
+			.set('expire_date', action.detail.expire_date)
 		)
 		// return { ... state, ...action.detail}
 	case types.FETCH_USER_PACKAGES:
