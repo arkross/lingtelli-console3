@@ -115,7 +115,7 @@ class DeletionModal extends React.Component {
 }
 
 const mapStatetoProps = (state, props) => ({
-	username: state.getIn(['user', 'username'])
+	username: state.getIn(['user', 'id']),
 })
 
 export default compose(

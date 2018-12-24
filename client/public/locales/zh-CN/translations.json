@@ -54,6 +54,7 @@
     },
     "create": {
       "text": "创建机器人",
+      "bot_count": "机器人数量 / 限制",
       "close": "关闭",
       "btns": {
         "create": "创建",
@@ -65,6 +66,7 @@
     "success": "机器人资料储存成功!",
     "setting": {
       "text": "基础设定",
+      "unavailable": "您的方案无法启用此服务",
       "line": {
         "title": "Line 设定",
         "secret": "Channel Secret",

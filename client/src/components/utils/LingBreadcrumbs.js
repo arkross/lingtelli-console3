@@ -33,7 +33,7 @@ class LingBreadcrumbs extends React.Component {
 			}
 
 			if (arr[key - 1] === 'bot' && !isNaN(parseFloat(el))) {
-				const bot = _.find(bots, o => o.pk === parseFloat(el))
+				const bot = _.find(bots, o => o.id === parseFloat(el))
 				return {
 					key,
 					content: (<Link to={`/${arr.slice(0, key + 1).join('/')}`}>{bot ? bot.robot_name : el}</Link>),

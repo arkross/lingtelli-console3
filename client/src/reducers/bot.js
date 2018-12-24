@@ -16,14 +16,14 @@ export default function bot(state = initState, action = {}) {
 	switch (action.type) {
 	case types.FETCH_ALL_BOTS: {
 		return state.withMutations(s => {
-			const existingPK = s.get('bots').map(el => el.get('pk'))
-			const toDelete = existingPK.filterNot(el => _.find(action.bots, bot => bot.pk === el))
+			const existingPK = s.get('bots').map(el => el.get('id'))
+			const toDelete = existingPK.filterNot(el => _.find(action.bots, bot => bot.id === el))
 			toDelete.forEach(el => {
 				s.deleteIn(['bots', el + ''])
 			})
 			_.forEach(action.bots, o => {
 				_.forEach(o, (v, w) => {
-					s.setIn(['bots', o.pk + '', w], fromJS(v))
+					s.setIn(['bots', o.id + '', w], fromJS(v))
 				})
 			})
 			return s
@@ -66,15 +66,10 @@ export default function bot(state = initState, action = {}) {
 			.setIn(['bots', action.id + '', 'reportStat'], fromJS(totalStat)))
 	}
 	case types.FETCH_GROUPS: {
-		return state.setIn(['bots', action.id + '', 'group'], fromJS({
-			groups: action.data.results,
-			total: action.data.total_pages,
-			currentPage: action.page,
-			answer_content: action.answer_content
-		}))
+		return state.setIn(['bots', action.id + '', 'group', 'groups'], fromJS(action.data))
 	}
 	case types.FETCH_GROUP: {
-		const idx = state.getIn(['bots', action.id + '', 'group', 'groups']).findIndex(el => el.get('id') == action.groupId)
+		const idx = state.getIn(['bots', action.id + '', 'group', 'groups']).findIndex(el => el.get('group') == action.groupId)
 		return state.setIn(['bots', action.id + '', 'group', 'groups', idx], fromJS(action.data))
 	}
 	case types.FETCH_SUPPORT_PLATFORMS:

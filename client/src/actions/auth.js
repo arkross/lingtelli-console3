@@ -1,5 +1,6 @@
 import * as types from '../types'
 import api from '../apis/auth'
+import setAuthorizationHeader from '../utils/setAuthorizationHeader' 
 
 // login action function
 export const userLoggedIn = auth => ({
@@ -23,8 +24,9 @@ export const resendEmail = () => ({
 export const login = credentials => dispatch =>
 	api.login(credentials)
 		.then((auth) => {
-			localStorage.setItem('token', auth.access_token)
-			dispatch(userLoggedIn(auth))
+			localStorage.setItem('token', auth.success)
+			setAuthorizationHeader()
+			return dispatch(userLoggedIn(auth))
 		})
 
 export const logout = () => dispatch =>

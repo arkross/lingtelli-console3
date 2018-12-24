@@ -43,6 +43,7 @@
     },
     "create": {
       "text": "建立機器人",
+      "bot_count": "機器人數量 / 限制",
       "close": "關閉",
       "btns": {
         "create": "建立",
@@ -54,6 +55,7 @@
     "success": "機器人資料儲存成功!",
     "setting": {
       "text": "基本設定",
+      "unavailable": "您的方案無法啟用此服務",
       "line": {
         "title": "Line 設定",
         "secret": "Channel Secret",

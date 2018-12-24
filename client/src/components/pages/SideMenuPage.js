@@ -58,8 +58,8 @@ class SideMenuPage extends React.Component {
 		const { bots, match } = nextProps;
 		if (bots) {
 			this.items = _.map(bots, (item) => (
-				<div onClick={this.onBotItemClick} key={`bot${item.pk}`} className=''>
-				<NavLink to={`${match.url}/bot/${item.pk}`} className='item' key={`bot${item.pk}`}>
+				<div onClick={this.onBotItemClick} key={`bot${item.id}`} className=''>
+				<NavLink to={`${match.url}/bot/${item.id}`} className='item' key={`bot${item.id}`}>
 					{item.robot_name}
 				</NavLink>
 				</div>
@@ -115,7 +115,7 @@ SideMenuPage.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-	bots: state.getIn(['bot', 'bots']).filter(el => el.get('pk')) || {},
+	bots: state.getIn(['bot', 'bots']).filter(el => el.get('id')) || {},
 	info: state.getIn(['bot', 'info']) || {},
 });
 

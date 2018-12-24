@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react'
 import _ from 'lodash'
-import {Icon, Grid, Header, Button, Message, Segment, Input, Table, Divider} from 'semantic-ui-react'
+import {Icon, Grid, Header, Button, Message, Segment, Input, Table, Divider, Label} from 'semantic-ui-react'
 import { compose } from 'recompose'
 import { translate, Trans} from 'react-i18next'
 import { connect } from 'react-redux'
@@ -92,11 +92,13 @@ class APIIntegration extends Component {
 	}
 
 	render() {
-		const { supportPlatforms, t, info } = this.props
-		const { info: {platform: activatedPlatforms, vender_id}} = this.state
-		const currentPlatforms = _.filter(supportPlatforms, plat => _.find(activatedPlatforms, p => p == plat.id))
+		const { supportPlatforms, t, info, user, user: {packages} } = this.props
+		const { info: {platform: third_party, vender_id}} = this.state
+		const currentPlatforms = _.filter(supportPlatforms, plat => _.find(third_party, p => p === plat.id))
  
 		const webActive = !!_.find(currentPlatforms, plat => plat.name == 'Api')
+		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)
+		const isActivable = currentPaidtype && currentPaidtype.third_party.indexOf(5) > -1
 
 		const rootUrl = process.env.REACT_APP_WEBHOOK_API_HOST + '/' + vender_id
 		const webhookUrl = process.env.REACT_APP_WEBHOOK_HOST + '/' + vender_id
@@ -105,8 +107,10 @@ class APIIntegration extends Component {
 			<Grid.Row>
 				<Grid.Column width={12}><Header>API</Header></Grid.Column>
 				<Grid.Column floated='right' width={3}>
-					<Button floated='right' onClick={this.handleToggle.bind(this, 'Api')} color={webActive ? 'green' : 'grey'} icon={webActive ? 'check' : 'remove'} content={webActive ? t('chatbot.integration.activated') : t('chatbot.integration.inactive')}
+				{isActivable ? 
+					<Button floated='right' disabled={!isActivable} onClick={this.handleToggle.bind(this, 'Api')} color={webActive ? 'green' : 'grey'} icon={webActive ? 'check' : 'remove'} content={webActive ? t('chatbot.integration.activated') : t('chatbot.integration.inactive')}
 					/>
+				: <Label basic color='grey'><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label>}
 				</Grid.Column>
 			</Grid.Row>
 			<Grid.Row>
@@ -601,6 +605,7 @@ class APIUnit extends Component {
 }
 
 const mapStateToProps = (state, props) => ({
+	user: state.get('user'),
 	activeBot: props.match.params.id,
 	info: state.getIn(['bot', 'bots', props.match.params.id]) || {},
 	supportPlatforms: state.getIn(['bot', 'supportPlatforms']) || []

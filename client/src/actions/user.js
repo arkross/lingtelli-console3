@@ -27,7 +27,7 @@ const fetchUserPackage = packages => ({
 })
 
 export const fetchUser = () => dispatch =>
-	api.info().then(info => dispatch(fetchUserInfo(info)))
+	api.info().then(info => dispatch(fetchUserInfo(info[0])))
 
 export const fetchDetail = () => dispatch =>
 	api.getId()

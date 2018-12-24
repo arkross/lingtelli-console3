@@ -61,6 +61,7 @@ axios.interceptors.response.use(response => {
 		if (err.response.status === 401) {
 			// User logged out or session expired
 			localStorage.removeItem('token')
+			setAuthorizationHeader()
 			document.location.reload()
 		}
 		return Promise.reject({

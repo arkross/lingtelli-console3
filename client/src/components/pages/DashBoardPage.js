@@ -5,7 +5,7 @@ import { Route, Switch, Redirect } from 'react-router-dom'
 import { translate } from 'react-i18next';
 import _ from 'lodash'
 import { logout } from 'actions/auth';
-import { fetchDetail } from 'actions/user'
+import { fetchDetail, fetchPackages } from 'actions/user'
 import { fetchAllBotDetails, fetchBot, fetchHistory, fetchPlatforms } from 'actions/bot';
 import { hideAllMessages } from 'actions/message'
 import { Dimmer, Loader, Dropdown, Menu, Divider, Container, Message, Icon} from 'semantic-ui-react';
@@ -53,6 +53,7 @@ class DashBoardPage extends React.Component {
 		this.props.fetchDetail()
 		this.updateBots()
 		this.props.fetchPlatforms()
+		this.props.fetchPackages()
 		this.isUpdate = true
 	}
 
@@ -177,6 +178,6 @@ const mapStateToProps = (state) => ({
 
 export default compose(
 	translate('translations'),
-	connect(mapStateToProps, { logout, fetchBot, fetchHistory, fetchDetail, fetchAllBotDetails, fetchPlatforms, hideAllMessages }),
+	connect(mapStateToProps, { logout, fetchBot, fetchHistory, fetchDetail, fetchAllBotDetails, fetchPlatforms, hideAllMessages, fetchPackages }),
 	toJS
 )(DashBoardPage);

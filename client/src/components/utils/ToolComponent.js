@@ -92,13 +92,10 @@ class ToolComponent extends React.Component {
 
 		const { loading, errors, success } = this.state
 		const { t, onCreateGroup, keyword, info, bots, user } = this.props
-		const faq_limits = {
-			'Trial': 50,
-			'Basic': 100,
-			'Pro': 500
-		}
-		const faqCount = _.reduce(bots, (acc, bot) => (acc += (bot && bot.group && bot.group.total)	 || 0), 0)
-		const faqLimit = user.paid_type ? faq_limits[user.paid_type] : 50
+
+		const currentPaidtype = _.find(user.packages, p => p.name === user.paid_type)
+		const faqCount = _.reduce(bots, (acc, bot) => (acc += (bot && bot.group && bot.group.groups.length)	 || 0), 0)
+		const faqLimit = currentPaidtype ? currentPaidtype.faq_amount : 0
 
 		return (
 			<div style={{ margin: "10px" }}>

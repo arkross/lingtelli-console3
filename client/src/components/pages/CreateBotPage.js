@@ -14,6 +14,7 @@ import {
 	Modal,
 	Container
 } from 'semantic-ui-react';
+import _ from 'lodash'
 import toJS from 'components/utils/ToJS'
 
 class CreateBotPage extends React.Component {
@@ -112,7 +113,6 @@ class CreateBotPage extends React.Component {
 				failed_msg: data.failedMsg,
 				greeting_msg: data.greetingMsg,
 				postback_title: data.postbackMsg,
-				package: data.packageSelect.toString(),
 				language: data.language
 			})
 			.then(() => {
@@ -140,12 +140,9 @@ class CreateBotPage extends React.Component {
 			bots
 		} = this.props
 
-		const bot_limits = {
-			'Trial': 1,
-			'Basic': 1,
-			'Pro': 5
-		}
-		const bot_limit = user.paid_type ? bot_limits[user.paid_type] : 5
+		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)
+
+		const bot_limit = user.paid_type ? currentPaidtype.bot_amount : 5
 		const botCount = Object.keys(bots).length
 
 		const { errors, data, openModal, loading } = this.state
@@ -200,8 +197,8 @@ class CreateBotPage extends React.Component {
 					</Form.Field>
 				</Form>
 				<div>
-					<Label color={botCount < bot_limit ? 'green' : 'red'}>
-						<Icon name='android' /> {botCount} / {bot_limit}
+					<Label color={botCount < bot_limit ? 'green' : 'red'} size='large' basic>
+						{t('chatbot.create.bot_count')} : {botCount} / {bot_limit}
 					</Label>
 					<Button
 						disabled={botCount >= bot_limit}

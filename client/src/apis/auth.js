@@ -18,7 +18,7 @@ export default {
 	 * @param {string} credentials.data.password
 	 * @returns {Promise<LoginResponse>}
 	 */
-	login: async credentials => (await axios.post(`${API_HOST}/member/account/login/`, {
+	login: async credentials => (await axios.post(`${API_HOST}/member/login/`, {
 		username: credentials.data.email,
 		password: credentials.data.password,
 	})).data,
@@ -35,30 +35,28 @@ export default {
 		// Remove auth header first
 		const tempToken = setAuth()
 
-		return axios.post(`${API_HOST}/member/account/login/`, creds).then(data => {
-			setAuth(data.data.access_token)
+		return axios.put(`${API_HOST}/member/${creds.username}/delete_confirm/`).then(data => {
 			return data.data
 		}, err => {
-			setAuth(tempToken.replace('Bearer ', ''))
 			return Promise.reject(err)
 		})
 	},
 
-	confirm: async code => (await axios.post(`${API_HOST}/member/account/confirm/`, {
+	confirm: async code => (await axios.post(`${API_HOST}/member/confirm/`, {
 		code,
 	})).data,
 
-	register: async credentials => (await axios.post(`${API_HOST}/member/account/register/`, {
+	register: async credentials => (await axios.post(`${API_HOST}/member/register/`, {
 		username: credentials.data.email,
 		password: credentials.data.password,
 		first_name: credentials.data.nickname,
 	})).data,
 
-	resend: async username => (await axios.get(`${API_HOST}/member/account/resend/`, {
+	resend: async username => (await axios.get(`${API_HOST}/member/resend/`, {
 		params: { username },
 	})).data,
 
-	isExpired: async () => (await axios.get(`${API_HOST}/member/chatbot/`)).data,
+	isExpired: async () => (await axios.get(`${API_HOST}/chatbot/`)).data,
 
 	/**
 	 * @typedef LogoutResponse
@@ -70,5 +68,5 @@ export default {
 	 * @async
 	 * @returns {Promise<LogoutResponse>}
 	 */
-	logout: async () => (await axios.get(`${API_HOST}/member/account/logout/`)).data
+	logout: async () => (await axios.get(`${API_HOST}/member/logout/`)).data
 }

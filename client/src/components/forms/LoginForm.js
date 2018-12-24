@@ -39,12 +39,12 @@ class LoginForm extends React.Component {
 		});
 	}
 
-	onSubmit = () => {
+	onSubmit = e => {
 		const errors = this.validate(this.state.data);
 		const { dismissError } = this.props
-		this.setState({ errors });
+		this.setState({ errors })
 		if (Object.keys(errors).length === 0) {
-			this.setState({ loading: true });
+			this.setState({ loading: true })
 			this.props
 				.submit(this.state)
 				.then(data => {
@@ -58,6 +58,7 @@ class LoginForm extends React.Component {
 					this.setState(updateState)
 				})
 		}
+		return false
 	}
 
 	validate = (data) => {

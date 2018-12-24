@@ -103,12 +103,12 @@ class FAQConfigPage extends React.Component {
 						groups.map((item, ix) =>
 							<Group
 								ix={ix}
-								key={item.id}
-								id={item.id}
+								key={item.group}
+								id={item.group}
 								questions={item.question}
 								answers={item.answer}
-								onDelete={this.onDeleteGroupClick.bind(this, item.id)}
-								fetchGroup={this.onFetchGroup.bind(this, item.id)}
+								onDelete={this.onDeleteGroupClick.bind(this, item.group)}
+								fetchGroup={this.onFetchGroup.bind(this, item.group)}
 								activeBot={activeBot}
 							/>
 						)

@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react'
 import _ from 'lodash'
-import {Image, Icon, Grid, Header, Button, Message, Segment, Form, FormField, Input, TextArea} from 'semantic-ui-react'
+import {Image, Icon, Grid, Header, Button, Message, Segment, Form, FormField, Input, TextArea, Label} from 'semantic-ui-react'
 import { compose } from 'recompose'
 import { translate, Trans} from 'react-i18next'
 import { connect } from 'react-redux'
@@ -167,21 +167,26 @@ ${str}</script>
 	}
 
 	render() {
-		const { supportPlatforms, t } = this.props
-		const { info: {platform: activatedPlatforms}, copied, loading, show, robotIcon, chatIcon, headerTextColor, headerBackgroundColor, chatLabel} = this.state
-		const currentPlatforms = _.filter(supportPlatforms, plat => _.find(activatedPlatforms, p => p == plat.id))
-		
+		const { supportPlatforms, t, user, user: {packages} } = this.props
+		const { info: {platform: third_party}, copied, loading, show, robotIcon, chatIcon, headerTextColor, headerBackgroundColor, chatLabel} = this.state
+		const currentPlatforms = _.filter(supportPlatforms, plat => _.find(third_party, p => p == plat.id))
+
 		const webScript = this.generateScript()
  
 		const webActive = !!_.find(currentPlatforms, plat => plat.name == 'Web')
 		const srcDoc = `<!doctype html><html><head></head><body>${webScript}</body></html>`
 
+		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)
+		const isActivable = currentPaidtype && currentPaidtype.third_party.indexOf(3) > -1
+
 		return <Grid className='integration-page'>
 			<Grid.Row>
 				<Grid.Column width={12}><Header>Web</Header></Grid.Column>
 				<Grid.Column floated='right' width={3}>
-					<Button floated='right' onClick={this.handleToggle.bind(this, 'Web')} color={webActive ? 'green' : 'grey'} icon={webActive ? 'check' : 'remove'} content={webActive ? t('chatbot.integration.activated') : t('chatbot.integration.inactive')}
+				{isActivable ? 
+					<Button floated='right' disabled={!isActivable} onClick={this.handleToggle.bind(this, 'Web')} color={webActive ? 'green' : 'grey'} icon={webActive ? 'check' : 'remove'} content={webActive ? t('chatbot.integration.activated') : t('chatbot.integration.inactive')}
 					/>
+				: <Label color='grey' basic><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label>}
 				</Grid.Column>
 			</Grid.Row>
 			<Grid.Row>
@@ -233,6 +238,7 @@ ${str}</script>
 }
 
 const mapStateToProps = (state, props) => ({
+	user: state.get('user'),
 	activeBot: props.match.params.id,
 	info: state.getIn(['bot', 'bots', props.match.params.id]) || {},
 	supportPlatforms: state.getIn(['bot', 'supportPlatforms']) || []

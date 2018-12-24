@@ -96,13 +96,13 @@ export const fetchAllBotDetails = () => async (dispatch) => {
 	const bots = await api.list()
 	dispatch(fetchAllBots(bots))
 	return Promise.all(_.map(bots, bot => {
-		api.info(bot.pk).then(data => {
-			data.activeBot = bot.pk
+		api.info(bot.id).then(data => {
+			data.activeBot = bot.id
 			// Also fetch FAQ to get the counts
-			fetchGroups(bot.pk, 1)(dispatch)
+			fetchGroups(bot.id, 1)(dispatch)
 			dispatch(fetchBotInfo(data))
 		})
-		return api.report(bot.pk).then(data => dispatch(fetchBotReport(data, bot.pk)))
+		return api.report(bot.id).then(data => dispatch(fetchBotReport(data, bot.id)))
 	}))
 }
 

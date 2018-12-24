@@ -44,6 +44,7 @@
     },
     "create": {
       "text": "Create Chatbot",
+      "bot_count": "Chatbot count / limit",
       "close": "Close",
       "btns": {
         "create": "Create",
@@ -55,6 +56,7 @@
     "success": "Chatbot settings saved successfully!",
     "setting": {
       "text": "Basic Setting",
+      "unavailable": "Unavailable in your current subscription.",
       "line": {
         "title": "Line Setting",
         "token": "Channel Access Token",

@@ -98,7 +98,7 @@ class AboutForm extends React.Component {
 		if (form.password2) {
 			this.props.resetPassword({
 				old_password: form.password,
-				new_password: form.password2
+				password: form.password2
 			}).then(() => {
 				this.setState({loading: false, showSuccess: true, showModal: true})
 			}) 
@@ -116,18 +116,8 @@ class AboutForm extends React.Component {
 	}
 
 	render = () => {
-		const { t, bots } = this.props
+		const { t, bots, user: {packages} } = this.props
 		const { loading, showSuccess, errors, form, showModal } = this.state
-		const bot_limits = {
-			'Trial': 1,
-			'Basic': 1,
-			'Pro': 5
-		}
-		const faq_limits = {
-			'Trial': 50,
-			'Basic': 100,
-			'Pro': 500
-		}
 		const labelColors = {
 			'Trial': 'grey',
 			'Basic': 'blue',
@@ -135,6 +125,9 @@ class AboutForm extends React.Component {
 		}
 		const botCount = Object.keys(bots).length
 		const faqCount = _.reduce(bots, (acc, bot) => (acc += (bot && bot.group && bot.group.total)	 || 0), 0)
+		const currentPaidtype = _.find(packages, p => p.name === form.paid_type)
+		const botLimit = currentPaidtype.bot_amount
+		const faqLimit = currentPaidtype.faq_amount
 		return (
 			<Form success={showSuccess} loading={loading}>
 				<Grid columns={2} divided='vertically'>
@@ -147,7 +140,7 @@ class AboutForm extends React.Component {
 							<Statistic.Group>
 								<Statistic>
 									<Statistic.Value>
-										{botCount} / {bot_limits[form.paid_type]}
+										{botCount} / {botLimit}
 									</Statistic.Value>
 									<Statistic.Label>
 										{t('account.bot_limit')}
@@ -155,7 +148,7 @@ class AboutForm extends React.Component {
 								</Statistic>
 								<Statistic>
 									<Statistic.Value>
-										{faqCount} / {faq_limits[form.paid_type]}
+										{faqCount} / {faqLimit}
 									</Statistic.Value>
 									<Statistic.Label>
 										{t('account.faq_limit')}
