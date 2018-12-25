@@ -3,7 +3,7 @@ import { fromJS } from 'immutable'
 
 const initState = fromJS({
 	info: {},
-	token: '',
+	access_token: '',
 	packages: []
 })
 
@@ -19,6 +19,7 @@ export default function user(state = initState, action = {}) {
 		return state.set('info', fromJS(action.info))
 	case types.FETCH_USER_DETAIL:
 		return state.withMutations(s => s
+			.set('id', action.detail.id)
 			.set('username', action.detail.username)
 			.set('first_name', action.detail.first_name)
 			.set('language', action.detail.language)

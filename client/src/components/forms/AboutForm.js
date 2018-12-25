@@ -124,16 +124,16 @@ class AboutForm extends React.Component {
 			'Pro': 'teal'
 		}
 		const botCount = Object.keys(bots).length
-		const faqCount = _.reduce(bots, (acc, bot) => (acc += (bot && bot.group && bot.group.total)	 || 0), 0)
+		const faqCount = _.reduce(bots, (acc, bot) => (acc += (bot && bot.group && bot.group.groups && bot.group.groups.length)	 || 0), 0)
 		const currentPaidtype = _.find(packages, p => p.name === form.paid_type)
-		const botLimit = currentPaidtype.bot_amount
-		const faqLimit = currentPaidtype.faq_amount
+		const botLimit = currentPaidtype ? currentPaidtype.bot_amount : 0
+		const faqLimit = currentPaidtype ? currentPaidtype.faq_amount : 0
 		return (
 			<Form success={showSuccess} loading={loading}>
 				<Grid columns={2} divided='vertically'>
 					<Grid.Row>
 						<Grid.Column>
-							<p><Label size='large' color={labelColors[form.paid_type]}>{form.paid_type}</Label></p>
+							<Label size='large' color={labelColors[form.paid_type]}>{form.paid_type}</Label>
 							{form.paid_type !== 'Trial' && <Fragment><p>{t('account.activation_date')}: {form.start_date}<br/>{t('account.expiration_date')}: {form.expire_date}</p></Fragment>}
 						</Grid.Column>
 						<Grid.Column>

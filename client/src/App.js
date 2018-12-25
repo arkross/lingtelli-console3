@@ -90,6 +90,6 @@ App.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired
   }).isRequired
-};
+}
 
-export default connect(null, { logout, logoutDirectly })(App);
+export default connect(null, { logout, logoutDirectly })(App)

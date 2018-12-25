@@ -24,7 +24,7 @@ export default {
 	})).data,
 
 	/**
-	 * Confirm user password
+	 * Confirm password for deleting user
 	 * @async
 	 * @param {Object} creds
 	 * @param {string} creds.username
@@ -32,10 +32,9 @@ export default {
 	 * @returns {Promise<LoginResponse>}
 	 */
 	confirmPassword: async creds => {
-		// Remove auth header first
-		const tempToken = setAuth()
-
-		return axios.put(`${API_HOST}/member/${creds.username}/delete_confirm/`).then(data => {
+		return axios.put(`${API_HOST}/member/${creds.id}/delete_confirm/`, {
+			password: creds.password
+		}).then(data => {
 			return data.data
 		}, err => {
 			return Promise.reject(err)

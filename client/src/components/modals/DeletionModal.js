@@ -3,7 +3,7 @@ import { compose } from 'recompose'
 import { connect } from 'react-redux'
 import { Modal, Input, Button, Form } from 'semantic-ui-react'
 import { translate } from 'react-i18next'
-import auth from '../../apis/auth'
+import bot from '../../apis/bot'
 import toJS from 'components/utils/ToJS'
 
 const PROGRESS = {
@@ -64,10 +64,10 @@ class DeletionModal extends React.Component {
 				progress: PROGRESS.PASSWORD_INPUT
 			})
 		} else {
-			const { username, onSuccess, onFailure } = this.props
+			const { onSuccess, onFailure, id } = this.props
 			const { inputValue: password } = this.state
 			this.setState({ loading: true })
-			auth.confirmPassword({username, password})
+			bot.delete_confirm(id, password)
 				.then(data => {
 					this.setState({error: false})
 					typeof onSuccess === 'function' && onSuccess(data)
@@ -115,7 +115,8 @@ class DeletionModal extends React.Component {
 }
 
 const mapStatetoProps = (state, props) => ({
-	username: state.getIn(['user', 'id']),
+	username: state.getIn(['user', 'username']),
+	id: state.getIn(['user', 'id'])
 })
 
 export default compose(

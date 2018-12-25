@@ -10,10 +10,7 @@ class LoginPage extends React.Component {
 	// react-router will pass history in components
 	submit = data =>
 		this.props.login(data)
-			.then(() => {
-				this.props.history.push('/dashboard')
-				// document.location.reload()
-			})
+			.then(() => this.props.history.push('/dashboard'))
 
 	render() {
 		return (

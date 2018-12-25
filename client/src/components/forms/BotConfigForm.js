@@ -100,7 +100,6 @@ class BotConfigForm extends React.Component {
 
 	onDelete = (e) => {
 		const { activeBot } = this.props.info
-		console.log('Deleting')
 		this.props.onDelete(activeBot)
 	}
 
@@ -238,13 +237,6 @@ class BotConfigForm extends React.Component {
 						</Grid.Column>
 					</Grid.Row>
 					<Grid.Row columns={2}>
-						<Grid.Column>
-							<Label size='large'>
-								<Icon name='calendar' />
-								{t('chatbot.expiredAt')}
-								<Label.Detail>{info.expired_at}</Label.Detail>
-							</Label>
-						</Grid.Column>
 						<Grid.Column floated='right'>
 							<Button floated='right' primary onClick={this.onUpdate}>
 								<Icon name='save' />

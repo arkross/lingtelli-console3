@@ -5,7 +5,9 @@ import setAuthorizationHeader from '../utils/setAuthorizationHeader'
 // login action function
 export const userLoggedIn = auth => ({
 	type: types.USER_LOGGED_IN,
-	auth,
+	auth: {
+		access_token: auth.success
+	}
 })
 // logout action function
 export const userLoggedOut = () => ({
