@@ -29,14 +29,14 @@ def create_model(chatbot_obj):
     try:
         response = requests.post(url, data=data, timeout=10)
     except Exception as e:
-        print('==== NLU server timeout ====')
+        print('XXX NLU server timeout XXX')
         return False, 'NLU server timeout: ' + str(e)
     else:
         if response.status_code == 200:
-            print('==== Create model successed ====')
+            print('XXX Create model successed XXX')
             return True, ''
         else:
-            print('==== Create model failed ====')
+            print('XXX Create model failed XXX')
             return False, 'Create model failed: ' +\
                 str(json.loads(response.content))
 
@@ -66,13 +66,13 @@ def train_model(chatbot_obj):
         try:
             response = requests.put(url, data=data)
         except Exception as e:
-            print('==== NLU server timeout ====')
+            print('XXX NLU server timeout XXX')
             return False, 'NLU server timeout: ' + str(e)
         if response.status_code == 200:
-            print('==== Train NLU Model Successed ====')
+            print('XXX Train NLU Model Successed XXX')
             return True, ''
         else:
-            print('==== NLU server error ====')
+            print('XXX NLU server error XXX')
             return False, 'NLU server error: ' +\
                 str(json.loads(response.content))
 
@@ -92,7 +92,7 @@ def delete_model(chatbot_obj):
     try:
         requests.delete(url, timeout=10)
     except Exception as e:
-        print('Delete NLU model error: ' + str(e))
+        print('XXX Delete NLU model error: ' + str(e) + ' XXX')
 
 def initial_question_answer(chatbot_obj):
     '''Initial QA for model

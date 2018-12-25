@@ -1,4 +1,4 @@
-import json
+import json, logging
 from datetime import datetime, timedelta, timezone
 
 from django.shortcuts import render
@@ -13,28 +13,37 @@ from rest_framework.response import Response
 from rest_framework.decorators import (api_view, authentication_classes,
                                        permission_classes, action)
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import (
+    IsAuthenticated,
+    AllowAny,
+    IsAdminUser
+)
 from rest_framework.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
     HTTP_400_BAD_REQUEST,
     HTTP_403_FORBIDDEN,
-    HTTP_404_NOT_FOUND
+    HTTP_404_NOT_FOUND,
+    HTTP_500_INTERNAL_SERVER_ERROR,
 )
 
 import chat_console_3.utils as utils
-from account.serializers import MemberSerializer
+from .serializers import MemberSerializer, AgentMemberSerializer
 
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from account.models import AccountInfo
 from paidtype.models import PaidType
 
+logger = logging.getLogger(__name__)
+
 # MEMBER PART
+# TODO: Fix OPTIONS request appending content to method issue
+# XXX Please send OPTIONS request without content XXX
 @csrf_exempt
 @api_view(['POST'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([])
 @permission_classes([AllowAny])
 def member_login(request):
     '''Member login
@@ -59,18 +68,9 @@ def member_login(request):
     username = login_data.get('username')
     password = login_data.get('password')
 
-    user = None # Initial user object to None
-    if not request.user.is_anonymous:
-        # To check if user has logged in and tried to login again
-        old_token_obj = Token.objects.filter(user=request.user).first()
-        expired = utils.check_token_expired(old_token_obj)
-        if expired == False:
-            return Response({'errors': 'You have logged in.' +\
-                            'Do not need to login again'},
-                            status=HTTP_400_BAD_REQUEST)
-
     user = User.objects.filter(username=username).first()
     if not user:
+        logger.warning('=== User ' + username + ' not found ===')
         return Response({'errors': 'User does not exist.' +\
                                    'Please register an account first'},
                         status=HTTP_404_NOT_FOUND)
@@ -83,12 +83,16 @@ def member_login(request):
         if expired == True:
             new_token = utils.create_token_with_expire_time(user)
             if new_token:
+                logger.info('=== User ' + user.username + ' logged in ===')
                 return \
                     Response({'success': new_token.key}, status=HTTP_200_OK)
             else:
+                logger.error('XXX Service with login error, please check XXX')
                 return Response({'errors': 'Something went wrong'+\
-                    'Please try again'}, status=HTTP_400_BAD_REQUEST)
+                    'Please try again'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
         else:
+            logger.info('=== User ' + user.username + ' logged in with' +\
+                        ' old token ===')
             return Response({'success': old_token_obj.key}, status=HTTP_200_OK)
     else:
         return Response({'errors': 'Username or password is not correct'},
@@ -100,10 +104,8 @@ def member_login(request):
 @permission_classes([IsAuthenticated])
 def member_logout(request):
     user = request.user
-    if not user:
-        return Response({'errors': 'You have not logged in yet'}, 
-                        status=HTTP_403_FORBIDDEN)
     Token.objects.filter(user=user).delete()
+    logger.info('=== User ' + user.username + ' has logged out ===')
     return Response({'success': 'You have successfully logged out'},
                     status=HTTP_200_OK)
 
@@ -442,3 +444,37 @@ class MemberProfileViewset(viewsets.ModelViewSet):
 
 
 # AGENT PART
+
+class AgentMemberViewset(viewsets.ModelViewSet):
+    '''Agent member viewset
+
+    For agents to manage members' data. Only can update paidtype.
+    '''
+
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    queryset = AccountInfo.objects.all()
+    serializer_class = AgentMemberSerializer
+
+    def list(self, request):
+        res_list = []
+        for acc in self.queryset:
+            res_dict = {}
+            res_dict['id'] = acc.id
+            res_dict['username'] = acc.user.username
+            res_list.append(res_dict)
+        return Response(res_list, status=HTTP_200_OK)
+
+    def retrieve(self, request, pk=None):
+        mem_acc_obj = self.queryset.filter(id=pk).first()
+        if mem_acc_obj:
+            res_dict = {}
+            res_dict['username'] = mem_acc_obj.user.username
+            res_dict['paid_type'] = mem_acc_obj.paid_type.name
+            res_dict['start_date'] = mem_acc_obj.start_date
+            res_dict['expire_date'] = mem_acc_obj.expire_date
+            return Response(res_dict, status=HTTP_200_OK)
+        return Response({'errors':_('Not found')}, status=HTTP_404_NOT_FOUND1)
+
+    def update(self, request, pk=None):
+        pass

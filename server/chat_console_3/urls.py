@@ -37,8 +37,11 @@ member_router.register('', acc_view.MemberProfileViewset)
 # agent_router = routers.DefaultRouter(trailing_slash=True)
 # agent_router.register('',)
 # agent_router.register(r'(?P<id>\d+)/confrim',)
-# agent_router.register('member',)
-# agent_router.register('report',) #Not sure what to provide yet
+
+# Agent member managment related
+agent_member_router = routers.DefaultRouter(trailing_slash=True)
+agent_member_router.register('', acc_view.AgentMemberViewset)
+# agent_router.register(r'(?P<pk>\d+)/report',) #Not sure what to provide yet
 
 
 # Member page chatbot related. Not specifiy member cause agent can also use it.
@@ -99,7 +102,7 @@ urlpatterns = [
     # Agent related urls
     # path('agent/login/',),
     # path('agent/logout/',),
-    # path('agent/register/',),
-    # path('agent/<int:pk>/chatbot/', include(agent_bot_router.urls), name='agent_chatbot')
-    # path('agent/', include(account.urls.agent_urls), name='agent_account'),
+    path('agent/member/', include(agent_member_router.urls), name='agent_member'),
+    # path('agent/<int:pk>/chatbot/', include(agent_bot_router.urls), name='agent_chatbot'),
+    # path('agent/', include(agent_router.urls), name='agent_account'),
 ]

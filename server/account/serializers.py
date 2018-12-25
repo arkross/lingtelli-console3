@@ -3,8 +3,10 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from account.models import AccountInfo
 
+# Member related
 class MemberSerializer(serializers.Serializer):
-    '''
+    '''Member profile
+
     Only username, first_name can be updated and read.
     Password can only be updated.
 
@@ -24,5 +26,17 @@ class MemberSerializer(serializers.Serializer):
         user_data['expire_date'] = acc_obj.expire_date
         user_data['language'] = acc_obj.language
         return user_data
-        
+
+
+# Agent related
+class AgentMemberSerializer(serializers.Serializer):
+    '''For agent to manage members
+
+    Only paidtype can be updated
+    '''
+
+    user = serializers.IntegerField(read_only=True)
+    start_date = serializers.DateTimeField(read_only=True)
+    expire_date = serializers.DateTimeField(read_only=True)
+    paid_type = serializers.IntegerField()
 

@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-from chat_console_3.token_setting import BearerTokenAuthentication
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -27,8 +26,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CORS_ORIGIN_WHITELIST = ()
 CORS_ORIGIN_ALLOW_ALL = False
-
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'POST',
+    'PUT',
+    'OPTIONS',
+)
 
 # Application definition
 
@@ -42,6 +48,7 @@ INITIAL = [
 ]
 
 THIRD_PARTY = [
+    'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
 ]
@@ -61,17 +68,18 @@ INSTALLED_APPS = INITIAL + THIRD_PARTY + OUR_APP
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework.authentication.TokenAuthentication'
         # Set the token parameter to Bearer
-        BearerTokenAuthentication
+        'chat_console_3.middlewares.BearerTokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
+
     ),
     'EXCEPTION_HANDLER': 'chat_console_3.utils.custom_exception_handler',
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

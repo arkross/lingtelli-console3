@@ -3,11 +3,11 @@
         "model": "paidtype.paidtype",
         "pk": 1,
         "fields": {
-            "name": "Trail",
+            "name": "Trial",
             "duration": "0_0",
             "bot_amount": "1",
             "faq_amount": "50",
-            "thirdparty": [4]
+            "third_party": [4]
         }
     },
     {
@@ -18,7 +18,7 @@
             "duration": "1_y",
             "bot_amount": "1",
             "faq_amount": "100",
-            "thirdparty": [1,2,3,4,5]
+            "third_party": [1,2,4]
         }
     },
     {
@@ -29,7 +29,7 @@
             "duration": "1_y",
             "bot_amount": "5",
             "faq_amount": "500",
-            "thirdparty": [1,2,3,4,5]
+            "third_party": [1,2,3,4,5]
         }
     },
     {
@@ -40,7 +40,7 @@
             "duration": "0_0",
             "bot_amount": "0",
             "faq_amount": "0",
-            "thirdparty": [1,2,3,4,5]
+            "third_party": [1,2,3,4,5]
         }
     }
 ]

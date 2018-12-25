@@ -8,34 +8,58 @@ from paidtype.models import PaidType
 from thirdparty.models import ThirdParty
 
 
-class AgentRegisterTest(TestCase):
-    '''Agent register new account function
+class AgentCreateAgentTest(TestCase):
+    '''Agent can only be created by superuser or agent
 
-    Only for agent to use
+    First time only superuser can create an agent in local domain. After
+    creating an agent, the agent can create other agent account.
     '''
-    def test_register_duplicated(self):
-        agent_data = {'username': 'admin', 'password': 'adminpassword'}
-        User.objects.create(**agent_data)
 
+    def setup(self):
+        # Initial an agent
+        agent_data = {'username': 'admin', 'password': 'adminpassword',
+                      'is_staff': True}
+        user_obj = User.objects.create_user(**agent_data)
+        # Login agent
+        token = Token.objects.create(user_obj)
+        self.agent_header = {'HTTP_AUTHORIZATION': 'Bearer ' + token.key}
+        user_id = user_obj.id
+        self.uri = '/agent/' + str(user_id) + '/create_agent/'
+
+        # Initial a member
+        member_data = {'username': 'cosmo.hu@lingtelli.com',
+                       'password': 'thisispassword'}
+        member_obj = User.objects.create_user(**member_data)
+        # Login member
+        member_token = Token.objects.create(member_obj)
+        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + member_token.key}
+        member_id = member_obj.id
+        self.member_uri = '/agent/' + str(member_id) + '/create_agent/'
+
+    def test_no_auth(self):
         c = Client()
+        new_agent_data = {'username': 'admin2', 'password': 'adminpass2'}
+        response = c.post(self.uri, json.dumps(new_agent_data),
+                          content_type='application/json')
+        self.assertEqual(response.status_code, 401)
 
-        response = c.post('/agent/register/', json.dumps(agent_data),
-                         content_type='application/json')
+    def test_not_staff(self):
+        c = Client()
+        new_agent_data = {'username': 'admin2', 'password': 'adminpass2'}
+        response = c.post(self.member_uri, json.dumps(new_agent_data),
+                          **self.header, content_type='application/json')
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
 
-    def test_register_successed(self):
+    def test_create_new_agent(self):
         c = Client()
-        response = c.post('/agent/register/', 
-                          json.dumps({'username': 'admin',
-                                      'password': 'adminpassword'}),
-                          content_type='application/json')
+        new_agent_data = {'username': 'admin2', 'password': 'adminpass2'}
+        response = c.post(self.uri, json.dumps(new_agent_data),
+                          **self.agent_header, content_type='application/json')
         self.assertEqual(response.status_code, 201)
         res_data = json.loads(response.content)
-        user_obj = User.objects.get(username='admin')
         self.assertIn('success', res_data)
-        self.assertEqual(user_obj.is_staff, True)
         
 
 class AgentAccessTest(TestCase):
@@ -45,17 +69,18 @@ class AgentAccessTest(TestCase):
     '''
     def setUp(self):
         # Initial an agent
-        self.agent_data = {'username': 'admin', 'password': 'adminpassword'}
-        user_obj = User.objects.create(**self.agent_data)
-        user_obj.is_staff = True
+        agent_data = {'username': 'admin', 'password': 'adminpassword',
+                      'is_staff': True}
+        user_obj = User.objects.create_user(**agent_data)
 
     def test_login(self):
         c = Client()
-        response = c.post('/agent/login/', json.dumps(self.agent_data),
+        data = {'username': 'admin', 'password': 'adminpassword'}
+        response = c.post('/agent/login/', json.dumps(data),
                           content_type='application/json')
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
-        self.assertIn('accesstoken', res_data)
+        self.assertIn('success', res_data)
     
     def test_login_user_not_found(self):
         c = Client()
@@ -107,7 +132,7 @@ class AgentProfileTest(TestCase):
     '''
     def setUp(self):
         # Initial package
-        trial_data = {
+        staff_data = {
             'pk': 1,
             'name': 'Staff',
             'duration': '0_0',
@@ -119,16 +144,17 @@ class AgentProfileTest(TestCase):
             'pk': 4,
             'name': 'demo'
         }
-        trial_obj = PaidType.objects.create(**trial_data)
+        staff_obj = PaidType.objects.create(**staff_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.thirdparty.add(demo_obj)
+        staff_obj.third_party.add(demo_obj)
 
         # Initial agent account
-        self.agent_data = {'username': 'admin', 'password': 'adminpassword'}
-        user_obj = User.objects.create(**self.agent_data)
+        self.agent_data = {'username': 'admin', 'password': 'adminpassword',
+                           'is_staff': True}
+        user_obj = User.objects.create_user(**self.agent_data)
 
         # Initial account info (only need language here but still create it)
-        agent_acc_data = {'user': user_obj, 'paid_type': trial_obj,
+        agent_acc_data = {'user': user_obj, 'paid_type': staff_obj,
                           'confirmation_code': 'no_need',
                           'code_reset_time': '2010-10-10 00:00:00'}
         AccountInfo.objects.create(**agent_acc_data)
@@ -262,33 +288,32 @@ class DeleteAccountConfirmTest(TestCase):
     '''
     def setUp(self):
         # Initial thirdparty and paidtype
-        trial_data = {
+        staff_data = {
             'pk': 1,
-            'name': 'Trail',
+            'name': 'Staff',
             'duration': '0_0',
-            'bot_amount': '1',
-            'faq_amount': '50'
+            'bot_amount': '0',
+            'faq_amount': '0'
         }
 
         demo_data = {
             'pk': 4,
             'name': 'demo'
         }
-        trial_obj = PaidType.objects.create(**trial_data)
+        staff_obj = PaidType.objects.create(**staff_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.thirdparty.add(demo_obj)
+        staff_obj.third_party.add(demo_obj)
 
-        # Initial an account
-        user_data = {'username': 'cosmo.hu@lingtelli.com',
-                     'password': 'thisispassword',
-                     'first_name': 'cosmo'}
-        user_obj = User.objects.create(**user_data)
+         # Initial agent account
+        self.agent_data = {'username': 'admin', 'password': 'adminpassword',
+                           'is_staff': True}
+        user_obj = User.objects.create_user(**self.agent_data)
 
-        # Create account info
-        acc_data = {'user': user_obj, 'paid_type': trial_obj,
-                    'confirmation_code': 'confirmationcode', 
-                    'code_reset_time': '2019-12-12 00:00:00', }
-        AccountInfo.objects.create(**acc_data)
+        # Initial account info (only need language here but still create it)
+        agent_acc_data = {'user': user_obj, 'paid_type': staff_obj,
+                          'confirmation_code': 'no_need',
+                          'code_reset_time': '2010-10-10 00:00:00'}
+        AccountInfo.objects.create(**agent_acc_data)
 
         # Initial user id uri
         user_id = user_obj.id
@@ -300,24 +325,23 @@ class DeleteAccountConfirmTest(TestCase):
 
     def test_update_confirm_no_auth(self):
         c = Client()
-        correct_password = {'password': 'thisispassword'}
+        correct_password = {'password': 'adminpassword'}
         response = c.put(self.uri, json.dumps(correct_password), 
                           content_type='application/json')
         self.assertEqual(response.status_code, 401)
 
     def test_update_confirm_correct_password(self):
         c = Client()
-        correct_password = {'password': 'thisispassword'}
+        correct_password = {'password': 'adminpassword'}
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(correct_password), 
                           content_type='application/json', **header)
-        user_obj = User.objects.get(username='cosmo.hu@lingtelli.com')
+        user_obj = User.objects.get(username='admin')
         acc_info = AccountInfo.objects.get(user=user_obj)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(acc_info.delete_confirm, True)
         res_data = json.loads(response.content)
-        self.assertEqual(res_data.get('success'),
-                         'Account deleting has confirmed')
+        self.assertIn('success', res_data)
 
     def test_update_confirm_wrong_password(self):
         c = Client()
@@ -327,7 +351,7 @@ class DeleteAccountConfirmTest(TestCase):
                           content_type='application/json', **header)
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
-        self.assertEqual(res_data.get('errors'), 'Password is not correct')
+        self.assertIn('errors', res_data)
 
 
 class AgentMemberTest(TestCase):
@@ -359,13 +383,14 @@ class AgentMemberTest(TestCase):
         trial_obj = PaidType.objects.create(**trial_data)
         staff_obj = PaidType.objects.create(**staff_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.thirdparty.add(demo_obj)
+        trial_obj.third_party.add(demo_obj)
+        staff_obj.third_party.add(demo_obj)
 
         # Create new member account
         user_data = {'username': 'cosmo.hu@lingtelli.com',
                      'password': 'thisispassword',
                      'first_name': 'cosmo'}
-        self.user_obj = User.objects.create(**user_data)
+        self.user_obj = User.objects.create_user(**user_data)
 
         # Create account info
         acc_data = {'user': self.user_obj, 'paid_type': trial_obj,
@@ -376,7 +401,7 @@ class AgentMemberTest(TestCase):
         # Create new agent account
         agent_data = {'username': 'superuser', 'password': 'agentpassword',
                       'is_staff': True}
-        self.agent_obj = User.objects.create(**agent_data)
+        self.agent_obj = User.objects.create_user(**agent_data)
 
         # Create agent account info
         acc_data = {'user': self.agent_obj, 'paid_type': staff_obj,

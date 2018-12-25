@@ -307,6 +307,7 @@ class CSVTest(TestCase):
         ''' CSV action with no file
 
         For export, it will always export the file with header.
+        For train test with bot not found.
 
         POST(upload), GET(train)
         '''
@@ -320,7 +321,7 @@ class CSVTest(TestCase):
         self.assertIn('errors', res_data)
 
         # Train
-        train_uri = self.bot_uri + '/train/'
+        train_uri = '/chatbot/123/train/'
         response = c.get(train_uri, **self.header)
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)

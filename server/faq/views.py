@@ -105,7 +105,9 @@ class FAQGrouptViewset(viewsets.ModelViewSet):
         if int(faq_group_limit) != 0 and faq_count >= int(faq_group_limit):
             return Response({'errors':_('Faq group exceeded upper limit')},
                             status=HTTP_403_FORBIDDEN)
-        faq_group_obj = FAQGroup.objects.create(chatbot_id=id)
+        new_csv_id = faq_count + 1
+        faq_group_obj = FAQGroup.objects.create(chatbot_id=id,
+                                                csv_group=new_csv_id)
         if faq_group_obj:
             res = {}
             res['id'] = faq_group_obj.id
@@ -406,14 +408,14 @@ def export_faq_csv(request, pk=None):
                 for a in range(len(answers)):
                     ans = answers[a].content
                     que = ''
-                    if a < len(questions) - 1:
+                    if a < len(questions):
                         que = questions[a].content
                     rows.append([faqgroup.csv_group, que, ans])
             else:
                 for q in range(len(questions)):
                     que = questions[q].content
                     ans = ''
-                    if q < len(answers) - 1:
+                    if q < len(answers):
                         ans = answers[q].content
                     rows.append([faqgroup.csv_group, que, ans])
         csv_file = StringIO()
@@ -438,9 +440,10 @@ def train_bot_faq(request, pk=None):
     if not bot_obj:
         return Response({'errors':_('Not found')},
                         status=HTTP_404_NOT_FOUND)
-    train_status, err_msg = nlumodel.train_model(bot_obj)
-    if not train_status:
-        return Response({'errors': err_msg},
-                        status=HTTP_500_INTERNAL_SERVER_ERROR)
+    # TODO: Remove the comment after connect to nlu
+    # train_status, err_msg = nlumodel.train_model(bot_obj)
+    # if not train_status:
+    #     return Response({'errors': err_msg},
+    #                     status=HTTP_500_INTERNAL_SERVER_ERROR)
     return Response({'success':_('Training bot succeeded')},
                     status=HTTP_200_OK)

@@ -411,9 +411,9 @@ class MemberAccessTest(TestCase):
                           json.dumps({'username': 'cosmo.hu@lingtelli.com',
                                       'password': 'thisispassword'}),
                           content_type='application/json', **header)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
-        self.assertIn('errors', res_data)
+        self.assertIn('success', res_data)
 
     
     def test_logout(self):
