@@ -129,11 +129,11 @@ class FBIntegration extends Component {
 		const { info, info: {platform: third_party}, copied, loading, show} = this.state
 		const currentPlatforms = _.filter(supportPlatforms, plat => _.find(third_party, p => p == plat.id))
 
-		const facebookWebhook = `https://${process.env.REACT_APP_WEBHOOK_HOST}/facebook/${info.vender_id}`
+		const facebookWebhook = `https://${process.env.REACT_APP_WEBHOOK_HOST}/facebook/${info.vendor_id}`
 		const facebookActive = !!_.find(currentPlatforms, plat => plat.name == 'Facebook')
 
 		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)		
-		const isActivable = (currentPaidtype && currentPaidtype.third_party.indexOf(1) > -1)
+		const isActivable = (currentPaidtype && currentPaidtype.third_party.find(el => el.name === 'Facebook'))
 
 		return <Grid className='integration-page'>
 			<Grid.Row>

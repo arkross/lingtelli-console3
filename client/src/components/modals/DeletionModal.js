@@ -64,10 +64,10 @@ class DeletionModal extends React.Component {
 				progress: PROGRESS.PASSWORD_INPUT
 			})
 		} else {
-			const { onSuccess, onFailure, id } = this.props
+			const { onSuccess, onFailure, botId } = this.props
 			const { inputValue: password } = this.state
 			this.setState({ loading: true })
-			bot.delete_confirm(id, password)
+			bot.delete_confirm(botId, password)
 				.then(data => {
 					this.setState({error: false})
 					typeof onSuccess === 'function' && onSuccess(data)

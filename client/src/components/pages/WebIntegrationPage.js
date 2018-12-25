@@ -143,10 +143,10 @@ class WebIntegration extends Component {
 	}
 
 	generateScript = () => {
-		const { info: { vender_id } } = this.state
+		const { info: { vendor_id } } = this.state
 		const { robotIcon, chatIcon, headerTextColor, headerBackgroundColor, chatLabel } = this.state.preview
 		const windowData = {
-			KEY: vender_id,
+			KEY: vendor_id,
 			// KEY: '240b4cd2-b39c-3698-b8db-8abab8da6ba9',
 			robotIcon,
 			chatIcon,
@@ -177,7 +177,7 @@ ${str}</script>
 		const srcDoc = `<!doctype html><html><head></head><body>${webScript}</body></html>`
 
 		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)
-		const isActivable = currentPaidtype && currentPaidtype.third_party.indexOf(3) > -1
+		const isActivable = currentPaidtype && currentPaidtype.third_party.find(el => el.name === 'Web')
 
 		return <Grid className='integration-page'>
 			<Grid.Row>

@@ -256,6 +256,7 @@ class BotConfigForm extends React.Component {
 					onSuccess={this.onDelete}
 					message={<Trans i18nKey='chatbot.delete.warning'><strong>{info.robot_name}</strong></Trans>}
 					buttonText={t('chatbot.delete.title')}
+					botId={info.id}
 				/>
 			</Form>
 		)

@@ -24,7 +24,7 @@ class TilePage extends Component {
 
 	componentDidUpdate = (prevProps) =>  {
 		const { onUpdate, bots } = this.props
-		if (JSON.stringify(_.map(bots, 'pk')) !== JSON.stringify(_.map(prevProps.bots, 'pk'))) {
+		if (JSON.stringify(_.map(bots, 'id')) !== JSON.stringify(_.map(prevProps.bots, 'id'))) {
 		}
 		document.title = 'LingBot | Dashboard'
 	}
@@ -61,17 +61,13 @@ class TilePage extends Component {
 		})
 
 		return <Responsive as={Card.Group} className='tile-dashboard' centered>
-			{_.map(botData, el => <Card key={`${el.pk}bot`} href={`${baseUrl}/bot/${el.pk}`} onClick={e => {
+			{_.map(botData, el => <Card key={`${el.id}bot`} href={`${baseUrl}/bot/${el.id}`} onClick={e => {
 				e.preventDefault()
-				return onCardClick(`${baseUrl}/bot/${el.pk}`)
+				return onCardClick(`${baseUrl}/bot/${el.id}`)
 			}}>
 
 				<Card.Content>
 					<Card.Header>
-						<Label ribbon color='orange'>
-							<Icon name='dollar' />
-							<Label.Detail>{el.package}</Label.Detail>
-						</Label>
 						{el.robot_name}
 					</Card.Header>
 					<Card.Meta>
@@ -94,13 +90,6 @@ class TilePage extends Component {
 					<Dimmer inverted active={el.language ? false : true} />
 					<Loader active={el.language ? false : true} />
 				</Card.Content>
-				<Card.Content extra>
-					<Card.Meta>
-						<Icon name='calendar' /> 
-						{`${t('chatbot.expiredAt')}: ${moment(el.expired_at, 'YYYY-MM-DD').format('LL')}`}
-					</Card.Meta>
-					<Dimmer inverted active={el.language ? false : true} />
-				</Card.Content>
 				
 			</Card>)}
 			<Card className='add-bot' href={`${baseUrl}/bot/create`} onClick={e => {
@@ -121,7 +110,7 @@ class TilePage extends Component {
 }
 
 const mapStateToProps = (state) => ({
-	bots: state.getIn(['bot', 'bots']).filter(el => el.get('pk'))
+	bots: state.getIn(['bot', 'bots']).filter(el => el.get('id'))
 })
 
 export default compose(

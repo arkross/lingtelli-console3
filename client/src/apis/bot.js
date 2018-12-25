@@ -25,7 +25,7 @@ export default {
 
 	delete: async activeBot => (await axios.delete(`${API_HOST}/chatbot/${activeBot}/`)).data,
 
-	delete_confirm: async (id, password) => (await axios.put(`${API_HOST}/chatbot/${id}/`, {
+	delete_confirm: async (id, password) => (await axios.put(`${API_HOST}/chatbot/${id}/delete_confirm/`, {
 		password
 	})).data,
 

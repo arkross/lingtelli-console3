@@ -93,15 +93,15 @@ class APIIntegration extends Component {
 
 	render() {
 		const { supportPlatforms, t, info, user, user: {packages} } = this.props
-		const { info: {platform: third_party, vender_id}} = this.state
+		const { info: {platform: third_party, vendor_id}} = this.state
 		const currentPlatforms = _.filter(supportPlatforms, plat => _.find(third_party, p => p === plat.id))
  
 		const webActive = !!_.find(currentPlatforms, plat => plat.name == 'Api')
 		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)
-		const isActivable = currentPaidtype && currentPaidtype.third_party.indexOf(5) > -1
+		const isActivable = currentPaidtype && currentPaidtype.third_party.find(el => el.name === 'Api')
 
-		const rootUrl = process.env.REACT_APP_WEBHOOK_API_HOST + '/' + vender_id
-		const webhookUrl = process.env.REACT_APP_WEBHOOK_HOST + '/' + vender_id
+		const rootUrl = process.env.REACT_APP_WEBHOOK_API_HOST + '/' + vendor_id
+		const webhookUrl = process.env.REACT_APP_WEBHOOK_HOST + '/' + vendor_id
 
 		return <Grid className='integration-page'>
 			<Grid.Row>

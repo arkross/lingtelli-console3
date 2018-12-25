@@ -120,11 +120,11 @@ class LineIntegration extends Component {
 		const { info, info: {platform: third_party}, copied, loading, show} = this.state
 		const currentPlatforms = _.filter(supportPlatforms, plat => _.find(third_party, p => p == plat.id))
 		
-		const lineWebhook = `${process.env.REACT_APP_WEBHOOK_HOST}/line/${info.vender_id}`
+		const lineWebhook = `${process.env.REACT_APP_WEBHOOK_HOST}/line/${info.vendor_id}`
 		const lineActive = !!_.find(currentPlatforms, plat => plat.name == 'Line')
 
 		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)
-		const isActivable = currentPaidtype && currentPaidtype.third_party.indexOf(2) > -1
+		const isActivable = currentPaidtype && currentPaidtype.third_party.find(el => el.name === 'Line')
 
 		return <Grid className='integration-page'><Grid.Row>
 			<Grid.Column width={12}><Header>LINE</Header></Grid.Column>
