@@ -48,4 +48,20 @@ export default {
 		greeting_msg: data.greeting_msg,
 		postback_title: data.postback_title
 	})).data,
+
+	facebook: {
+		read: async botId => (await axios.get(`${API_HOST}/chatbot/${botId}/facebook/`)).data,
+		update: async (botId, token, verify_str) => (await axios.put(`${API_HOST}/chatbot/${botId}/facebook/${botId}/`, {
+			token,
+			verify_str
+		})).data
+	},
+
+	line: {
+		read: async botId => (await axios.get(`${API_HOST}/chatbot/${botId}/line/`)).data,
+		update: async (botId, secret, token) => (await axios.put(`${API_HOST}/chatbot/${botId}/line/${botId}/`, {
+			secret,
+			token
+		})).data
+	}
 }

@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import toJS from '../utils/ToJS'
 import { updateBot } from 'actions/bot'
+import botAPI from '../../apis/bot'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 class FBIntegration extends Component {
@@ -80,7 +81,7 @@ class FBIntegration extends Component {
 		}
 
 		this.setState({ loading: true })
-		updateBot(info.pk, info)
+		updateBot(info.id, info)
 			.then(data => this.finishLoading())
 	}
 
@@ -89,7 +90,7 @@ class FBIntegration extends Component {
 		const { info: stateInfo } = this.state
 		const saveData = { ...info, [platformName]: stateInfo[platformName] }
 		this.setState({ loading: true})
-		updateBot(saveData.pk, saveData)
+		botAPI.facebook.update(saveData.id, stateInfo[platformName].token, stateInfo[platformName].verify_str)
 			.then(data => this.finishLoading())
 	}
 
@@ -126,11 +127,11 @@ class FBIntegration extends Component {
 
 	render() {
 		const { supportPlatforms, t, match, user, user: {packages} } = this.props
-		const { info, info: {platform: third_party}, copied, loading, show} = this.state
+		const { info, info: {third_party}, copied, loading, show} = this.state
 		const currentPlatforms = _.filter(supportPlatforms, plat => _.find(third_party, p => p == plat.id))
 
 		const facebookWebhook = `https://${process.env.REACT_APP_WEBHOOK_HOST}/facebook/${info.vendor_id}`
-		const facebookActive = !!_.find(currentPlatforms, plat => plat.name == 'Facebook')
+		const facebookActive = !!_.find(currentPlatforms, plat => plat.name === 'Facebook')
 
 		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)		
 		const isActivable = (currentPaidtype && currentPaidtype.third_party.find(el => el.name === 'Facebook'))

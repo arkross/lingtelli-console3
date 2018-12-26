@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import toJS from '../utils/ToJS'
 import { updateBot } from 'actions/bot'
+import botAPI from '../../apis/bot'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 class LineIntegration extends Component {
@@ -80,7 +81,7 @@ class LineIntegration extends Component {
 		}
 
 		this.setState({ loading: true })
-		updateBot(info.pk, info)
+		updateBot(info.id, info)
 			.then(data => this.finishLoading())
 	}
 
@@ -89,7 +90,7 @@ class LineIntegration extends Component {
 		const { info: stateInfo } = this.state
 		const saveData = { ...info, [platformName]: stateInfo[platformName] }
 		this.setState({ loading: true})
-		updateBot(saveData.pk, saveData)
+		botAPI.line.update(saveData.id, stateInfo[platformName].secret, stateInfo[platformName].token)
 			.then(data => this.finishLoading())
 	}
 
@@ -117,7 +118,7 @@ class LineIntegration extends Component {
 
 	render() {
 		const { supportPlatforms, t, match, user, user: {packages} } = this.props
-		const { info, info: {platform: third_party}, copied, loading, show} = this.state
+		const { info, info: {third_party}, loading, show} = this.state
 		const currentPlatforms = _.filter(supportPlatforms, plat => _.find(third_party, p => p == plat.id))
 		
 		const lineWebhook = `${process.env.REACT_APP_WEBHOOK_HOST}/line/${info.vendor_id}`

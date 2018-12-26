@@ -52,6 +52,18 @@ export const deleteTheBot = () => ({
 	type: types.DELETE_BOT,
 })
 
+export const fetchFacebook = (botId, data) => ({
+	type: types.FETCH_FACEBOOK,
+	id: botId,
+	data
+})
+
+export const fetchLine = (botId, data) => ({
+	type: types.FETCH_LINE,
+	id: botId,
+	data
+})
+
 export const fetchBot = (botId) => dispatch =>
 	api.info(botId)
 		.then( info => {
@@ -100,6 +112,8 @@ export const fetchAllBotDetails = () => async (dispatch) => {
 			data.activeBot = bot.id
 			// Also fetch FAQ to get the counts
 			fetchGroups(bot.id, 1)(dispatch)
+			facebookRead(bot.id)(dispatch)
+			lineRead(bot.id)(dispatch)
 			dispatch(fetchBotInfo(data))
 		})
 		return api.report(bot.id).then(data => dispatch(fetchBotReport(data, bot.id)))
@@ -154,3 +168,11 @@ export const updateBot = (botId, data) => dispatch =>
 export const deleteBot = botId => dispatch =>
 	api.delete(botId)
 		.then(() => dispatch(deleteTheBot()))
+
+export const facebookRead = botId => dispatch =>
+	api.facebook.read(botId)
+		.then(data => dispatch(fetchFacebook(botId, data[0])))
+
+export const lineRead = botId => dispatch =>
+	api.line.read(botId)
+		.then(data => dispatch(fetchLine(botId, data[0])))

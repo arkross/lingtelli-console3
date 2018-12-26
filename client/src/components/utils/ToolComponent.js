@@ -84,7 +84,7 @@ class ToolComponent extends React.Component {
 		e.preventDefault()
 		const { info, updateBot } = this.props
 		updateBot(info.pk, Object.assign({}, info, {
-			postback_enabled: !info.postback_enabled
+			postback_activate: !info.postback_activate
 		}))
 	}
 
@@ -133,7 +133,7 @@ class ToolComponent extends React.Component {
 					{t("chatbot.faq.train")}
 				</Button>
 				<Input onKeyDown={this.handleKeyDown} placeholder={t('chatbot.faq.search')} onChange={this.handleChangeKeyword} value={keyword ? keyword : ''}icon={<Icon name='search' circular link onClick={this.handleSubmitKeyword} />} />
-				<Button icon={info.postback_enabled ? 'remove' : 'check'} content={info.postback_enabled ? t('chatbot.faq.disable_postback') : t('chatbot.faq.enable_postback')} floated='right' color={info.postback_enabled ? 'green': 'grey'} onClick={this.handlePostbackToggleClick} />
+				<Button icon={info.postback_activate ? 'remove' : 'check'} content={info.postback_activate ? t('chatbot.faq.disable_postback') : t('chatbot.faq.enable_postback')} floated='right' color={info.postback_activate ? 'green': 'grey'} onClick={this.handlePostbackToggleClick} />
 			</div>
 		)
 	}
