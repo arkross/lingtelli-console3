@@ -6,7 +6,7 @@ import { translate, Trans} from 'react-i18next'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import toJS from '../utils/ToJS'
-import { updateBot } from 'actions/bot'
+import { facebookRead } from 'actions/bot'
 import botAPI from '../../apis/bot'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
@@ -70,28 +70,28 @@ class FBIntegration extends Component {
 	}
 	
 	handleToggle = platformName => {
-		const { supportPlatforms, info, updateBot } = this.props
-		const platformIndex = _.find(supportPlatforms, plat => plat.name == platformName)
-		const isAlreadyActive = (_.indexOf(info.platform, platformIndex.id) > -1)
+		// const { supportPlatforms, info, updateBot } = this.props
+		// const platformIndex = _.find(supportPlatforms, plat => plat.name == platformName)
+		// const isAlreadyActive = (_.indexOf(info.platform, platformIndex.id) > -1)
 
-		if (isAlreadyActive) {
-			info.platform = _.without(info.platform, platformIndex.id)
-		} else {
-			info.platform = [...info.platform, platformIndex.id]
-		}
+		// if (isAlreadyActive) {
+		// 	info.platform = _.without(info.platform, platformIndex.id)
+		// } else {
+		// 	info.platform = [...info.platform, platformIndex.id]
+		// }
 
-		this.setState({ loading: true })
-		updateBot(info.id, info)
-			.then(data => this.finishLoading())
+		// this.setState({ loading: true })
+		// updateBot(info.id, info)
+		// 	.then(data => this.finishLoading())
 	}
 
 	handleSubmit = platformName => {
-		const { info, updateBot } = this.props
+		const { info, updateBot, facebookRead } = this.props
 		const { info: stateInfo } = this.state
 		const saveData = { ...info, [platformName]: stateInfo[platformName] }
 		this.setState({ loading: true})
 		botAPI.facebook.update(saveData.id, stateInfo[platformName].token, stateInfo[platformName].verify_str)
-			.then(data => this.finishLoading())
+			.then(data => facebookRead(saveData.id).then(() => this.finishLoading()))
 	}
 
 	getFBTutorial = () => {
@@ -207,7 +207,7 @@ const mapStateToProps = (state, props) => ({
 })
 export default compose(
 	withRouter,
-	connect(mapStateToProps, { updateBot }),
+	connect(mapStateToProps, { facebookRead }),
 	translate(),
 	toJS
 )(FBIntegration)
