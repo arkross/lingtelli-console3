@@ -36,12 +36,12 @@ member_router.register('', acc_view.MemberProfileViewset)
 # Agent account related
 # agent_router = routers.DefaultRouter(trailing_slash=True)
 # agent_router.register('',)
-# agent_router.register(r'(?P<id>\d+)/confrim',)
+# agent_router.register(r'(?P<id>\d+)/delete_confirm',)
 
 # Agent member managment related
 agent_member_router = routers.DefaultRouter(trailing_slash=True)
 agent_member_router.register('', acc_view.AgentMemberViewset)
-# agent_router.register(r'(?P<pk>\d+)/report',) #Not sure what to provide yet
+# agent_member_router.register(r'(?P<pk>\d+)/report',) #Not sure what to provide yet
 
 
 # Member page chatbot related. Not specifiy member cause agent can also use it.
@@ -67,7 +67,7 @@ chatbot_router.register(r'(?P<id>\d+)/facebook', bot_view.FacebookViewset)
 # agent_bot_router.register(r'(?P<id>\d+)/faq',)
 # agent_bot_router.register(r'(?P<id>\d+)/answer',)
 # agent_bot_router.register(r'(?P<id>\d+)/question',)
-# agent_bot_router.register(r'(?P<id>\d+)/confirm',)
+# agent_bot_router.register(r'(?P<id>\d+)/delete_confirm',)
 # agent_bot_router.register(r'(?P<id>\d+)/upload',)
 # agent_bot_router.register(r'(?P<id>\d+)/export',)
 # agent_bot_router.register(r'(?P<id>\d+)/train',)
@@ -97,12 +97,12 @@ urlpatterns = [
     path('member/register/', acc_view.member_register),
     path('member/confirm/', acc_view.confirm_user),
     path('member/resend/', acc_view.resend_email),
-    path('member/', include(member_router.urls)),
+    path('member/', include(member_router.urls), name='member_profile'),
 
     # Agent related urls
     # path('agent/login/',),
     # path('agent/logout/',),
     path('agent/member/', include(agent_member_router.urls), name='agent_member'),
-    # path('agent/<int:pk>/chatbot/', include(agent_bot_router.urls), name='agent_chatbot'),
-    # path('agent/', include(agent_router.urls), name='agent_account'),
+    # path('agent/<int:pk>/taskbot/', include(agent_bot_router.urls), name='agent_taskbot'),
+    # path('agent/', include(agent_router.urls), name='agent_profile'),
 ]

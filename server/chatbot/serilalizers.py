@@ -3,7 +3,8 @@ from rest_framework import serializers
 from thirdparty.serializers import ThirdPartySerializer
 
 from django.contrib.auth.models import User
-from .models import Line, Facebook
+from .models import Line, Facebook, BotThirdPartyGroup
+
 
 class ChatbotSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
@@ -32,6 +33,10 @@ class ChatbotSerializer(serializers.Serializer):
             res['robot_name'] = chatbot_data.get('robot_name')
         else:
             res = chatbot_data
+            third_partys = BotThirdPartyGroup.objects\
+                .filter(chatbot_id=chatbot_data.get('id'))\
+                .values_list('third_party', flat=True)
+            res['third_party'] = third_partys
             res['user'] = instance.user.id
         return res
 

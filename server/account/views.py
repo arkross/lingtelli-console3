@@ -445,6 +445,19 @@ class MemberProfileViewset(viewsets.ModelViewSet):
 
 # AGENT PART
 
+def agent_login(request):
+    pass
+
+def agent_logout(request):
+    pass
+
+class AgentProfileViewset(viewsets.ModelViewSet):
+    '''Agent profile viewset
+    '''
+
+    def delete_confirm(self, request, pk=None):
+        pass
+
 class AgentMemberViewset(viewsets.ModelViewSet):
     '''Agent member viewset
 

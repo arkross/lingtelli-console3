@@ -80,8 +80,8 @@ class Chatbot(models.Model):
 
     class Meta:
         db_table = 'chatbot'
-
-    def __unicode__(self):
+    
+    def __str__(self):
         return self.robot_name
 
     def get_third_parties(self):
@@ -124,12 +124,6 @@ class Line(models.Model):
     class Meta:
         db_table = 'line'
 
-    def __str__(self):
-        return self.chatbot.robot_name
-    
-    def chatbot_user(self):
-        return self.chatbot.user.username
-
 
 class Facebook(models.Model):
     '''Data for facebook webhook
@@ -147,9 +141,3 @@ class Facebook(models.Model):
 
     class Meta:
         db_table = 'facebook'
-
-    def __str__(self):
-        return self.chatbot.robot_name
-
-    def chatbot_user(self):
-        return self.chatbot.user.username

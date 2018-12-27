@@ -27,7 +27,7 @@ def url_encoder(data):
         encoded: User's encoded email address with key
     '''
 
-    data = data.rjust(64) # Need to be multiple 16 in length
+    data = data.rjust(128) # Need to be multiple 16 in length
     cipher = AES.new(URL_ENCODE_KEY, AES.MODE_ECB) # never use ECB in strong systems obviously
     encrypt_data = (cipher.encrypt(data)) 
     encoded = base64.b64encode(encrypt_data)

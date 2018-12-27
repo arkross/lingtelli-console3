@@ -38,11 +38,11 @@ CELERY_BEAT_SCHEDULE = {
     'check_token_expired_every_minutes': {
         'task': 'delete_token',
         'schedule': 60.0
-    },
-    'check_paidtype_expired_every_day': {
-        'task': 'paidtype_expire',
-        'schedule': 86400.0
     }
+    # 'check_paidtype_expired_every_day': {
+    #     'task': 'paidtype_expire',
+    #     'schedule': 86400.0
+    # }
 }
 
 LOGGING = {
