@@ -58,8 +58,8 @@ class Group extends React.Component {
 	}
 
 	onDeleteAnswer = (e, ix) => {
-		const { activeBot, deleteQuestion, questions } = this.props
-		const id = questions[ix].id
+		const { activeBot, deleteAnswer, answers } = this.props
+		const id = answers[ix].id
 
 		return deleteAnswer(activeBot, id)
 			.then(() => this.refresh(), err => console.log('Failed to delete answer', err))
@@ -107,6 +107,7 @@ class Group extends React.Component {
 							<Answer
 								key={item.id}
 								id={item.id}
+								ix={ix}
 								content={item.content}
 								onDelete={this.onDeleteAnswer}
 								activeBot={activeBot}
