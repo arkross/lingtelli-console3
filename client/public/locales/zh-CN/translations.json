@@ -182,6 +182,7 @@
       "train": "训练模型",
       "add": "新增问答",
       "question": "新增问题",
+      "answer": "新增答案",
       "search": "搜寻答案",
       "form": {
         "question": "点击输入问题",

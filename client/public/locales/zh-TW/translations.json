@@ -171,6 +171,7 @@
       "train": "訓練模型",
       "add": "新增問答",
       "question": "新增問題",
+      "answer": "新增答案",
       "search": "搜尋答案",
       "form": {
         "question": "點擊輸入問題",

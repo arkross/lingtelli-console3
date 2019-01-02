@@ -172,6 +172,7 @@
       "train": "Train Model",
       "add": "Add New FAQ",
       "question": "Add Question",
+      "answer": "Add Answer",
       "search": "Search Answer",
       "form": {
         "question": "Click for Question",

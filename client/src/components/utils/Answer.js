@@ -3,7 +3,7 @@ import React from "react";
 import { compose } from "recompose";
 import { connect } from 'react-redux';
 import { translate } from "react-i18next";
-import { Input } from "semantic-ui-react";
+import { Input, Button } from "semantic-ui-react";
 import { updateAnswer } from "actions/answer";
 import toJS from './ToJS'
 
@@ -12,6 +12,7 @@ class Answer extends React.Component {
     id: this.props.id,
     content: this.props.content || '',
     editable: false,
+    loading: false
   }
 
   update = () => {
@@ -25,6 +26,12 @@ class Answer extends React.Component {
         this.setState({ editable: false });
       });
   }
+
+  onDelete = (e, ix) => {
+		this.setState({loading: true})
+		this.props.onDelete(e, ix)
+			.catch(err => this.setState({loading: false}))
+	}
 
   onClick = (id, e) => {
     this.setState({editable: true});
@@ -48,8 +55,8 @@ class Answer extends React.Component {
   }
 
   render = () => {
-    const { content, editable } = this.state;
-    const { t} = this.props;
+    const { content, editable, loading } = this.state;
+    const { t, ix } = this.props;
 
     return (
       <div
@@ -57,14 +64,17 @@ class Answer extends React.Component {
         className="answer"
       >
         <Input
+          action
           placeholder={t("chatbot.faq.form.answer")}
           ref={ input => this.input = input }
           value={content}
-          disabled={!editable}
           onBlur={this.onBlur}
           onKeyDown={this.onKeyPress}
           onChange={this.onChange}
-        />
+        >
+          <input disabled={!editable} />
+					<Button icon='trash alternate outline' loading={loading} color='red' className='question-delete' onClick={ e => this.onDelete(e, ix) } />
+        </Input>
       </div>
     )
   }

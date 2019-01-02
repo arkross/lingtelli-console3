@@ -7,8 +7,9 @@ import { v4 } from "uuid";
 import { compose } from "recompose";
 import { connect } from "react-redux";
 import { translate } from "react-i18next";
-import { Icon, Button } from "semantic-ui-react";
+import { Icon, Button, Container } from "semantic-ui-react";
 import { createQuestion, deleteQuestion } from "actions/question";
+import { createAnswer, deleteAnswer } from 'actions/answer'
 import toJS from './ToJS'
 
 class Group extends React.Component {
@@ -38,6 +39,14 @@ class Group extends React.Component {
 			.then(() => this.refresh(), (err) => console.log(`Failed to create question.`, err));
 	}
 
+	onCreateAnswer = e => {
+		const { id } = this.state
+		const { activeBot, createAnswer } = this.props
+
+		createAnswer(activeBot, id)
+			.then(() => this.refresh(), err => console.log('Failed to create answer', err))
+	}
+
 	onDelete = (e, ix) => {
 		const { activeBot, deleteQuestion, questions } = this.props;
 		const id = questions[ix].id;
@@ -46,6 +55,14 @@ class Group extends React.Component {
 			.then(() => this.refresh(), (err) => {
 				console.log('Failed to delete question', err)
 			})
+	}
+
+	onDeleteAnswer = (e, ix) => {
+		const { activeBot, deleteQuestion, questions } = this.props
+		const id = questions[ix].id
+
+		return deleteAnswer(activeBot, id)
+			.then(() => this.refresh(), err => console.log('Failed to delete answer', err))
 	}
 
 	render() {
@@ -58,10 +75,17 @@ class Group extends React.Component {
 					onClick={(e) => onDelete(e, ix) }
 					className='delete-group-icon pull-right clickable'
 				/>
-				<Button color='blue' onClick={this.onCreate} className="block create-question">
-					<Icon name="add" />
-					<span>{t("chatbot.faq.question")}</span>
-				</Button>
+				<Container fluid>
+					<Button floated='left' color='blue' onClick={this.onCreate} className="block create-question">
+						<Icon name="add" />
+						<span>{t("chatbot.faq.question")}</span>
+					</Button>
+					<Button floated='right' color='blue' onClick={this.onCreateAnswer} className="block create-question">
+						<Icon name="add" />
+						<span>{t("chatbot.faq.answer")}</span>
+					</Button>
+				</Container>
+				<div style={{clear: 'both'}} />
 				<div className="questions-group inline-block">
 					{
 						questions && _.map(questions, (item, ix) =>
@@ -84,6 +108,7 @@ class Group extends React.Component {
 								key={item.id}
 								id={item.id}
 								content={item.content}
+								onDelete={this.onDeleteAnswer}
 								activeBot={activeBot}
 							/>
 						)
@@ -97,6 +122,6 @@ class Group extends React.Component {
 
 export default compose(
 	translate("translations"),
-	connect(null, { deleteQuestion, createQuestion }),
+	connect(null, { deleteQuestion, createQuestion, createAnswer, deleteAnswer }),
 	toJS
 )(Group);
