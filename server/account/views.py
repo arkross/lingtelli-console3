@@ -10,6 +10,8 @@ from django.contrib.auth import authenticate
 
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.mixins import (ListModelMixin, RetrieveModelMixin,
+                                   UpdateModelMixin)
 from rest_framework.decorators import (api_view, authentication_classes,
                                        permission_classes, action)
 from rest_framework.authentication import TokenAuthentication
@@ -29,7 +31,12 @@ from rest_framework.status import (
 )
 
 import chat_console_3.utils as utils
-from .serializers import MemberSerializer, AgentMemberSerializer
+from chat_console_3.settings.common import INIT_PASSWORD
+from .serializers import (
+    MemberSerializer,
+    AgentMemberSerializer,
+    AgentSerializer,
+)
 
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
@@ -418,8 +425,7 @@ class MemberProfileViewset(viewsets.ModelViewSet):
         '''
 
         # TODO: Need to check if the account has really been deleted. 
-        # If not should add a task to check and set delete_confirm back to 
-        # False
+        # If not should add a task to delete the account.
         if request.body:
             if request.user.id != int(pk):
                 return Response({'errors':_('Not found')},
@@ -444,21 +450,199 @@ class MemberProfileViewset(viewsets.ModelViewSet):
 
 
 # AGENT PART
-
+@csrf_exempt
+@api_view(['POST'])
+@authentication_classes([])
+@permission_classes([AllowAny])
 def agent_login(request):
-    pass
+    '''Agent login
 
+    For only agent to login.
+    '''
+
+    login_data = json.loads(request.body)
+    username = login_data.get('username')
+    password = login_data.get('password')
+    check_user_exist = User.objects.filter(username=username).first()
+    if not check_user_exist:
+        return Response({'errors':_('User does not exist.' +\
+                                    ' Please contact admin.')},
+                        status=HTTP_404_NOT_FOUND)
+    if check_user_exist.is_staff == False:
+        return Response({'errors':_('Only staff can login this page')},
+                        status=HTTP_403_FORBIDDEN)
+    user = authenticate(request, username=username, password=password)
+
+    if user:
+        old_token_obj = Token.objects.filter(user=user).first()
+        expired = utils.check_token_expired(old_token_obj)
+        if expired == True:
+            new_token = utils.create_token_with_expire_time(user)
+            if new_token:
+                return \
+                    Response({'success': new_token.key}, status=HTTP_200_OK)
+            else:
+                return Response({'errors': 'Something went wrong'+\
+                    'Please try again'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response({'success': old_token_obj.key}, status=HTTP_200_OK)
+    else:
+        return Response({'errors': 'Username or password is not correct'},
+                         status=HTTP_403_FORBIDDEN)
+
+
+@csrf_exempt
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated, IsAdminUser])
 def agent_logout(request):
-    pass
+    '''Agent logout
+
+    For only agent to logout.
+    '''
+
+    user = request.user
+    Token.objects.filter(user=user).delete()
+    return Response({'success': 'You have successfully logged out'},
+                    status=HTTP_200_OK)
 
 class AgentProfileViewset(viewsets.ModelViewSet):
     '''Agent profile viewset
     '''
 
-    def delete_confirm(self, request, pk=None):
-        pass
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    queryset = User.objects.all()
+    serializer_class = AgentSerializer
 
-class AgentMemberViewset(viewsets.ModelViewSet):
+    def get_queryset(self):
+        return User.objects.filter(id=self.request.user.id, is_staff=True)
+
+    def create(self, request):
+        if request.body:
+            create_data = json.loads(request.body)
+            username = create_data.get('username')
+            password = INIT_PASSWORD
+            new_agent_obj = \
+                User.objects.create_user(username=username, password=password)
+            if new_agent_obj:
+                agent_acc_data = {}
+                staff_type = PaidType.objects.filter(name='Staff').first()
+                agent_acc_data['confirmation_code'] = 'staff'
+                agent_acc_data['language'] = 'tw'
+                agent_acc_data['code_reset_time'] = datetime.now(timezone.utc)
+                agent_acc_data['paid_type'] = staff_type
+                agent_acc_data['user'] = new_agent_obj
+                agent_acc = AccountInfo.objects.create(**agent_acc_data)
+                new_agent_obj.is_staff = True
+                new_agent_obj.save()
+                return Response({'success':_('Create new agent succeeded')},
+                                status=HTTP_201_CREATED)
+            return Response({'errors':_('Create failed')},
+                            status=HTTP_400_BAD_REQUEST)
+        return Response({'errors':_('No content')},
+                        status=HTTP_400_BAD_REQUEST)
+
+    def update(self, request, pk=None):
+        if request.body:
+            user_obj = request.user
+            update_data = json.loads(request.body)
+
+            # Change password
+            if update_data.get('password', None):
+                old_password = update_data.get('old_password', None)
+                if user_obj.check_password(old_password):
+                    user_obj.set_password(update_data.get('password'))
+                    user_obj.save()
+                    Token.objects.filter(user=user_obj).delete()
+                    return Response({'success':_('Password has updated.' +\
+                                    'Please login again')}, status=HTTP_200_OK)
+                return Response({'errors':_('Old password is not correct')},
+                                    status=HTTP_403_FORBIDDEN)
+
+            # Change username
+            if update_data.get('username', None):
+                username = update_data.get('username')
+                same_username = User.objects.filter(username=username).first()
+                if same_username:
+                    return Response({'errors':_('User name existed')},
+                                    status=HTTP_400_BAD_REQUEST)
+                user_obj.username = username
+                user_obj.save()
+
+            # Change language
+            if update_data.get('language', None):
+                choice_list = ['tw', 'en', 'cn']
+                if not update_data.get('language') in choice_list:
+                    return \
+                        Response({'errors':_('Do not support this language')},
+                                status=HTTP_400_BAD_REQUEST)
+                acc_obj = AccountInfo.objects.filter(user=user_obj).first()
+                acc_obj.language = update_data.get('language')
+                acc_obj.save()
+            return Response({'success':_('Update succeeded')},
+                            status=HTTP_200_OK)
+
+    def destroy(self, request, pk=None):
+        if request.user.is_superuser:
+            return Response({'errors':_('Superuser cannot be deleted')},
+                            status=HTTP_403_FORBIDDEN)
+        if request.user.id != int(pk):
+            return Response({'errors':_('Not found')},
+                                status=HTTP_404_NOT_FOUND)
+        user_obj = request.user
+        acc_obj = AccountInfo.objects.filter(user=user_obj).first()
+        if acc_obj.delete_confirm != True:
+            return Response({'errors':_('Please confirm the deletion first')},
+                            status=HTTP_403_FORBIDDEN)
+        user_obj.delete()
+        check_user_deleted = User.objects.filter(id=user_obj.id).first()
+        if check_user_deleted:
+            acc_obj.delete_confirm = False
+            acc_obj.save()
+            return Response({'errors':_('Deleting account failed')},
+                             status=HTTP_400_BAD_REQUEST)
+        return Response(status=HTTP_204_NO_CONTENT)
+
+    @action(methods=['put'], detail=True,
+            permission_classes=[IsAuthenticated, IsAdminUser])
+    def delete_confirm(self, request, pk=None):
+        '''Delete account confirmation
+
+        Before deleting the account, ask user to confirm the action
+
+        detail:
+            True means having {lookup} pk in url. False the other way around.
+        '''
+
+        # TODO: Need to check if the account has really been deleted. 
+        # If not should add a task to delete the account.
+        if request.user.is_superuser:
+            return Response({'errors':_('Superuser cannot be deleted')},
+                            status=HTTP_403_FORBIDDEN)
+        if request.body:
+            if request.user.id != int(pk):
+                return Response({'errors':_('Not found')},
+                                status=HTTP_404_NOT_FOUND)
+
+            request_data = json.loads(request.body)
+            user_obj = request.user
+            if not request_data.get('password'):
+                return Response({'errors':_('Please enter the password')},
+                                status=HTTP_400_BAD_REQUEST)
+            if user_obj.check_password(request_data.get('password')):
+                acc_obj = AccountInfo.objects.filter(user=user_obj).first()
+                acc_obj.delete_confirm = True
+                acc_obj.save()
+                return Response({'success':_('Delete confirmed')},
+                                status=HTTP_200_OK)
+            return Response({'errors':_('Password is not correct')},
+                            status=HTTP_403_FORBIDDEN)
+        return Response({'errors':_('No content')},
+                        status=HTTP_400_BAD_REQUEST)
+
+class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
+                         viewsets.GenericViewSet):
     '''Agent member viewset
 
     For agents to manage members' data. Only can update paidtype.
@@ -490,4 +674,38 @@ class AgentMemberViewset(viewsets.ModelViewSet):
         return Response({'errors':_('Not found')}, status=HTTP_404_NOT_FOUND1)
 
     def update(self, request, pk=None):
-        pass
+        '''Update member paidtype
+
+        To update member's paidtype. Currently dont know how to deal with faq
+        and bot amount when downgrade to lower level of paidtype. Only finished
+        updating expired and started time in account info.
+        XXX NOT FINISH YET XXX
+        TODO: Make sure how downgrade works.
+        '''
+        if request.body:
+            update_data = json.loads(request.body)
+            paid_type_id = update_data.get('paid_type', None)
+            if paid_type_id:
+                acc_obj = self.queryset.filter(id=pk).first()
+                paid_obj = PaidType.objects.filter(id=paid_type_id).first()
+                acc_obj.paid_type = paid_obj
+                time_now = datetime.now(timezone.utc)
+                acc_obj.start_date = time_now
+                duration = paid_obj.duration
+                duration = duration.split('_')
+                duration_time = duration[0]
+                duration_unit = duration[1]
+                if duration_time != '0' and duration_unit != '0':
+                    total_days = 0
+                    if duration_unit == 'y':
+                        total_days = int(duration_time) * 365
+                    else:
+                        total_days = int(duration_time)
+                    acc_obj.expire_date = time_now + timedelta(days=total_days)
+                acc_obj.save()
+                return Response({'success':_('Update successed')},
+                                status=HTTP_200_OK)
+            return Response({'errors':_('paid_type cannot be empty')},
+                            status=HTTP_403_FORBIDDEN)
+        return Response({'errors':_('No content')},
+                        status=HTTP_400_BAD_REQUEST)

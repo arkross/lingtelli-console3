@@ -176,3 +176,6 @@ TOKEN_DURATION = 10080 # Expires every week
 
 # NLU related
 NLU_HOST = 'http://192.168.10.116:8787/chatbot/'
+
+# Iniital password for agent user
+INIT_PASSWORD = 'test1234'

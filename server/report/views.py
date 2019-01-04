@@ -73,7 +73,7 @@ class ReportViewSet(viewsets.ReadOnlyModelViewSet):
                     histories.filter(created_at__contains=the_date)
                 total_chat_count = the_history.values('qa_pair').distinct().\
                                                count()
-                report_dict['date'] = the_date.strftime('%Y/%m/%D')
+                report_dict['date'] = the_date.strftime('%Y/%m/%d')
                 report_dict['total_chat'] = total_chat_count
                 report_dict['success_count'] = \
                     self._get_total_success(the_history)

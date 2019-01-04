@@ -34,8 +34,8 @@ member_router.register('', acc_view.MemberProfileViewset)
 #XXX /member/pk/delete_confirm/ for delete confirmation api(detail_route)
 
 # Agent account related
-# agent_router = routers.DefaultRouter(trailing_slash=True)
-# agent_router.register('',)
+agent_router = routers.DefaultRouter(trailing_slash=True)
+agent_router.register('', acc_view.AgentProfileViewset)
 # agent_router.register(r'(?P<id>\d+)/delete_confirm',)
 
 # Agent member managment related
@@ -100,9 +100,9 @@ urlpatterns = [
     path('member/', include(member_router.urls), name='member_profile'),
 
     # Agent related urls
-    # path('agent/login/',),
-    # path('agent/logout/',),
+    path('agent/login/', acc_view.agent_login),
+    path('agent/logout/', acc_view.agent_logout),
     path('agent/member/', include(agent_member_router.urls), name='agent_member'),
     # path('agent/<int:pk>/taskbot/', include(agent_bot_router.urls), name='agent_taskbot'),
-    # path('agent/', include(agent_router.urls), name='agent_profile'),
+    path('agent/', include(agent_router.urls), name='agent_profile'),
 ]
