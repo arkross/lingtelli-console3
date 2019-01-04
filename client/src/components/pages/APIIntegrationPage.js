@@ -62,19 +62,19 @@ class APIIntegration extends Component {
 	}
 	
 	handleToggle = platformName => {
-		const { supportPlatforms, info, updateBot } = this.props
-		const platformIndex = _.find(supportPlatforms, plat => plat.name == platformName)
-		const isAlreadyActive = (_.indexOf(info.platform, platformIndex.id) > -1)
+		// const { supportPlatforms, info, updateBot } = this.props
+		// const platformIndex = _.find(supportPlatforms, plat => plat.name == platformName)
+		// const isAlreadyActive = (_.indexOf(info.platform, platformIndex.id) > -1)
 
-		if (isAlreadyActive) {
-			info.platform = _.without(info.platform, platformIndex.id)
-		} else {
-			info.platform = [...info.platform, platformIndex.id]
-		}
+		// if (isAlreadyActive) {
+		// 	info.platform = _.without(info.platform, platformIndex.id)
+		// } else {
+		// 	info.platform = [...info.platform, platformIndex.id]
+		// }
 
-		this.setState({ loading: true })
-		updateBot(info.pk, info)
-			.then(data => this.finishLoading())
+		// this.setState({ loading: true })
+		// updateBot(info.pk, info)
+		// 	.then(data => this.finishLoading())
 	}
 
 	handleSubmit = platformName => {
