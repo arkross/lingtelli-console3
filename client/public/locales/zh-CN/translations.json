@@ -192,8 +192,8 @@
         "title": "删除问答群组",
         "message": "您确定要删除此问答群组吗？"
       },
-      "enable_postback": "启用相似问题输出",
-      "disable_postback": "停用相似问题输出"
+      "enable_postback": "已停用相似问题输出",
+      "disable_postback": "已启用相似问题输出"
     },
     "recommendations": {
       "text": "推荐记录",

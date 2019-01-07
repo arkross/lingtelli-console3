@@ -182,8 +182,8 @@
         "title": "Delete Group",
         "message": "Are you sure you want to delete this group?"
       },
-      "enable_postback": "Enable Postback",
-      "disable_postback": "Disable Postback"
+      "enable_postback": "Postback Disabled",
+      "disable_postback": "Postback Enabled"
     },
     "recommendations": {
       "text": "Recommendations",

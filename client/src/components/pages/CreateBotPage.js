@@ -117,6 +117,7 @@ class CreateBotPage extends React.Component {
 			})
 			.then(() => {
 				this.setState({ loading: false, openModal: true })
+				this.modalButton.focus()
 			})
 			.catch(err => {
 				const error = err.message
@@ -216,7 +217,7 @@ class CreateBotPage extends React.Component {
 					{t('chatbot.success')}
 					</Modal.Content>
 					<Modal.Actions>
-						<Button onClick={onClose} primary>{t('chatbot.create.close')}</Button>
+						<Button onClick={onClose} primary ref={(el => this.modalButton = el)}>{t('chatbot.create.close')}</Button>
 					</Modal.Actions>
 				</Modal>
 			</Segment>
