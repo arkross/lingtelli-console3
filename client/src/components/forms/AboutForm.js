@@ -1,9 +1,10 @@
 import React, {Fragment} from 'react';
 import _ from 'lodash'
+import moment from 'moment'
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
-import { Segment, Form, Button, Icon, Message, Label, Modal, Divider, Grid, Statistic } from 'semantic-ui-react';
+import { Segment, Form, Button, Icon, Table, Label, Modal, Divider, Grid, Statistic } from 'semantic-ui-react';
 import { updateUser, resetPassword, fetchDetail } from 'actions/user'
 import { showInfo, showError } from 'actions/message'
 import Validator from 'utils/Validator'
@@ -95,21 +96,18 @@ class AboutForm extends React.Component {
 		// Update username
 		this.setState({loading: true, errors: errors})
 
+		const updateData = {
+			first_name: form.first_name
+		}
 		if (form.password2) {
-			this.props.resetPassword({
-				old_password: form.password,
-				password: form.password2
-			}).then(() => {
-				this.setState({loading: false, showSuccess: true, showModal: true})
-			}) 
+			updateData.old_password = form.password,
+			updateData.password = form.password2
 		}
 
-		this.props.updateUser({
-			first_name: form.first_name
-		})
+		this.props.updateUser(updateData)
 		.then(() => {
 			showInfo(t('account.success'))
-			this.setState({loading: false})
+			this.setState({loading: false, showSuccess: !!form.password2, showModal: !!form.password2})
 		}, err => {
 			this.setState({ loading: false })
 		})
@@ -128,13 +126,28 @@ class AboutForm extends React.Component {
 		const currentPaidtype = _.find(packages, p => p.name === form.paid_type)
 		const botLimit = currentPaidtype ? currentPaidtype.bot_amount : 0
 		const faqLimit = currentPaidtype ? currentPaidtype.faq_amount : 0
+
+		const displayStartDate = form.start_date ? moment(form.start_date).format('YYYY-MM-DD') : 'N/A'
+		const displayEndDate = form.expire_date ? moment(form.expire_date).format('YYYY-MM-DD') : 'N/A'
+
 		return (
 			<Form success={showSuccess} loading={loading}>
 				<Grid columns={2} divided='vertically'>
 					<Grid.Row>
 						<Grid.Column>
 							<Label size='large' color={labelColors[form.paid_type]}>{form.paid_type}</Label>
-							{form.paid_type !== 'Trial' && <Fragment><p>{t('account.activation_date')}: {form.start_date}<br/>{t('account.expiration_date')}: {form.expire_date}</p></Fragment>}
+							{form.paid_type !== 'Trial' && <table>
+								<tbody>
+									<tr>
+										<td>{t('account.activation_date')}: </td>
+										<td><strong>{displayStartDate}</strong></td>
+									</tr>
+									<tr>
+										<td>{t('account.expiration_date')}: </td>
+										<td><strong>{displayEndDate}</strong></td>
+									</tr>
+								</tbody>
+							</table>}
 						</Grid.Column>
 						<Grid.Column>
 							<Statistic.Group>

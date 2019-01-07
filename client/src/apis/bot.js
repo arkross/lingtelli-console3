@@ -46,7 +46,8 @@ export default {
 		robot_name: data.robot_name,
 		failed_msg: data.failed_msg,
 		greeting_msg: data.greeting_msg,
-		postback_title: data.postback_title
+		postback_title: data.postback_title,
+		// postback_activate: data.postback_activate
 	})).data,
 
 	facebook: {

@@ -14,8 +14,10 @@ export default {
 	edit: async (id, data) => (await axios.put(`${API_HOST}/member/${id}/`, {
 		username: data.username,
 		first_name: data.first_name,
-		language: data.language
+		language: data.language,
+		old_password: data.old_password,
+		password: data.password
 	})).data,
   
-	resetPassword: async (id, data) => (await axios.put(`${API_HOST}/member/${id}/reset_password/`, data)).data
+	resetPassword: async (id, data) => (await axios.put(`${API_HOST}/member/${id}/`, data)).data
 }

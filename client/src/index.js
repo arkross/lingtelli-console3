@@ -65,7 +65,7 @@ axios.interceptors.response.use(response => {
 			document.location.reload()
 		}
 		return Promise.reject({
-			message, 
+			message,
 			status: err.response.status,
 			xhr: err
 		})

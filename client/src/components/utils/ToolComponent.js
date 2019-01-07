@@ -83,7 +83,7 @@ class ToolComponent extends React.Component {
 	handlePostbackToggleClick = e => {
 		e.preventDefault()
 		const { info, updateBot } = this.props
-		updateBot(info.pk, Object.assign({}, info, {
+		updateBot(info.id, Object.assign({}, info, {
 			postback_activate: !info.postback_activate
 		}))
 	}
