@@ -122,7 +122,7 @@ class AboutForm extends React.Component {
 			'Pro': 'teal'
 		}
 		const botCount = Object.keys(bots).length
-		const faqCount = _.reduce(bots, (acc, bot) => (acc += (bot && bot.group && bot.group.groups && bot.group.groups.length)	 || 0), 0)
+		const faqCount = _.reduce(bots, (acc, bot) => (acc += (bot && bot.group && bot.group.length) || 0), 0)
 		const currentPaidtype = _.find(packages, p => p.name === form.paid_type)
 		const botLimit = currentPaidtype ? currentPaidtype.bot_amount : 0
 		const faqLimit = currentPaidtype ? currentPaidtype.faq_amount : 0

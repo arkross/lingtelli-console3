@@ -20,6 +20,12 @@ export const fetchFaqGroup = (data, botId, groupId) => ({
 	groupId
 })
 
+const fetchLength = (length, botId) => ({
+	type: types.FETCH_GROUP_LENGTH,
+	length,
+	id: botId
+})
+
 export const deleted = () => ({
 	type: types.DELETE_GROUP,
 })
@@ -33,6 +39,9 @@ export const uploadGroups = (activeBot, file) => dispatch =>
 
 export const fetchGroups = (activeBot, page, answer_content='') => dispatch =>
 	api.fetch(activeBot, page, answer_content).then(data => dispatch(fetch(data, activeBot, page, answer_content)))
+
+export const fetchGroupLength = (activeBot, page, answer_content='') => dispatch =>
+	api.fetch(activeBot, page, answer_content).then(data => dispatch(fetchLength(data.length, activeBot)))
 
 export const deleteGroup = (activeBot, id) => dispatch =>
 	api.delete(activeBot, id).then(() => dispatch(deleted()))

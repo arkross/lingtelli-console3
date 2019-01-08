@@ -1,7 +1,7 @@
 import * as types from '../types'
 import api from '../apis/bot'
 import { showNetworkErrorRaw as showNetworkError } from './message'
-import { fetchGroups } from './group'
+import { fetchGroupLength } from './group'
 import _ from 'lodash'
 
 // fetch all bots for user
@@ -111,7 +111,7 @@ export const fetchAllBotDetails = () => async (dispatch) => {
 		api.info(bot.id).then(data => {
 			data.activeBot = bot.id
 			// Also fetch FAQ to get the counts
-			fetchGroups(bot.id, 1)(dispatch)
+			fetchGroupLength(bot.id, 1)(dispatch)
 			facebookRead(bot.id)(dispatch)
 			lineRead(bot.id)(dispatch)
 			dispatch(fetchBotInfo(data))

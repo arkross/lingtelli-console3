@@ -3,7 +3,7 @@ import Group from 'components/utils/Group'
 import ToolComponent from 'components/utils/ToolComponent'
 import groupApis from 'apis/group'
 import answerApis from 'apis/answer'
-
+import _ from 'lodash'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import { translate } from 'react-i18next'
@@ -17,6 +17,8 @@ import {
 	Button
 } from 'semantic-ui-react'
 import toJS from 'components/utils/ToJS'
+
+const PER_PAGE = 10
 
 class FAQConfigPage extends React.Component {
 	constructor(props) {
@@ -45,7 +47,7 @@ class FAQConfigPage extends React.Component {
 
 	onPageChanged = (e, { activePage }) => {
 		this.setState({ activePage: activePage });
-		this._fetchGroups(activePage, this.state.keyword);
+		// this._fetchGroups(activePage, this.state.keyword);
 	}
 
 	onCreateGroup = (e) => {
@@ -92,15 +94,18 @@ class FAQConfigPage extends React.Component {
 	}
 
 	render = () => {
-		const { totalPages, loading, activeBot, t } = this.props
+		const { length, loading, activeBot, t } = this.props
 		const { groups, activePage, keyword, openDeleteModal } = this.state
 
+		const totalPages = Math.ceil(length / PER_PAGE)
+		const startNumber = PER_PAGE * (activePage - 1) + 1
+		const displayGroups = _.slice(groups, startNumber, startNumber + PER_PAGE + 1)
 		return (
 			<div>
 				<ToolComponent onKeywordSubmit={this.handleKeywordSubmit} keyword={keyword} onKeywordChange={this.handleKeywordChange} activeBot={activeBot} onCreateGroup={this.onCreateGroup} />
 				<Segment vertical loading={loading}>
-					{ groups &&
-						groups.map((item, ix) =>
+					{ displayGroups &&
+						displayGroups.map((item, ix) =>
 							<Group
 								ix={ix}
 								key={item.group}
@@ -150,7 +155,7 @@ class FAQConfigPage extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
 	activeBot: ownProps.match.params.id,
 	groups: state.getIn(['bot', 'bots', ownProps.match.params.id, 'group', 'groups']),
-	totalPages: state.getIn(['bot', 'bots', ownProps.match.params.id, 'group', 'total']),
+	length: state.getIn(['bot', 'bots', ownProps.match.params.id, 'group', 'length']),
 	answer_content: state.getIn(['bot', 'bots', ownProps.match.params.id, 'group', 'answer_content'])
 })
 

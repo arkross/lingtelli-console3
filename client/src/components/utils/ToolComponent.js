@@ -94,7 +94,7 @@ class ToolComponent extends React.Component {
 		const { t, onCreateGroup, keyword, info, bots, user } = this.props
 
 		const currentPaidtype = _.find(user.packages, p => p.name === user.paid_type)
-		const faqCount = _.reduce(bots, (acc, bot) => (acc += (bot && bot.group && bot.group.groups.length)	 || 0), 0)
+		const faqCount = _.reduce(bots, (acc, bot) => (acc += (bot && bot.group && bot.group.length) || 0), 0)
 		const faqLimit = currentPaidtype ? currentPaidtype.faq_amount : 0
 
 		return (
