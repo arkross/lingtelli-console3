@@ -104,6 +104,19 @@ class FAQConfigPage extends React.Component {
 			<div>
 				<ToolComponent onKeywordSubmit={this.handleKeywordSubmit} keyword={keyword} onKeywordChange={this.handleKeywordChange} activeBot={activeBot} onCreateGroup={this.onCreateGroup} />
 				<Segment vertical loading={loading}>
+					{
+						totalPages > 0 &&
+							<Pagination
+								firstItem={{ content: <Icon name='angle double left' />, icon: true }}
+								lastItem={{ content: <Icon name='angle double right' />, icon: true }}
+								prevItem={{ content: <Icon name='angle left' />, icon: true }}
+								nextItem={{ content: <Icon name='angle right' />, icon: true }}
+								ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
+								activePage={activePage}
+								onPageChange={this.onPageChanged}
+								totalPages={totalPages}
+							/>
+					}
 					{ displayGroups &&
 						displayGroups.map((item, ix) =>
 							<Group

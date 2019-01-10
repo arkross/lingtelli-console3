@@ -132,7 +132,7 @@ class ToolComponent extends React.Component {
 					<Icon name="flask"/>
 					{t("chatbot.faq.train")}
 				</Button>
-				<Input onKeyDown={this.handleKeyDown} placeholder={t('chatbot.faq.search')} onChange={this.handleChangeKeyword} value={keyword ? keyword : ''}icon={<Icon name='search' circular link onClick={this.handleSubmitKeyword} />} />
+				{/* <Input onKeyDown={this.handleKeyDown} placeholder={t('chatbot.faq.search')} onChange={this.handleChangeKeyword} value={keyword ? keyword : ''}icon={<Icon name='search' circular link onClick={this.handleSubmitKeyword} />} /> */}
 				<Button icon={info.postback_activate ? 'check' : 'remove'} content={info.postback_activate ? t('chatbot.faq.disable_postback') : t('chatbot.faq.enable_postback')} floated='right' color={info.postback_activate ? 'green': 'grey'} onClick={this.handlePostbackToggleClick} />
 			</div>
 		)
