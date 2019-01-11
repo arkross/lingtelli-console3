@@ -66,7 +66,8 @@ class HistoryViewSet(viewsets.ReadOnlyModelViewSet):
         if bot_obj:
             history_list = History.objects.filter(chatbot_id=bot_obj)\
                         .order_by('-created_at')
-            return Response(history_list, status=HTTP_200_OK)
+            serializer = HistorySerializer(history_list, many=True)
+            return Response(serializer.data, status=HTTP_200_OK)
         return Response({'errors':_('Not found')},
                         status=HTTP_404_NOT_FOUND)
 

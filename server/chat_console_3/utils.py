@@ -115,7 +115,7 @@ def key_validator(key_list, input_dict):
         return 'Lack or more then the required key amount', False
     
     for k in key_list:
-        if not input_dict.get(k, None):
+        if input_dict.get(k) == None:
             return 'Key missing or empty: ' + k, False
     return '', True
 

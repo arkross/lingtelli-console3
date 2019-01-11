@@ -47,7 +47,8 @@ class ChatbotViewset(viewsets.ModelViewSet):
         "robot_name": "Jarvis",
         "greeting_msg": "hi",
         "failed_msg": "I do not understand",
-        "postback_title": "Please chose the similar questoin"
+        "postback_title": "Please chose the similar questoin",
+        "postback_activate": false
     }
 
     Response format example:
@@ -102,13 +103,26 @@ class ChatbotViewset(viewsets.ModelViewSet):
         if request.body:
             user_obj = request.user
             acc_obj = AccountInfo.objects.filter(user=user_obj).first()
+            # Check if bot creation is over upper limit
             bot_create_limit = acc_obj.paid_type.bot_amount
             bot_owned_amount = Chatbot.objects.filter(user=user_obj).count()
             if str(bot_create_limit) != '0' and\
                 bot_owned_amount >= int(bot_create_limit):
                 return Response({'errors':_('Reach bot create limitation')},
                                  status=HTTP_403_FORBIDDEN)
-            
+
+            # Check if faq creation is over upper limit
+            faq_create_limit = acc_obj.paid_type.faq_amount
+            faq_owned_amount = 0
+            bots = Chatbot.objects.filter(user=user_obj)
+            for bot in bots:
+                faq_count = FAQGroup.objects.filter(chatbot=bot).count()
+                faq_owned_amount += faq_count
+            if str(faq_create_limit) != '0' and\
+                (faq_owned_amount + 1) >= int(faq_create_limit):
+                return Response({'errors':_('Reach faq create limitation')},
+                                 status=HTTP_403_FORBIDDEN)
+
             bot_data = json.loads(request.body)
             bot_keys = ['robot_name', 'greeting_msg', 'failed_msg',
                         'postback_title', 'language']
@@ -119,7 +133,7 @@ class ChatbotViewset(viewsets.ModelViewSet):
             bot_data['user_id'] = user_obj.id
             bot_obj = Chatbot.objects.create(**bot_data)
             if bot_obj:
-                bot_obj.vender_id = utils.generate_uuid(str(bot_obj.id),
+                bot_obj.vendor_id = utils.generate_uuid(str(bot_obj.id),
                                                         bot_obj.robot_name)
                 paid_type = acc_obj.paid_type
                 for party in paid_type.third_party.all():
@@ -132,10 +146,10 @@ class ChatbotViewset(viewsets.ModelViewSet):
                 nlu_create_status, err_msg = nlumodel.create_model(bot_obj)
                 # TODO: Remove this comment after the NLU has setup
                 # TODO: Remove create_bot_obj = True
-                # create_bot_obj = \
-                #     self.__delete_create_failed_model(nlu_create_status,
-                #                                       bot_obj)
-                create_bot_obj = True
+                create_bot_obj = \
+                    self.__delete_create_failed_model(nlu_create_status,
+                                                      bot_obj)
+                # create_bot_obj = True
                 if not create_bot_obj:
                     return Response({'errors':_('Create bot failed. '+\
                                      'Cause by NLU error.' + err_msg)},
@@ -159,7 +173,7 @@ class ChatbotViewset(viewsets.ModelViewSet):
                                  status=HTTP_404_NOT_FOUND)
             update_data = json.loads(request.body)
             valid_update_key = ['robot_name', 'greeting_msg', 'failed_msg',
-                                'postback_title']
+                                'postback_title', 'postback_activate']
             err_msg, key_status = utils.key_validator(valid_update_key,
                                                       update_data)
             if not key_status:

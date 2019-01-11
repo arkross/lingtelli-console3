@@ -101,7 +101,12 @@ class FAQGrouptViewset(viewsets.ModelViewSet):
         if not bot_obj:
             return Response({'errors':_('Not found')},
                              status=HTTP_404_NOT_FOUND)
-        faq_count = FAQGroup.objects.filter(chatbot=id).count()
+        # Get total count first
+        faq_count = 0
+        bots = Chatbot.objects.filter(user=user_obj)
+        for bot in bots:
+            bot_faq_count = FAQGroup.objects.filter(chatbot=bot).count()
+            faq_count += bot_faq_count
         if int(faq_group_limit) != 0 and faq_count >= int(faq_group_limit):
             return Response({'errors':_('Faq group exceeded upper limit')},
                             status=HTTP_403_FORBIDDEN)
@@ -114,19 +119,6 @@ class FAQGrouptViewset(viewsets.ModelViewSet):
             return Response(res, status=HTTP_201_CREATED)
         return Response({'errors':_('Create faq group failed')},
                         status=HTTP_400_BAD_REQUEST)
-        
-
-    @action(methods=['post'], detail=True, permission_classes=[IsAuthenticated])
-    def upload(self, request, id=None, pk=None):
-        pass
-    
-    @action(methods=['get'], detail=True, permission_classes=[IsAuthenticated])
-    def export(self, request, id=None, pk=None):
-        pass
-    
-    @action(methods=['get'], detail=True, permission_classes=[IsAuthenticated])
-    def train(self, request, id=None, pk=None):
-        pass
 
 
 class AnswerViewset(viewsets.ModelViewSet):
@@ -359,7 +351,14 @@ def upload_faq_csv(request, pk=None):
             next(data) # Skip header
             acc_obj = AccountInfo.objects.filter(user=request.user).first()
             faq_limit = acc_obj.paid_type.faq_amount
+
+            # Get total faq amount first
             group_count = 0
+            bots = Chatbot.objects.filter(user=request.user)
+            for bot in bots:
+                bot_faq_group = FAQGroup.objects.filter(chatbot=bot).count()
+                group_count += bot_faq_group
+
             for row in data:
                 faq_group = row[0]
                 que = row[1]
@@ -441,9 +440,9 @@ def train_bot_faq(request, pk=None):
         return Response({'errors':_('Not found')},
                         status=HTTP_404_NOT_FOUND)
     # TODO: Remove the comment after connect to nlu
-    # train_status, err_msg = nlumodel.train_model(bot_obj)
-    # if not train_status:
-    #     return Response({'errors': err_msg},
-    #                     status=HTTP_500_INTERNAL_SERVER_ERROR)
+    train_status, err_msg = nlumodel.train_model(bot_obj)
+    if not train_status:
+        return Response({'errors': err_msg},
+                        status=HTTP_500_INTERNAL_SERVER_ERROR)
     return Response({'success':_('Training bot succeeded')},
                     status=HTTP_200_OK)

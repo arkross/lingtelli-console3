@@ -67,7 +67,7 @@ class Answer(models.Model):
                               on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'answer'
+        db_table = 'faq_answer'
 
     def __str__(self):
         return self.chatbot.robot_name
@@ -95,7 +95,7 @@ class Question(models.Model):
     group = models.ForeignKey(FAQGroup, related_name='question_faqgroup',
                               on_delete=models.CASCADE)
     class Meta:
-        db_table = 'question'
+        db_table = 'faq_question'
 
     def __str__(self):
         return self.chatbot.robot_name

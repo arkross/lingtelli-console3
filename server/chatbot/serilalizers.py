@@ -15,7 +15,6 @@ class ChatbotSerializer(serializers.Serializer):
     created_at = serializers.DateTimeField()
     updated_at = serializers.DateTimeField()
     third_party = ThirdPartySerializer()
-    expired_at =serializers.DateTimeField()
     activate = serializers.BooleanField()
     language = serializers.CharField()
     postback_activate = serializers.BooleanField()

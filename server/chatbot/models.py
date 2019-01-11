@@ -35,7 +35,6 @@ class Chatbot(models.Model):
         updated_at: Chatbot updated time.
         third_party: Platform chatbot is using on.
         user: User who's owning the chatbot.
-        expired_at: Expire time for chatbot.
         activate: Chatbot is activated or not.
         postback_activate: For forcing giving similar questions to client.
         postback_title: Showing postback title message.
@@ -62,8 +61,6 @@ class Chatbot(models.Model):
                                          related_name='group_bot_party')
     user = models.ForeignKey(User, related_name='chatbot_user',
                              on_delete=models.CASCADE)
-    expired_at = models.DateTimeField(auto_now_add=False, auto_now=False,
-                                      blank=True, null=True)
     activate = models.BooleanField(default=True)
     language = models.CharField(max_length=10, choices=LANGUAGE_CHOICE,
                                 default='tw')
@@ -122,7 +119,7 @@ class Line(models.Model):
                                 on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'line'
+        db_table = 'bot_line'
 
 
 class Facebook(models.Model):
@@ -140,4 +137,4 @@ class Facebook(models.Model):
                                 on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'facebook'
+        db_table = 'bot_facebook'
