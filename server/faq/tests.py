@@ -364,17 +364,18 @@ class CSVTest(TestCase):
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
     
-    def test_upload_wrong_format(self):
-        c = Client()
-        bot_upload_uri = self.bot_uri + '/upload/'
-        task_upload_uri = self.task_uri + '/upload/'
+    # TODO: Currently we do not have wrong format file to test
+    # def test_upload_wrong_format(self):
+    #     c = Client()
+    #     bot_upload_uri = self.bot_uri + '/upload/'
+    #     task_upload_uri = self.task_uri + '/upload/'
 
-        # Normal bot
-        response = c.post(bot_upload_uri, {'file': self.wrong_format},
-                         **self.header)
-        self.assertEqual(response.status_code, 403)
-        res_data = json.loads(response.content)
-        self.assertIn('errors', res_data)
+    #     # Normal bot
+    #     response = c.post(bot_upload_uri, {'file': self.wrong_format},
+    #                      **self.header)
+    #     self.assertEqual(response.status_code, 403)
+    #     res_data = json.loads(response.content)
+    #     self.assertIn('errors', res_data)
 
         # TODO:Task bot
         # response = c.post(task_upload_uri, {'file': self.wrong_format},
@@ -497,9 +498,9 @@ class AnswerTest(TestCase):
         self.task_faq = FAQGroup.objects.create(chatbot=self.taskbot_obj)
 
         # Initial answer uri
-        self.bot_uri = '/chatbot/' + str(self.bot_faq.id) + '/answer/'
-        self.task_uri = '/agent/' + str(self.agent_obj.id) + '/chatbot/'\
-                        + str(self.taskbot_obj.id) + '/answer/'
+        self.bot_uri = '/chatbot/' + str(self.bot_obj.id) + '/answer/'
+        self.task_uri = '/agent/taskbot/' + str(self.taskbot_obj.id) +\
+                        '/answer/'
         
         # Initial answer obj
         self.bot_ans_obj = \
@@ -589,33 +590,21 @@ class AnswerTest(TestCase):
         for k in ans_keys:
             self.assertIn(k, res_data)
 
-        # TODO:Task bot
-        # response = c.post(self.task_uri, json.dumps({'group': self.task_faq.id,
-        #                                              'content': 'hi'}),
-        #                   content_type='application/json', **self.agent_header)
-        # self.assertEqual(response.status_code, 201)
-        # res_data = json.loads(response.content)
-        # self.assertEqual(len(ans_keys), len(res_data))
-        # for k in ans_keys:
-        #     self.assertIn(k, res_data)
-    # TODO: TASK BOT
-    # def test_create_taskbot_more_than_one_ans(self):
-    #     c = Client()
-    #     c.post(self.task_uri, json.dumps({'group': self.task_faq.id,
-    #                                       'content': 'hi'}),
-    #            content_type='application/json', **self.agent_header)
-    #     response = c.post(self.task_uri, json.dumps({'group': self.task_faq.id,
-    #                                                  'content': 'hihi'}),
-    #                       content_type='application/json', **self.agent_header)
-    #     self.assertEqual(response.status_code, 403)
-    #     res_data = json.loads(response.content)
-    #     self.assertIn('errors', res_data)
+        # Task bot
+        response = c.post(self.task_uri, json.dumps({'group': self.task_faq.id,
+                                                     'content': 'hi'}),
+                          content_type='application/json', **self.agent_header)
+        self.assertEqual(response.status_code, 201)
+        res_data = json.loads(response.content)
+        self.assertEqual(len(ans_keys), len(res_data))
+        for k in ans_keys:
+            self.assertIn(k, res_data)
 
     def test_read(self):
         c = Client()
         ans_keys = ['id', 'content', 'group']
         bot_ans_uri = self.bot_uri + str(self.bot_ans_obj.id) + '/'
-        task_ans_uri = self.bot_uri + str(self.task_ans_obj.id) + '/'
+        task_ans_uri = self.task_uri + str(self.task_ans_obj.id) + '/'
         
         # Normal bot
         response = c.get(bot_ans_uri, **self.header)
@@ -625,19 +614,19 @@ class AnswerTest(TestCase):
         for k in ans_keys:
             self.assertIn(k, res_data)
 
-        # TODO:Task bot
-        # response = c.get(task_ans_uri, **self.agent_header)
-        # self.assertEqual(response.status_code, 200)
-        # res_data = json.loads(response.content)
-        # self.assertEqual(len(ans_keys), len(res_data))
-        # for k in ans_keys:
-        #     self.assertIn(k, res_data)
+        # Task bot
+        response = c.get(task_ans_uri, **self.agent_header)
+        self.assertEqual(response.status_code, 200)
+        res_data = json.loads(response.content)
+        self.assertEqual(len(ans_keys), len(res_data))
+        for k in ans_keys:
+            self.assertIn(k, res_data)
 
     def test_update(self):
         c = Client()
         ans_keys = ['content']
         bot_ans_uri = self.bot_uri + str(self.bot_ans_obj.id) + '/'
-        task_ans_uri = self.bot_uri + str(self.task_ans_obj.id) + '/'
+        task_ans_uri = self.task_uri + str(self.task_ans_obj.id) + '/'
 
         # Normal bot
         response = c.put(bot_ans_uri, json.dumps({'content': 'hello'}),
@@ -646,28 +635,25 @@ class AnswerTest(TestCase):
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
 
-        # TODO:Task bot
-        # response = c.put(task_ans_uri, json.dumps({'group': self.task_faq.id,
-        #                                            'content': 'hello'}),
-        #                  content_type='application/json', **self.agent_header)
-        # self.assertEqual(response.status_code, 200)
-        # res_data = json.loads(response.content)
-        # self.assertEqual(len(ans_keys), len(res_data))
-        # for k in ans_keys:
-        #     self.assertIn(k, res_data)
+        # Task bot
+        response = c.put(task_ans_uri, json.dumps({'content': 'hello'}),
+                         content_type='application/json', **self.agent_header)
+        self.assertEqual(response.status_code, 200)
+        res_data = json.loads(response.content)
+        self.assertIn('success', res_data)
 
     def test_delete(self):
         c = Client()
         bot_ans_uri = self.bot_uri + str(self.bot_ans_obj.id) + '/'
-        task_ans_uri = self.bot_uri + str(self.task_ans_obj.id) + '/'
+        task_ans_uri = self.task_uri + str(self.task_ans_obj.id) + '/'
 
         # Normal bot
         response = c.delete(bot_ans_uri, **self.header)
         self.assertEqual(response.status_code, 204)
 
-        # TODO:Task bot
-        # response = c.delete(task_ans_uri, **self.agent_header)
-        # self.assertEqual(response.status_code, 204)
+        # Task bot
+        response = c.delete(task_ans_uri, **self.agent_header)
+        self.assertEqual(response.status_code, 204)
 
 
 class QuestionTest(TestCase):
@@ -754,8 +740,8 @@ class QuestionTest(TestCase):
 
         # Initial question uri
         self.bot_uri = '/chatbot/' + str(self.bot_obj.id) + '/question/'
-        self.task_uri = '/agent/' + str(self.agent_obj.id) + '/chatbot/'\
-                        + str(self.taskbot_obj.id) + '/question/'
+        self.task_uri = '/agent/taskbot/' + str(self.taskbot_obj.id) +\
+                        '/question/'
         
         # Initial question obj
         self.bot_que_obj = \
@@ -846,23 +832,23 @@ class QuestionTest(TestCase):
         for k in que_keys:
             self.assertIn(k, res_data)
 
-        # TODO:Task bot
-        # response_task = c.post(self.task_uri,
-        #                        json.dumps({'group': self.task_faq.id,
-        #                                    'content': 'hi'}),
-        #                        content_type='application/json',
-        #                        **self.agent_header)
-        # self.assertEqual(response.status_code, 201)
-        # res_data = json.loads(response.content)
-        # self.assertEqual(len(que_keys), len(res_data))
-        # for k in que_keys:
-        #     self.assertIn(k, res_data)
+        # Task bot
+        response_task = c.post(self.task_uri,
+                               json.dumps({'group': self.task_faq.id,
+                                           'content': 'hi'}),
+                               content_type='application/json',
+                               **self.agent_header)
+        self.assertEqual(response.status_code, 201)
+        res_data = json.loads(response.content)
+        self.assertEqual(len(que_keys), len(res_data))
+        for k in que_keys:
+            self.assertIn(k, res_data)
 
     def test_read(self):
         c = Client()
         que_keys = ['id', 'content', 'group']
         bot_que_uri = self.bot_uri + str(self.bot_que_obj.id) + '/'
-        task_que_uri = self.bot_uri + str(self.task_que_obj.id) + '/'
+        task_que_uri = self.task_uri + str(self.task_que_obj.id) + '/'
 
         # Normal bot
         response = c.get(bot_que_uri, **self.header)
@@ -872,20 +858,20 @@ class QuestionTest(TestCase):
         for k in que_keys:
             self.assertIn(k, res_data)
 
-        # TODO:Task bot
-        # response_task = c.get(task_que_uri, **self.agent_header)
-        # self.assertEqual(response.status_code, 200)
-        # res_data = json.loads(response.content)
-        # self.assertEqual(len(que_keys), len(res_data))
-        # for k in que_keys:
-        #     self.assertIn(k, res_data)
+        # Task bot
+        response_task = c.get(task_que_uri, **self.agent_header)
+        self.assertEqual(response.status_code, 200)
+        res_data = json.loads(response.content)
+        self.assertEqual(len(que_keys), len(res_data))
+        for k in que_keys:
+            self.assertIn(k, res_data)
 
 
     def test_update(self):
         c = Client()
         que_keys = ['content']
         bot_que_uri = self.bot_uri + str(self.bot_que_obj.id) + '/'
-        task_que_uri = self.bot_uri + str(self.task_que_obj.id) + '/'
+        task_que_uri = self.task_uri + str(self.task_que_obj.id) + '/'
 
         # Normal bot
         response = c.put(bot_que_uri, json.dumps({'content': 'hello'}),
@@ -894,27 +880,25 @@ class QuestionTest(TestCase):
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
 
-        # TODO:Task bot
-        # response_task = c.put(task_que_uri,
-        #                        json.dumps({'group': self.task_faq.id,
-        #                                    'content': 'hello'}),
-        #                        content_type='application/json',
-        #                        **self.agent_header)
-        # self.assertEqual(response.status_code, 200)
-        # res_data = json.loads(response.content)
-        # self.assertEqual(len(que_keys), len(res_data))
-        # for k in que_keys:
-        #     self.assertIn(k, res_data)
+        # Task bot
+        response_task = c.put(task_que_uri,
+                               json.dumps({'group': self.task_faq.id,
+                                           'content': 'hello'}),
+                               content_type='application/json',
+                               **self.agent_header)
+        self.assertEqual(response.status_code, 200)
+        res_data = json.loads(response.content)
+        self.assertIn('success', res_data)
 
     def test_delete(self):
         c = Client()
         bot_que_uri = self.bot_uri + str(self.bot_que_obj.id) + '/'
-        task_que_uri = self.bot_uri + str(self.task_que_obj.id) + '/'
+        task_que_uri = self.task_uri + str(self.task_que_obj.id) + '/'
 
         # Normal bot
         response = c.delete(bot_que_uri, **self.header)
         self.assertEqual(response.status_code, 204)
 
-        # TODO:Task bot
-        # response_task = c.delete(task_que_uri, **self.agent_header)
-        # self.assertEqual(response_task.status_code, 204)
+        # Task bot
+        response_task = c.delete(task_que_uri, **self.agent_header)
+        self.assertEqual(response_task.status_code, 204)

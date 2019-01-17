@@ -7,7 +7,7 @@ from rest_framework.mixins import (RetrieveModelMixin, ListModelMixin,
                                    UpdateModelMixin)
 from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.status import (
     HTTP_200_OK,
     HTTP_400_BAD_REQUEST,
@@ -58,12 +58,10 @@ class PaidTypeViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         Only agent can update paidtype data.
         '''
         # To check if request body is empty
+        if request.user.is_staff == False:
+            return Response({'errors':_('Not allowed')},
+                            status=HTTP_403_FORBIDDEN)
         if request.body:
-            # Only agent can update paidtype
-            if not request.user.is_staff:
-                return Response({'errors':_('Not allowed')},
-                                status=HTTP_403_FORBIDDEN)
-
             paidtype_obj = PaidType.objects.filter(id=pk).first()
             if not paidtype_obj:
                 return Response({'errors':_('Not found')},

@@ -106,7 +106,7 @@ class PaidTypeTest(TestCase):
         the_paidtype = self.paidtype_uri + '100/'
 
         # GET
-        response = c.get(the_paidtype, **self.header)
+        response = c.get(the_paidtype, **self.agent_header)
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
@@ -123,7 +123,7 @@ class PaidTypeTest(TestCase):
         paidtype_keys = ['id', 'name', 'duration', 'bot_amount', 'faq_amount',
                          'third_party']
         the_paidtype = self.paidtype_uri + '1/'
-        response = c.get(the_paidtype, **self.header)
+        response = c.get(the_paidtype, **self.agent_header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
         self.assertEqual(len(paidtype_keys), len(res_data))

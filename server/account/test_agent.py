@@ -15,30 +15,47 @@ class AgentCreateAgentTest(TestCase):
     creating an agent, the agent can create other agent account.
     '''
 
-    def setup(self):
+    def setUp(self):
+        # Initial paid type
+        staff_data = {
+            'pk': 1,
+            'name': 'Staff',
+            'duration': '0_0',
+            'bot_amount': '0',
+            'faq_amount': '0'
+        }
+
+        demo_data = {
+            'pk': 4,
+            'name': 'demo'
+        }
+        staff_obj = PaidType.objects.create(**staff_data)
+        demo_obj = ThirdParty.objects.create(**demo_data)
+        staff_obj.third_party.add(demo_obj)
+
         # Initial an agent
         agent_data = {'username': 'admin', 'password': 'adminpassword',
                       'is_staff': True}
         user_obj = User.objects.create_user(**agent_data)
         # Login agent
-        token = Token.objects.create(user_obj)
+        token = Token.objects.create(user=user_obj)
         self.agent_header = {'HTTP_AUTHORIZATION': 'Bearer ' + token.key}
         user_id = user_obj.id
-        self.uri = '/agent/' + str(user_id) + '/create_agent/'
+        self.uri = '/agent/'
 
         # Initial a member
         member_data = {'username': 'cosmo.hu@lingtelli.com',
                        'password': 'thisispassword'}
         member_obj = User.objects.create_user(**member_data)
         # Login member
-        member_token = Token.objects.create(member_obj)
+        member_token = Token.objects.create(user=member_obj)
         self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + member_token.key}
         member_id = member_obj.id
-        self.member_uri = '/agent/' + str(member_id) + '/create_agent/'
+        self.member_uri = '/agent/'
 
     def test_no_auth(self):
         c = Client()
-        new_agent_data = {'username': 'admin2', 'password': 'adminpass2'}
+        new_agent_data = {'username': 'admin2'}
         response = c.post(self.uri, json.dumps(new_agent_data),
                           content_type='application/json')
         self.assertEqual(response.status_code, 401)
@@ -54,7 +71,7 @@ class AgentCreateAgentTest(TestCase):
 
     def test_create_new_agent(self):
         c = Client()
-        new_agent_data = {'username': 'admin2', 'password': 'adminpass2'}
+        new_agent_data = {'username': 'admin2'}
         response = c.post(self.uri, json.dumps(new_agent_data),
                           **self.agent_header, content_type='application/json')
         self.assertEqual(response.status_code, 201)
@@ -194,28 +211,32 @@ class AgentProfileTest(TestCase):
         '''
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
+        not_existed_uri = '/agent/222/'
         # GET
-        response = c.get(self.uri, header)
+        response = c.get(not_existed_uri, **header)
+        res_data = json.loads(response.content)
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
 
         # PUT
         new_agent_name = {'username': 'new_admin'}
-        response = c.put(self.uri, json.dumps(new_agent_name),
+        response = c.put(not_existed_uri, json.dumps(new_agent_name),
                          content_type='application/json', **header)
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
 
         # Delete
-        response = c.delete(self.uri, **header)
+        response = c.delete(not_existed_uri, **header)
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
 
     def test_read(self):
-        agent_profile_key = ['username', 'paid_type', 'language']
+        agent_profile_key = ['id', 'username', 'first_name', 'paid_type',
+                             'language', 'agent_type', 'start_date',
+                             'expire_date']
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.get(self.uri, **header)
@@ -237,12 +258,13 @@ class AgentProfileTest(TestCase):
 
     def test_update_username_duplicated(self):
         c = Client()
+        same_agent_username = {'username': 'admin'}
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
-        response = c.put(self.uri, json.dumps(self.agent_data.get('username')),
+        response = c.put(self.uri, json.dumps(same_agent_username),
                          content_type='application/json', **header)
         self.assertEqual(response.status_code, 400)
         res_data = json.loads(response.content)
-        self.assertEqual(res_data.get('errors'), 'Useranme has been used')
+        self.assertIn('errors', res_data)
     
     def test_update_password(self):
         new_agent_passwd = {'old_password': 'adminpassword',
@@ -257,7 +279,7 @@ class AgentProfileTest(TestCase):
     
     def test_update_wrong_old_password(self):
         new_agent_passwd = {'old_password': 'thisiswrong',
-                            'new_password': 'newagentpassword'}
+                            'password': 'newagentpassword'}
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         response = c.put(self.uri, json.dumps(new_agent_passwd),
@@ -267,6 +289,10 @@ class AgentProfileTest(TestCase):
         self.assertIn('errors', res_data)
 
     def test_delete(self):
+        user_obj = User.objects.get(username='admin')
+        acc_obj = AccountInfo.objects.get(user=user_obj)
+        acc_obj.delete_confirm = True
+        acc_obj.save()
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         c = Client()
         response = c.delete(self.uri, **header)
@@ -276,9 +302,12 @@ class AgentProfileTest(TestCase):
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         c = Client()
         response = c.delete(self.uri, **header)
+        check_delete_user = \
+            User.objects.filter(username='admin').first()
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
+        self.assertNotEqual(check_delete_user, None)
 
 
 class DeleteAccountConfirmTest(TestCase):
@@ -317,7 +346,7 @@ class DeleteAccountConfirmTest(TestCase):
 
         # Initial user id uri
         user_id = user_obj.id
-        self.uri = '/agent/' + str(user_id) + '/confirm/'
+        self.uri = '/agent/' + str(user_id) + '/delete_confirm/'
 
         # Login User
         token_obj = Token.objects.create(user=user_obj)
@@ -418,7 +447,7 @@ class AgentMemberTest(TestCase):
             {'HTTP_AUTHORIZATION': 'Bearer ' + self.agent_token}
 
         # Initial uri
-        self.member_uri = '/agent/' + str(self.agent_obj.id) + '/member/'
+        self.member_uri = '/agent/member/'
 
         
     
@@ -451,9 +480,8 @@ class AgentMemberTest(TestCase):
     
     def test_read(self):
         c = Client()
-        member_keys = ['username', 'first_name', 'paid_type', 'start_date',
-                       'expire_date']
-        the_member_uri = self.member_uri + '1/'
+        member_keys = ['username', 'paid_type', 'start_date', 'expire_date']
+        the_member_uri = self.member_uri + str(self.user_obj.id) + '/'
         response = c.get(the_member_uri, **self.agent_header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
@@ -463,7 +491,7 @@ class AgentMemberTest(TestCase):
 
     def test_update_paidtype(self):
         c = Client()
-        the_member_uri = self.member_uri + '1/'
+        the_member_uri = self.member_uri + str(self.user_obj.id) + '/'
         response = c.put(the_member_uri,
                          json.dumps({'paid_type': 2}),
                          content_type='application/json', **self.agent_header)
@@ -473,7 +501,7 @@ class AgentMemberTest(TestCase):
     
     def test_update_other_key_not_allowed(self):
         c = Client()
-        the_member_uri = self.member_uri + '1/'
+        the_member_uri = self.member_uri + str(self.user_obj.id) + '/'
         response = c.put(the_member_uri, json.dumps({'username': 'new'}),
                          content_type='application/json', **self.agent_header)
         self.assertEqual(response.status_code, 403)

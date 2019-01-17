@@ -16,6 +16,8 @@ from chat_console_3.settings.common import (URL_ENCODE_KEY, CONFIRM_DOMAIN,
                                             EMAIL_HOST_USER, TOKEN_DURATION)
 
 from rest_framework.authtoken.models import Token
+from faq.models import FAQGroup, Question, Answer
+from chatbot.models import Chatbot, Line, Facebook
 
 
 def url_encoder(data):
@@ -160,6 +162,9 @@ def custom_exception_handler(exc, context):
         if response.status_code == 401:
             custom_response_data = {'errors': 'Please login first'}
             response.data = custom_response_data
+        elif response.status_code == 403:
+            custom_response_data = {'errors': 'You do not have the permission'}
+            response.data = custom_response_data
     return response
 
 def transfer_paidtype_duration_to_time(paid_obj):
@@ -215,3 +220,29 @@ def check_upload_file_type(upload_file):
             except:
                 print('====WARNING====: The upload file is not big5')
         return file_result
+
+def delete_create_failed_model(create_status, chatbot_obj):
+    ''' Delete related model when created failed
+
+    When chat-console created chatbot failed or NLU server created model
+    failed, delete all the related objects.
+
+    Args:
+        create_status(BOOLEAN): NLU model created succeeful or not.
+        chatbot_obj: Chatbot object.
+
+    Returns:
+        Created successed: Chatbot object.
+        Created failed: None
+    '''
+
+    create_obj = chatbot_obj
+    if not create_status:
+        FAQGroup.objects.filter(chatbot=chatbot_obj).delete()
+        Question.objects.filter(chatbot=chatbot_obj).delete()
+        Answer.objects.filter(chatbot=chatbot_obj).delete()
+        Line.objects.filter(chatbot=chatbot_obj).delete()
+        Facebook.objects.filter(chatbot=chatbot_obj).delete()
+        chatbot_obj.delete()
+        create_obj = None
+    return create_obj

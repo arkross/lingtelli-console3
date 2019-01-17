@@ -3,6 +3,7 @@ from io import StringIO
 from django.shortcuts import render
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.decorators import (action, api_view,
                                        authentication_classes,
@@ -82,7 +83,9 @@ class FAQGrouptViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         bot_id = self.kwargs.get('id')
         user_obj = self.request.user
-        bot_obj = Chatbot.objects.filter(id=bot_id, user=user_obj).first()
+        bot_obj = Chatbot.objects.filter(Q(id=bot_id) &
+                                         (Q(user=user_obj) |
+                                         Q(assign_user=user_obj))).first()
         return self.queryset.filter(chatbot=bot_obj).order_by('-id')
 
     def create(self, request, id=None):
@@ -159,7 +162,9 @@ class AnswerViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         user_obj = self.request.user
         bot_id = self.kwargs.get('id')
-        bot_obj = Chatbot.objects.filter(id=bot_id, user=user_obj).first()
+        bot_obj = Chatbot.objects.filter(Q(id=bot_id) &
+                                         (Q(user=user_obj) |
+                                         Q(assign_user=user_obj))).first()
         return self.queryset.filter(chatbot=bot_obj)
 
     def create(self, request, id=None):
@@ -259,13 +264,17 @@ class QuestionViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         user_obj = self.request.user
         bot_id = self.kwargs.get('id')
-        bot_obj = Chatbot.objects.filter(id=bot_id, user=user_obj).first()
+        bot_obj = Chatbot.objects.filter(Q(id=bot_id) &
+                                         (Q(user=user_obj) |
+                                         Q(assign_user=user_obj))).first()
         return self.queryset.filter(chatbot=bot_obj)
 
     def create(self, request, id=None):
         if request.body:
             user_obj = request.user
-            bot_obj = Chatbot.objects.filter(id=id, user=user_obj).first()
+            bot_obj = Chatbot.objects.filter(Q(id=id) &
+                                         (Q(user=user_obj) |
+                                         Q(assign_user=user_obj))).first()
             if not bot_obj:
                 return Response({'errors':_('Not found')},
                                 status=HTTP_404_NOT_FOUND)
@@ -298,7 +307,9 @@ class QuestionViewset(viewsets.ModelViewSet):
     def update(self, request, id=None, pk=None):
         if request.body:
             user_obj = request.user
-            bot_obj = Chatbot.objects.filter(id=id, user=user_obj).first()
+            bot_obj = Chatbot.objects.filter(Q(id=id) &
+                                         (Q(user=user_obj) |
+                                         Q(assign_user=user_obj))).first()
             if not bot_obj:
                 return Response({'errors':_('Not found')},
                                 status=HTTP_404_NOT_FOUND)
@@ -368,7 +379,7 @@ def upload_faq_csv(request, pk=None):
                                                    chatbot=bot_obj)
                 if created:
                     group_count += 1
-                    if group_count > int(faq_limit):
+                    if group_count > int(faq_limit) and faq_limit != '0':
                         FAQGroup.objects.filter(chatbot=bot_obj).delete()
                         return Response({'errors':_('Group over limitation')},
                                         status=HTTP_403_FORBIDDEN)
@@ -386,8 +397,6 @@ def upload_faq_csv(request, pk=None):
     return Response({'errors':_('No content')},
                     status=HTTP_404_NOT_FOUND)
 
-                
-            
 
 @csrf_exempt
 @api_view(['GET'])
@@ -440,9 +449,9 @@ def train_bot_faq(request, pk=None):
         return Response({'errors':_('Not found')},
                         status=HTTP_404_NOT_FOUND)
     # TODO: Remove the comment after connect to nlu
-    train_status, err_msg = nlumodel.train_model(bot_obj)
-    if not train_status:
-        return Response({'errors': err_msg},
-                        status=HTTP_500_INTERNAL_SERVER_ERROR)
+    # train_status, err_msg = nlumodel.train_model(bot_obj)
+    # if not train_status:
+    #     return Response({'errors': err_msg},
+    #                     status=HTTP_500_INTERNAL_SERVER_ERROR)
     return Response({'success':_('Training bot succeeded')},
                     status=HTTP_200_OK)

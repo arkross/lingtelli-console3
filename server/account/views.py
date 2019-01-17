@@ -45,6 +45,7 @@ from paidtype.models import PaidType
 
 logger = logging.getLogger(__name__)
 
+
 # MEMBER PART
 # TODO: Fix OPTIONS request appending content to method issue
 # XXX Please send OPTIONS request without content XXX
@@ -104,6 +105,7 @@ def member_login(request):
     else:
         return Response({'errors': 'Username or password is not correct'},
                          status=HTTP_403_FORBIDDEN) 
+
 
 @csrf_exempt
 @api_view(['GET'])
@@ -424,8 +426,6 @@ class MemberProfileViewset(viewsets.ModelViewSet):
             True means having {lookup} pk in url. False the other way around.
         '''
 
-        # TODO: Need to check if the account has really been deleted. 
-        # If not should add a task to delete the account.
         if request.body:
             if request.user.id != int(pk):
                 return Response({'errors':_('Not found')},
@@ -446,7 +446,6 @@ class MemberProfileViewset(viewsets.ModelViewSet):
                             status=HTTP_403_FORBIDDEN)
         return Response({'errors':_('No content')},
                         status=HTTP_400_BAD_REQUEST)
-
 
 
 # AGENT PART
@@ -506,6 +505,7 @@ def agent_logout(request):
     return Response({'success': 'You have successfully logged out'},
                     status=HTTP_200_OK)
 
+
 class AgentProfileViewset(viewsets.ModelViewSet):
     '''Agent profile viewset
     '''
@@ -546,6 +546,9 @@ class AgentProfileViewset(viewsets.ModelViewSet):
     def update(self, request, pk=None):
         if request.body:
             user_obj = request.user
+            if user_obj.id != int(pk):
+                return Response({'errors':_('Not found')},
+                    status=HTTP_404_NOT_FOUND)
             update_data = json.loads(request.body)
 
             # Change password
@@ -580,6 +583,7 @@ class AgentProfileViewset(viewsets.ModelViewSet):
                 acc_obj = AccountInfo.objects.filter(user=user_obj).first()
                 acc_obj.language = update_data.get('language')
                 acc_obj.save()
+
             return Response({'success':_('Update succeeded')},
                             status=HTTP_200_OK)
 
@@ -613,10 +617,14 @@ class AgentProfileViewset(viewsets.ModelViewSet):
 
         detail:
             True means having {lookup} pk in url. False the other way around.
+
+        Request format example:
+        PUT:
+        {
+            "password": "thisisyourpassword"
+        }
         '''
 
-        # TODO: Need to check if the account has really been deleted. 
-        # If not should add a task to delete the account.
         if request.user.is_superuser:
             return Response({'errors':_('Superuser cannot be deleted')},
                             status=HTTP_403_FORBIDDEN)
@@ -641,6 +649,7 @@ class AgentProfileViewset(viewsets.ModelViewSet):
         return Response({'errors':_('No content')},
                         status=HTTP_400_BAD_REQUEST)
 
+
 class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
                          viewsets.GenericViewSet):
     '''Agent member viewset
@@ -650,28 +659,29 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
 
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, IsAdminUser,)
-    queryset = AccountInfo.objects.all()
+    queryset = User.objects.filter(is_staff=False)
     serializer_class = AgentMemberSerializer
 
     def list(self, request):
         res_list = []
-        for acc in self.queryset:
+        for usr in self.queryset:
             res_dict = {}
-            res_dict['id'] = acc.id
-            res_dict['username'] = acc.user.username
+            res_dict['id'] = usr.id
+            res_dict['username'] = usr.username
             res_list.append(res_dict)
         return Response(res_list, status=HTTP_200_OK)
 
     def retrieve(self, request, pk=None):
-        mem_acc_obj = self.queryset.filter(id=pk).first()
-        if mem_acc_obj:
+        user_obj = self.queryset.filter(id=pk).first()
+        if user_obj:
+            acc_obj = user_obj.acc_user.filter().first()
             res_dict = {}
-            res_dict['username'] = mem_acc_obj.user.username
-            res_dict['paid_type'] = mem_acc_obj.paid_type.name
-            res_dict['start_date'] = mem_acc_obj.start_date
-            res_dict['expire_date'] = mem_acc_obj.expire_date
+            res_dict['username'] = user_obj.username
+            res_dict['paid_type'] = acc_obj.paid_type.name
+            res_dict['start_date'] = acc_obj.start_date
+            res_dict['expire_date'] = acc_obj.expire_date
             return Response(res_dict, status=HTTP_200_OK)
-        return Response({'errors':_('Not found')}, status=HTTP_404_NOT_FOUND1)
+        return Response({'errors':_('Not found')}, status=HTTP_404_NOT_FOUND)
 
     def update(self, request, pk=None):
         '''Update member paidtype
@@ -686,7 +696,8 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
             update_data = json.loads(request.body)
             paid_type_id = update_data.get('paid_type', None)
             if paid_type_id:
-                acc_obj = self.queryset.filter(id=pk).first()
+                user_obj = self.queryset.filter(id=pk).first()
+                acc_obj = user_obj.acc_user.filter().first()
                 paid_obj = PaidType.objects.filter(id=paid_type_id).first()
                 acc_obj.paid_type = paid_obj
                 time_now = datetime.now(timezone.utc)

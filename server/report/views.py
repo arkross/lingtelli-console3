@@ -19,7 +19,7 @@ from history.models import History
 from faq.models import FAQStatus
 
 
-class ReportViewSet(viewsets.ReadOnlyModelViewSet):
+class ReportViewset(viewsets.ReadOnlyModelViewSet):
     '''Report related features. List and retrieve methods only.
 
     Can not be modified by user.

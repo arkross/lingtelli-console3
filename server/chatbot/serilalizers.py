@@ -21,7 +21,6 @@ class ChatbotSerializer(serializers.Serializer):
     postback_title = serializers.CharField()
     delete_confirm = serializers.BooleanField()
     bot_type = serializers.CharField()
-    assign_user = serializers.IntegerField()
 
     def to_representation(self, instance):
         chatbot_data = super().to_representation(instance)
@@ -37,6 +36,10 @@ class ChatbotSerializer(serializers.Serializer):
                 .values_list('third_party', flat=True)
             res['third_party'] = third_partys
             res['user'] = instance.user.id
+            if instance.assign_user:
+                res['assign_user'] = instance.assign_user.id
+            else:
+                res['assign_user'] = None
         return res
 
 

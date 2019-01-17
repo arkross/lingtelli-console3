@@ -162,10 +162,10 @@ class ChatbotTest(TestCase):
 
     def test_read_retrieve(self):
         bot_data = ['robot_name', 'greeting_msg', 'failed_msg',
-                    'postback_title', 'created_at', 'updated_at', 'expired_at',
-                    'vendor_id', 'postback_activate', 'delete_confirm',
-                    'bot_type', 'assign_user', 'activate', 'language',
-                    'third_party', 'user']
+                    'postback_title', 'created_at', 'updated_at','vendor_id',
+                    'postback_activate', 'delete_confirm', 'bot_type',
+                    'assign_user', 'activate', 'language', 'third_party',
+                    'user']
         c = Client()
         response = c.get(self.bot_uri, **self.header)
         self.assertEqual(response.status_code, 200)
@@ -175,7 +175,8 @@ class ChatbotTest(TestCase):
     
     def test_update(self):
         bot_update_data = {'robot_name': 'newnamebot', 'greeting_msg': 'LOL',
-                           'failed_msg':'bye', 'postback_title':'similar'}
+                           'failed_msg':'bye', 'postback_title':'similar',
+                           'postback_activate': True}
 
         c = Client()
         response = c.put(self.bot_uri, json.dumps(bot_update_data),
@@ -185,7 +186,7 @@ class ChatbotTest(TestCase):
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
         for k, v in bot_update_data.items():
-            self.assertIn(getattr(updated_bot_obj, k), v)
+            self.assertEqual(getattr(updated_bot_obj, k), v)
     
     def test_update_bot_name_blank(self):
         c = Client()

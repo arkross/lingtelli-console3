@@ -62,8 +62,6 @@ class AgentMemberSerializer(serializers.Serializer):
     Only paidtype can be updated
     '''
 
-    user = serializers.IntegerField(read_only=True)
-    start_date = serializers.DateTimeField(read_only=True)
-    expire_date = serializers.DateTimeField(read_only=True)
-    paid_type = serializers.IntegerField()
+    id = serializers.IntegerField(read_only=True)
+    username = serializers.CharField(read_only=True)
 

@@ -38,7 +38,7 @@ class StandardDataSetPagination(PageNumberPagination):
             'results': data
         })
 
-class HistoryViewSet(viewsets.ReadOnlyModelViewSet):
+class HistoryViewset(viewsets.ReadOnlyModelViewSet):
     '''History related features. List and retrieve methods only.
 
     Can not be modified by user.
@@ -72,7 +72,7 @@ class HistoryViewSet(viewsets.ReadOnlyModelViewSet):
                         status=HTTP_404_NOT_FOUND)
 
 
-class QuestionMatchHistoryViewSet(ListModelMixin, RetrieveModelMixin,
+class QuestionMatchHistoryViewset(ListModelMixin, RetrieveModelMixin,
                                   UpdateModelMixin, viewsets.GenericViewSet):
 
     '''Show similar question matching history

@@ -1,6 +1,7 @@
 import json
 from django.shortcuts import render
 from django.utils.translation import gettext as _
+from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -67,7 +68,6 @@ class ChatbotViewset(viewsets.ModelViewSet):
         "postback_title": "Please chose the similar questoin",
         "created_at": "2017-10-10 00:00:00",
         "updated_at": "2017-12-12 00:00:00",
-        "expired_at": "2018-10-10 00:00:00",
         "vendor_id": "thisisvendorid",
         "postback_activate": False,
         "delete_confirm": False,
@@ -87,7 +87,7 @@ class ChatbotViewset(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user_obj = self.request.user
-        return self.queryset.filter(user=user_obj)        
+        return self.queryset.filter(Q(user=user_obj) | Q(assign_user=user_obj))
 
     def create(self, request):
         '''Create chatbot
@@ -145,19 +145,19 @@ class ChatbotViewset(viewsets.ModelViewSet):
                 nlumodel.initial_question_answer(bot_obj)
                 nlu_create_status, err_msg = nlumodel.create_model(bot_obj)
                 # TODO: Remove this comment after the NLU has setup
-                # TODO: Remove create_bot_obj = True
-                create_bot_obj = \
-                    self.__delete_create_failed_model(nlu_create_status,
-                                                      bot_obj)
-                # create_bot_obj = True
+                # TODO: Remove create_bot_obj = bot_obj
+                # create_bot_obj = \
+                #     utils.delete_create_failed_model(nlu_create_status,
+                #                                      bot_obj)
+                create_bot_obj = bot_obj
                 if not create_bot_obj:
                     return Response({'errors':_('Create bot failed. '+\
                                      'Cause by NLU error.' + err_msg)},
                                      status=HTTP_400_BAD_REQUEST)
                 # TODO change bot_obj to create_bot_obj
                 res = {}
-                res['id'] = bot_obj.id
-                res['robot_name'] = bot_obj.robot_name
+                res['id'] = create_bot_obj.id
+                res['robot_name'] = create_bot_obj.robot_name
                 return Response(res, status=HTTP_201_CREATED)
             return Response({'errors':_('Create bot failed')},
                              status=HTTP_400_BAD_REQUEST)
@@ -167,7 +167,10 @@ class ChatbotViewset(viewsets.ModelViewSet):
     def update(self, request, pk=None):
         if request.body:
             user_obj = request.user
-            bot_obj = Chatbot.objects.filter(id=pk, user=user_obj).first()
+            bot_obj = \
+                Chatbot.objects.filter(Q(id=pk) &
+                                       (Q(user=user_obj) |
+                                        Q(assign_user=user_obj))).first()
             if not bot_obj:
                 return Response({'errors':_('Not found')},
                                  status=HTTP_404_NOT_FOUND)
@@ -213,6 +216,12 @@ class ChatbotViewset(viewsets.ModelViewSet):
     @action(methods=['put'], detail=True, permission_classes=[IsAuthenticated])
     def delete_confirm(self, request, pk=None):
         '''Chatbot delete confirmation
+
+        Request format example:
+        PUT:
+        {
+            "password": "thisisyourpassword"
+        }
         '''
         if request.body:
             user_obj = request.user
@@ -233,32 +242,6 @@ class ChatbotViewset(viewsets.ModelViewSet):
                             status=HTTP_403_FORBIDDEN)
         return Response({'errors':_('No content')},
                         status=HTTP_400_BAD_REQUEST)
-    
-    def __delete_create_failed_model(self, create_status, chatbot_obj):
-        ''' Delete related model when created failed
-
-        When chat-console created chatbot failed or NLU server created model
-        failed, delete all the related objects.
-
-        Args:
-            create_status(BOOLEAN): NLU model created succeeful or not.
-            chatbot_obj: Chatbot object.
-
-        Returns:
-            Created successed: Chatbot object.
-            Created failed: None
-        '''
-
-        create_obj = chatbot_obj
-        if not create_status:
-            FAQGroup.objects.filter(chatbot=chatbot_obj).delete()
-            Question.objects.filter(chatbot=chatbot_obj).delete()
-            Answer.objects.filter(chatbot=chatbot_obj).delete()
-            Line.objects.filter(chatbot=chatbot_obj).delete()
-            Facebook.objects.filter(chatbot=chatbot_obj).delete()
-            chatbot_obj.delete()
-            create_obj = None
-        return create_obj
 
 
 class LineViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
@@ -292,6 +275,23 @@ class LineViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         bot_id = self.kwargs.get('id')
         return Line.objects.filter(chatbot=bot_id)
 
+    def list(self, request, id=None):
+        if request.user.is_staff == True:
+            return Response({'errors': _('Not allowed to get user fb data')},
+                            status=HTTP_403_FORBIDDEN)
+
+        line_obj = Line.objects.filter(chatbot=id).first()
+        serializer = LineSerializer(line_obj)
+        return Response(serializer.data, status=HTTP_200_OK)
+
+    def retrieve(self, request, id=None, pk=None):
+        if request.user.is_staff == True:
+            return Response({'errors': _('Not allowed to get user fb data')},
+                            status=HTTP_403_FORBIDDEN)
+        line_obj = Line.objects.filter(chatbot=id).first()
+        serializer = LineSerializer(line_obj)
+        return Response(serializer.data, status=HTTP_200_OK)
+
     def update(self, request, id=None, pk=None):
         '''Update line data
 
@@ -299,6 +299,9 @@ class LineViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
             id = Chatbot object id
             pk = Line object id
         '''
+        if request.user.is_staff == True:
+            return Response({'errors': _('Not allowed to get user fb data')},
+                            status=HTTP_403_FORBIDDEN)
         if request.body:
             user_obj = request.user
             line_obj = Line.objects.filter(id=pk, chatbot=id).first()
@@ -346,6 +349,22 @@ class FacebookViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         bot_id = self.kwargs.get('id')
         return Facebook.objects.filter(chatbot=bot_id)
 
+    def list(self, request, id=None):
+        if request.user.is_staff == True:
+            return Response({'errors': _('Not allowed to get user fb data')},
+                            status=HTTP_403_FORBIDDEN)
+        fb_obj = Facebook.objects.filter(chatbot=id).first()
+        serializer = FacebookSerializer(fb_obj)
+        return Response(serializer.data, status=HTTP_200_OK)
+
+    def retrieve(self, request, id=None, pk=None):
+        if request.user.is_staff == True:
+            return Response({'errors': _('Not allowed to get user fb data')},
+                            status=HTTP_403_FORBIDDEN)
+        fb_obj = Facebook.objects.filter(chatbot=id).first()
+        serializer = FacebookSerializer(fb_obj)
+        return Response(serializer.data, status=HTTP_200_OK)
+
     def update(self, request, id=None, pk=None):
         '''Update line data
 
@@ -353,6 +372,9 @@ class FacebookViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
             id = Chatbot object id
             pk = Line object id
         '''
+        if request.user.is_staff == True:
+            return Response({'errors': _('Not allowed to get user fb data')},
+                            status=HTTP_403_FORBIDDEN)
         if request.body:
             user_obj = request.user
             fb_obj = Facebook.objects.filter(id=pk, chatbot=id).first()

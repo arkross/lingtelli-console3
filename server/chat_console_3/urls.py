@@ -25,6 +25,7 @@ from chatbot import views as bot_view
 from faq import views as faq_view
 from history import views as his_view
 from report import views as rep_view
+from taskbot import views as task_view
 
 from django.contrib.auth.models import User
 
@@ -36,7 +37,7 @@ member_router.register('', acc_view.MemberProfileViewset)
 # Agent account related
 agent_router = routers.DefaultRouter(trailing_slash=True)
 agent_router.register('', acc_view.AgentProfileViewset)
-# agent_router.register(r'(?P<id>\d+)/delete_confirm',)
+#XXX /agent/pk/delete_confirm/ for delete confirmation api(detail_route)
 
 # Agent member managment related
 agent_member_router = routers.DefaultRouter(trailing_slash=True)
@@ -48,12 +49,12 @@ agent_member_router.register('', acc_view.AgentMemberViewset)
 chatbot_router = routers.DefaultRouter(trailing_slash=True)
 chatbot_router.register('', bot_view.ChatbotViewset)
 #XXX /chatbot/pk/delete_confirm/ for delete confirmation api(detail_route)
-chatbot_router.register(r'(?P<id>\d+)/history', his_view.HistoryViewSet)
-chatbot_router.register(r'(?P<id>\d+)/report', rep_view.ReportViewSet)
+chatbot_router.register(r'(?P<id>\d+)/history', his_view.HistoryViewset)
+chatbot_router.register(r'(?P<id>\d+)/report', rep_view.ReportViewset)
 chatbot_router.register(r'(?P<id>\d+)/faq', faq_view.FAQGrouptViewset)
 chatbot_router.register(r'(?P<id>\d+)/answer', faq_view.AnswerViewset)
 chatbot_router.register(r'(?P<id>\d+)/question', faq_view.QuestionViewset)
-chatbot_router.register(r'(?P<id>\d+)/matching', his_view.QuestionMatchHistoryViewSet)
+chatbot_router.register(r'(?P<id>\d+)/matching', his_view.QuestionMatchHistoryViewset)
 chatbot_router.register(r'(?P<id>\d+)/line', bot_view.LineViewset)
 chatbot_router.register(r'(?P<id>\d+)/facebook', bot_view.FacebookViewset)
 
@@ -61,16 +62,16 @@ chatbot_router.register(r'(?P<id>\d+)/facebook', bot_view.FacebookViewset)
 
 # TODO: Do not have the exact feature for now. Need to make sure first.
 # Agent page chatbot. Use for checking member analysis and creating task chatbot for member
-# agent_bot_router = routers.DefaultRouter(trailing_slash=True)
-# agent_bot_router.register('',)
-# agent_bot_router.register(r'(?P<id>\d+)/history',)
-# agent_bot_router.register(r'(?P<id>\d+)/faq',)
-# agent_bot_router.register(r'(?P<id>\d+)/answer',)
-# agent_bot_router.register(r'(?P<id>\d+)/question',)
-# agent_bot_router.register(r'(?P<id>\d+)/delete_confirm',)
-# agent_bot_router.register(r'(?P<id>\d+)/upload',)
-# agent_bot_router.register(r'(?P<id>\d+)/export',)
-# agent_bot_router.register(r'(?P<id>\d+)/train',)
+#XXX /agent/taskbot/pk/delete_confirm/ for delete confirmation api(detail_route)
+agent_bot_router = routers.DefaultRouter(trailing_slash=True)
+agent_bot_router.register('', task_view.TaskbotViewset)
+agent_bot_router.register(r'(?P<id>\d+)/history', his_view.HistoryViewset)
+agent_bot_router.register(r'(?P<id>\d+)/faq', faq_view.FAQGrouptViewset)
+agent_bot_router.register(r'(?P<id>\d+)/answer', faq_view.AnswerViewset)
+agent_bot_router.register(r'(?P<id>\d+)/question', faq_view.QuestionViewset)
+agent_bot_router.register(r'(?P<id>\d+)/matching', his_view.QuestionMatchHistoryViewset)
+agent_bot_router.register(r'(?P<id>\d+)/line', bot_view.LineViewset)
+agent_bot_router.register(r'(?P<id>\d+)/facebook', bot_view.FacebookViewset)
 
 # Both used api
 thirdparty_router = routers.DefaultRouter(trailing_slash=True)
@@ -100,9 +101,12 @@ urlpatterns = [
     path('member/', include(member_router.urls), name='member_profile'),
 
     # Agent related urls
+    path('agent/taskbot/<int:pk>/upload/', faq_view.upload_faq_csv),
+    path('agent/taskbot/<int:pk>/export/', faq_view.export_faq_csv),
+    path('agent/taskbot/<int:pk>/train/', faq_view.train_bot_faq),
     path('agent/login/', acc_view.agent_login),
     path('agent/logout/', acc_view.agent_logout),
     path('agent/member/', include(agent_member_router.urls), name='agent_member'),
-    # path('agent/<int:pk>/taskbot/', include(agent_bot_router.urls), name='agent_taskbot'),
+    path('agent/taskbot/', include(agent_bot_router.urls), name='agent_taskbot'),
     path('agent/', include(agent_router.urls), name='agent_profile'),
 ]
