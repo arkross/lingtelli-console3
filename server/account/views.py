@@ -685,12 +685,6 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
 
     def update(self, request, pk=None):
         '''Update member paidtype
-
-        To update member's paidtype. Currently dont know how to deal with faq
-        and bot amount when downgrade to lower level of paidtype. Only finished
-        updating expired and started time in account info.
-        XXX NOT FINISH YET XXX
-        TODO: Make sure how downgrade works.
         '''
         if request.body:
             update_data = json.loads(request.body)
@@ -698,7 +692,15 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
             if paid_type_id:
                 user_obj = self.queryset.filter(id=pk).first()
                 acc_obj = user_obj.acc_user.filter().first()
+                old_paid_type = acc_obj.paid_type
                 paid_obj = PaidType.objects.filter(id=paid_type_id).first()
+                if paid_obj.bot_amount < old_paid_type.bot_amount or\
+                    paid_obj.faq_amount < old_paid_type.faq_amount:
+                    status, err = utils.downgrade(user_obj, paid_obj)
+                    if not status:
+                        print(err)
+                        return Response({'errors':_('Something went wrong')},
+                                        status=HTTP_500_INTERNAL_SERVER_ERROR)
                 acc_obj.paid_type = paid_obj
                 time_now = datetime.now(timezone.utc)
                 acc_obj.start_date = time_now

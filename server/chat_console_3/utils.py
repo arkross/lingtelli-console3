@@ -246,3 +246,39 @@ def delete_create_failed_model(create_status, chatbot_obj):
         chatbot_obj.delete()
         create_obj = None
     return create_obj
+
+def downgrade(user, new_paid_type):
+    '''Pay type downgrading
+
+    Delete oldest bots first. If faqs are still over upper limit,
+    Delete oldest faqs.
+    '''
+    bot_limit = int(new_paid_type.bot_amount)
+    faq_limit = int(new_paid_type.faq_amount)
+    bots = Chatbot.objects.filter(user=user).order_by('id')
+    bot_count = bots.count()
+    try:
+        if bot_count > bot_limit:
+            the_amount = bot_count - bot_limit
+            for i in range(the_amount):
+                bots[0].delete()
+    except Exception as e:
+        print('Downgrade deleting bot failed: ', e)
+        return False, '===== Downgrade deleting bot failed ====='
+
+    bots_remain = Chatbot.objects.filter(user=user).order_by('id')
+    total_faq = 0
+    for bot in bots_remain:
+        faq_count = FAQGroup.objects.filter(chatbot=bot).count()
+        total_faq += faq_count
+    try:
+        if total_faq > faq_limit:
+            for bot in bots_remain:
+                faqs = FAQGroup.objects.filter(chatbot=bot).order_by('id')
+                the_amout = total_faq - faq_limit
+                for i in range(the_amout):
+                    faqs[0].delete()
+    except Exception as e:
+        print('Downgrade deleting faq failed: ', e)
+        return False, '===== Downgrade deleting faq failed ====='
+    return True, ''

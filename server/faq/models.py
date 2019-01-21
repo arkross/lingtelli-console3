@@ -18,6 +18,7 @@ class FAQGroup(models.Model):
     chatbot = models.ForeignKey(Chatbot, related_name='faqgroup_chatbot',
                                 on_delete=models.CASCADE)
     csv_group = models.IntegerField(default=0)
+    hide_status = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'faqgroup'

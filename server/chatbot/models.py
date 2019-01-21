@@ -45,6 +45,7 @@ class Chatbot(models.Model):
         assign_user: Only can be assigned when the bot type is task and the 
                      user type is staff. For assigning the task bot created by
                      the staff to client to use.
+        hide_status: Hiding the bot when user paid type downgraded
     '''
 
     robot_name = models.CharField(max_length=100, blank=False, null=False)
@@ -74,6 +75,7 @@ class Chatbot(models.Model):
     assign_user = models.ForeignKey(User, related_name='assign_user',
                                     blank=True, null=True,
                                     on_delete=models.CASCADE)
+    hide_status = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'chatbot'

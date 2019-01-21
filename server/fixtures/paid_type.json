@@ -14,7 +14,7 @@
         "model": "paidtype.paidtype",
         "pk": 2,
         "fields": {
-            "name": "Basic",
+            "name": "Standard",
             "duration": "1_y",
             "bot_amount": "1",
             "faq_amount": "100",
@@ -25,10 +25,10 @@
         "model": "paidtype.paidtype",
         "pk": 3,
         "fields": {
-            "name": "Pro",
+            "name": "Enhanced",
             "duration": "1_y",
             "bot_amount": "5",
-            "faq_amount": "500",
+            "faq_amount": "300",
             "third_party": [1,2,3,4,5]
         }
     },
@@ -40,6 +40,28 @@
             "duration": "0_0",
             "bot_amount": "0",
             "faq_amount": "0",
+            "third_party": [1,2,3,4,5]
+        }
+    },
+    {
+        "model": "paidtype.paidtype",
+        "pk": 5,
+        "fields": {
+            "name": "Tiny",
+            "duration": "1_y",
+            "bot_amount": "1",
+            "faq_amount": "50",
+            "third_party": [1,2,4]
+        }
+    },
+    {
+        "model": "paidtype.paidtype",
+        "pk": 6,
+        "fields": {
+            "name": "Ultimate",
+            "duration": "1_y",
+            "bot_amount": "5",
+            "faq_amount": "500",
             "third_party": [1,2,3,4,5]
         }
     }
