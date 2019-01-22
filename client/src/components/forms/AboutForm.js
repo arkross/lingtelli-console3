@@ -116,11 +116,6 @@ class AboutForm extends React.Component {
 	render = () => {
 		const { t, bots, user: {packages} } = this.props
 		const { loading, showSuccess, errors, form, showModal } = this.state
-		const labelColors = {
-			'Trial': 'grey',
-			'Basic': 'blue',
-			'Pro': 'teal'
-		}
 		const botCount = Object.keys(bots).length
 		const faqCount = _.reduce(bots, (acc, bot) => (acc += (bot && bot.group && bot.group.length) || 0), 0)
 		const currentPaidtype = _.find(packages, p => p.name === form.paid_type)
@@ -135,7 +130,7 @@ class AboutForm extends React.Component {
 				<Grid columns={2} divided='vertically'>
 					<Grid.Row>
 						<Grid.Column>
-							<Label size='large' color={labelColors[form.paid_type]}>{form.paid_type}</Label>
+							<Label size='large' color='grey'>{form.paid_type}</Label>
 							{form.paid_type !== 'Trial' && <table>
 								<tbody>
 									<tr>
