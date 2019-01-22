@@ -21,7 +21,8 @@ class ChatbotTest(TestCase):
             'name': 'Trail',
             'duration': '0_0',
             'bot_amount': '2',
-            'faq_amount': '50'
+            'faq_amount': '50',
+            'user_type': 'M'
         }
 
         demo_data = {
@@ -242,7 +243,8 @@ class DeleteBotConfirmTest(TestCase):
             'name': 'Trail',
             'duration': '0_0',
             'bot_amount': '1',
-            'faq_amount': '50'
+            'faq_amount': '50',
+            'user_type': 'M'
         }
 
         demo_data = {
@@ -325,7 +327,8 @@ class LineTest(TestCase):
             'name': 'Trail',
             'duration': '0_0',
             'bot_amount': '1',
-            'faq_amount': '50'
+            'faq_amount': '50',
+            'user_type': 'M'
         }
 
         demo_data = {
@@ -417,7 +420,8 @@ class FacebookTest(TestCase):
             'name': 'Trail',
             'duration': '0_0',
             'bot_amount': '1',
-            'faq_amount': '50'
+            'faq_amount': '50',
+            'user_type': 'M'
         }
 
         demo_data = {

@@ -22,7 +22,8 @@ class AgentCreateAgentTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '0'
+            'faq_amount': '0',
+            'user_type': 'S'
         }
 
         demo_data = {
@@ -154,7 +155,8 @@ class AgentProfileTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '0'
+            'faq_amount': '0',
+            'user_type': 'S'
         }
 
         demo_data = {
@@ -322,7 +324,8 @@ class DeleteAccountConfirmTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '0'
+            'faq_amount': '0',
+            'user_type': 'S'
         }
 
         demo_data = {
@@ -394,7 +397,17 @@ class AgentMemberTest(TestCase):
             'name': 'Trail',
             'duration': '0_0',
             'bot_amount': '1',
-            'faq_amount': '50'
+            'faq_amount': '50',
+            'user_type': 'M'
+        }
+
+        tiny_data = {
+            'pk': 3,
+            'name': 'Tiny',
+            'duration': '1_y',
+            'bot_amount': '1',
+            'faq_amount': '50',
+            'user_type': 'M'
         }
 
         staff_data = {
@@ -402,7 +415,8 @@ class AgentMemberTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '0'
+            'faq_amount': '0',
+            'user_type': 'S'
         }
 
         demo_data = {
@@ -411,9 +425,11 @@ class AgentMemberTest(TestCase):
         }
         trial_obj = PaidType.objects.create(**trial_data)
         staff_obj = PaidType.objects.create(**staff_data)
+        tiny_obj = PaidType.objects.create(**tiny_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
         trial_obj.third_party.add(demo_obj)
         staff_obj.third_party.add(demo_obj)
+        tiny_obj.third_party.add(demo_obj)
 
         # Create new member account
         user_data = {'username': 'cosmo.hu@lingtelli.com',
@@ -493,7 +509,7 @@ class AgentMemberTest(TestCase):
         c = Client()
         the_member_uri = self.member_uri + str(self.user_obj.id) + '/'
         response = c.put(the_member_uri,
-                         json.dumps({'paid_type': 2}),
+                         json.dumps({'paid_type': 3}),
                          content_type='application/json', **self.agent_header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)

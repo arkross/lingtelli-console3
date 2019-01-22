@@ -21,7 +21,8 @@ class FAQGroupTest(TestCase):
             'name': 'Trail',
             'duration': '0_0',
             'bot_amount': '1',
-            'faq_amount': '50'
+            'faq_amount': '50',
+            'user_type': 'M'
         }
 
         staff_data = {
@@ -29,7 +30,8 @@ class FAQGroupTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '0'
+            'faq_amount': '0',
+            'user_type': 'S'
         }
 
         demo_data = {
@@ -205,7 +207,8 @@ class CSVTest(TestCase):
             'name': 'Trail',
             'duration': '0_0',
             'bot_amount': '1',
-            'faq_amount': '50'
+            'faq_amount': '50',
+            'user_type': 'M'
         }
 
         staff_data = {
@@ -213,7 +216,8 @@ class CSVTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '0'
+            'faq_amount': '0',
+            'user_type': 'S'
         }
 
         demo_data = {
@@ -427,7 +431,8 @@ class AnswerTest(TestCase):
             'name': 'Trail',
             'duration': '0_0',
             'bot_amount': '1',
-            'faq_amount': '50'
+            'faq_amount': '50',
+            'user_type': 'M'
         }
 
         staff_data = {
@@ -435,7 +440,8 @@ class AnswerTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '0'
+            'faq_amount': '0',
+            'user_type': 'S'
         }
 
         demo_data = {
@@ -668,7 +674,8 @@ class QuestionTest(TestCase):
             'name': 'Trail',
             'duration': '0_0',
             'bot_amount': '1',
-            'faq_amount': '50'
+            'faq_amount': '50',
+            'user_type': 'M'
         }
 
         staff_data = {
@@ -676,7 +683,8 @@ class QuestionTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '0'
+            'faq_amount': '0',
+            'user_type': 'S'
         }
 
         demo_data = {

@@ -110,7 +110,8 @@ class FAQGrouptViewset(viewsets.ModelViewSet):
         for bot in bots:
             bot_faq_count = FAQGroup.objects.filter(chatbot=bot).count()
             faq_count += bot_faq_count
-        if int(faq_group_limit) != 0 and faq_count >= int(faq_group_limit):
+        if acc_obj.paid_type.user_type != 'S' and\
+            faq_count >= int(faq_group_limit):
             return Response({'errors':_('Faq group exceeded upper limit')},
                             status=HTTP_403_FORBIDDEN)
         new_csv_id = faq_count + 1
@@ -379,7 +380,8 @@ def upload_faq_csv(request, pk=None):
                                                    chatbot=bot_obj)
                 if created:
                     group_count += 1
-                    if group_count > int(faq_limit) and faq_limit != '0':
+                    if group_count > int(faq_limit) and\
+                        acc_obj.paid_type.user_type != 'S':
                         FAQGroup.objects.filter(chatbot=bot_obj).delete()
                         return Response({'errors':_('Group over limitation')},
                                         status=HTTP_403_FORBIDDEN)

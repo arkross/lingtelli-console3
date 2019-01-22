@@ -9,3 +9,4 @@ class PaidTypeSerializer(serializers.Serializer):
     bot_amount = serializers.CharField()
     faq_amount = serializers.CharField()
     third_party = ThirdPartySerializer(many=True)
+    user_type = serializers.CharField()

@@ -90,7 +90,7 @@ class TaskbotViewset(viewsets.ModelViewSet):
             update_data = json.loads(request.body)
             valid_update_key = ['robot_name', 'greeting_msg', 'failed_msg',
                                 'postback_title', 'postback_activate',
-                                'assign_user']
+                                'assign_user', 'activate']
             not_null = 'robot_name'
             if not update_data.get(not_null):
                 return \

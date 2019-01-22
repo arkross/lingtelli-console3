@@ -2,20 +2,9 @@ from chat_console_3.settings.common import *
 
 # Remember to modify wsgi and manage file to use development settings
 
+ALLOWED_HOSTS = os.environ.get('ALLOW_HOST').split(',')
 
-ALLOWED_HOSTS = [
-    '0.0.0.0',
-    '127.0.0.1',
-    '192.168.10.7',
-    '192.168.10.10'
-]
-
-CORS_ORIGIN_WHITELIST = (
-    '0.0.0.0:8000',
-    '127.0.0.1:8000',
-    '192.168.10.10:3000',
-    'google.com',
-)
+CORS_ORIGIN_WHITELIST = tuple(os.environ.get('WHITE_LIST').split(','))
 
 DATABASES = {
     'default': {
@@ -23,7 +12,7 @@ DATABASES = {
         'USER': 'superuser',
         'NAME': 'console',
         'PASSWORD': 'pass1234',
-        'HOST': '127.0.0.1',
+        'HOST': os.environ.get('DB_HOST'),
         'PORT': '3306',
         'OPTIONS': {
             'charset': 'utf8mb4'
@@ -31,7 +20,13 @@ DATABASES = {
     }
 }
 
+CONFIRM_DOMAIN = os.environ.get('CONFIRM')
+
+# NLU related
+NLU_HOST = os.environ.get('NLU')
+
 # Celery related settings
+# TODO Should be get from env
 CELERY_BROKER_URL = 'redis://localhost:6379'
 
 CELERY_BEAT_SCHEDULE = {

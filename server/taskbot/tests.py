@@ -21,7 +21,8 @@ class TaskbotTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '0'
+            'faq_amount': '0',
+            'user_type': 'S'
         }
 
         demo_data = {
@@ -122,8 +123,6 @@ class TaskbotTest(TestCase):
         c = Client()
         response = c.post('/agent/taskbot/', json.dumps(bot_data),
                           content_type='application/json', **self.agent_header)
-        res_data = json.loads(response.content)
-        print(res_data)
         self.assertEqual(response.status_code, 201)
         res_data = json.loads(response.content)
         bot_obj = Chatbot.objects.get(id=res_data.get('id'))
@@ -164,7 +163,8 @@ class TaskbotTest(TestCase):
     def test_update(self):
         bot_update_data = {'robot_name': 'newnamebot', 'greeting_msg': 'LOL',
                            'failed_msg': 'failed', 'postback_title': 'related',
-                           'postback_activate': True, 'assign_user': None}
+                           'postback_activate': True, 'assign_user': None,
+                           'activate': True}
 
         c = Client()
         response = c.put(self.bot_uri, json.dumps(bot_update_data),
@@ -213,7 +213,8 @@ class DeleteBotConfirmTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '0'
+            'faq_amount': '0',
+            'user_type': 'S'
         }
 
         demo_data = {
@@ -298,7 +299,8 @@ class LineTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '0'
+            'faq_amount': '0',
+            'user_type': 'S'
         }
 
         demo_data = {
@@ -390,7 +392,8 @@ class FacebookTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '0'
+            'faq_amount': '0',
+            'user_type': 'S'
         }
 
         demo_data = {

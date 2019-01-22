@@ -21,7 +21,8 @@ class PaidTypeTest(TestCase):
             'name': 'Trail',
             'duration': '0_0',
             'bot_amount': '1',
-            'faq_amount': '50'
+            'faq_amount': '50',
+            'user_type': 'M'
         }
 
         staff_data = {
@@ -29,7 +30,8 @@ class PaidTypeTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '50'
+            'faq_amount': '50',
+            'user_type': 'S'
         }
 
         demo_data = {
@@ -121,7 +123,7 @@ class PaidTypeTest(TestCase):
     def test_read(self):
         c = Client()
         paidtype_keys = ['id', 'name', 'duration', 'bot_amount', 'faq_amount',
-                         'third_party']
+                         'third_party', 'user_type']
         the_paidtype = self.paidtype_uri + '1/'
         response = c.get(the_paidtype, **self.agent_header)
         self.assertEqual(response.status_code, 200)

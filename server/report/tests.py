@@ -22,7 +22,8 @@ class ReportTest(TestCase):
             'name': 'Trail',
             'duration': '0_0',
             'bot_amount': '1',
-            'faq_amount': '50'
+            'faq_amount': '50',
+            'user_type': 'M'
         }
 
         demo_data = {

@@ -20,7 +20,8 @@ class ThirdpartyTest(TestCase):
             'name': 'Trail',
             'duration': '0_0',
             'bot_amount': '1',
-            'faq_amount': '50'
+            'faq_amount': '50',
+            'user_type': 'M'
         }
 
         staff_data = {
@@ -28,7 +29,8 @@ class ThirdpartyTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '50'
+            'faq_amount': '50',
+            'user_type': 'S'
         }
 
         demo_data = {

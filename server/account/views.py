@@ -106,7 +106,6 @@ def member_login(request):
         return Response({'errors': 'Username or password is not correct'},
                          status=HTTP_403_FORBIDDEN) 
 
-
 @csrf_exempt
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
@@ -117,7 +116,6 @@ def member_logout(request):
     logger.info('=== User ' + user.username + ' has logged out ===')
     return Response({'success': 'You have successfully logged out'},
                     status=HTTP_200_OK)
-
 
 @csrf_exempt
 @api_view(['POST'])
@@ -232,7 +230,6 @@ def resend_email(request):
                         status=HTTP_200_OK)
     return Response({'errors':_('Failed to send email')},
                     status=HTTP_400_BAD_REQUEST)
-
 
 @csrf_exempt
 @api_view(['POST'])
@@ -447,7 +444,6 @@ class MemberProfileViewset(viewsets.ModelViewSet):
         return Response({'errors':_('No content')},
                         status=HTTP_400_BAD_REQUEST)
 
-
 # AGENT PART
 @csrf_exempt
 @api_view(['POST'])
@@ -488,7 +484,6 @@ def agent_login(request):
     else:
         return Response({'errors': 'Username or password is not correct'},
                          status=HTTP_403_FORBIDDEN)
-
 
 @csrf_exempt
 @api_view(['GET'])
@@ -694,6 +689,9 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
                 acc_obj = user_obj.acc_user.filter().first()
                 old_paid_type = acc_obj.paid_type
                 paid_obj = PaidType.objects.filter(id=paid_type_id).first()
+                if paid_obj.name == 'Staff':
+                    return Response({'errors':_('Invalid type')},
+                                    status=HTTP_403_FORBIDDEN)
                 if paid_obj.bot_amount < old_paid_type.bot_amount or\
                     paid_obj.faq_amount < old_paid_type.faq_amount:
                     status, err = utils.downgrade(user_obj, paid_obj)

@@ -106,7 +106,7 @@ class ChatbotViewset(viewsets.ModelViewSet):
             # Check if bot creation is over upper limit
             bot_create_limit = acc_obj.paid_type.bot_amount
             bot_owned_amount = Chatbot.objects.filter(user=user_obj).count()
-            if str(bot_create_limit) != '0' and\
+            if acc_obj.paid_type.user_type != 'S' and\
                 bot_owned_amount >= int(bot_create_limit):
                 return Response({'errors':_('Reach bot create limitation')},
                                  status=HTTP_403_FORBIDDEN)
@@ -118,7 +118,7 @@ class ChatbotViewset(viewsets.ModelViewSet):
             for bot in bots:
                 faq_count = FAQGroup.objects.filter(chatbot=bot).count()
                 faq_owned_amount += faq_count
-            if str(faq_create_limit) != '0' and\
+            if acc_obj.paid_type.user_type != 'S' and\
                 (faq_owned_amount + 1) >= int(faq_create_limit):
                 return Response({'errors':_('Reach faq create limitation')},
                                  status=HTTP_403_FORBIDDEN)

@@ -1,6 +1,11 @@
 from django.db import models
 from thirdparty.models import ThirdParty
 
+USER_TYPE_CHOICE = (
+    ('S', 'STAFF'),
+    ('M', 'MEMBER')
+)
+
 class PaidType(models.Model):
     '''Paid type
 
@@ -19,6 +24,8 @@ class PaidType(models.Model):
     bot_amount = models.CharField(max_length=100, blank=False, null=False)
     faq_amount = models.CharField(max_length=100, blank=False, null=False)
     third_party = models.ManyToManyField(ThirdParty , related_name='paid_party')
+    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICE,
+                                default='M')
 
     class Meta:
         db_table='paid_type'
