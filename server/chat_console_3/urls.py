@@ -19,65 +19,78 @@ from django.urls import path
 from rest_framework import routers
 from rest_framework.authtoken import views
 from account import views as acc_view
+from paidtype import views as paid_view
+from thirdparty import views as third_view
+from chatbot import views as bot_view
+from faq import views as faq_view
+from history import views as his_view
+from report import views as rep_view
+from taskbot import views as task_view
+
+from django.contrib.auth.models import User
 
 # Member account related
 member_router = routers.DefaultRouter(trailing_slash=True)
 member_router.register('', acc_view.MemberProfileViewset)
-#XXX /member/pk/confirm/ for delete confirmation api(detail_route)
+#XXX /member/pk/delete_confirm/ for delete confirmation api(detail_route)
 
 # Agent account related
-# agent_router = routers.DefaultRouter(trailing_slash=True)
-# agent_router.register('',)
-# agent_router.register('<int:pk>/confrim/',)
-# agent_router.register('/member/',)
-# agent_router.register('/report/',) #Not sure what to provide yet
+agent_router = routers.DefaultRouter(trailing_slash=True)
+agent_router.register('', acc_view.AgentProfileViewset)
+#XXX /agent/pk/delete_confirm/ for delete confirmation api(detail_route)
+
+# Agent member managment related
+agent_member_router = routers.DefaultRouter(trailing_slash=True)
+agent_member_router.register('', acc_view.AgentMemberViewset)
+# agent_member_router.register(r'(?P<pk>\d+)/report',) #Not sure what to provide yet
 
 
 # Member page chatbot related. Not specifiy member cause agent can also use it.
-# chatbot_router = routers.DefaultRouter(trailing_slash=True)
-# chatbot_router.register('',)
-# chatbot_router.register('<int:pk>/history/',)
-# chatbot_router.register('<int:pk>/report/',)
-# chatbot_router.register('<int:pk>/faq/',)
-# chatbot_router.register('<int:pk>/answer/',)
-# chatbot_router.register('<int:pk>/question/',)
-# chatbot_router.register('<int:pk>/matching/',)
-# chatbot_router.register('<int:pk>/confirm/',)
-# chatbot_router.register('<int:pk>/line/',)
-# chatbot_router.register('<int:pk>/facebook/',)
-# chatbot_router.register('<int:pk>/upload/',)
-# chatbot_router.register('<int:pk>/export/',)
-# chatbot_router.register('<int:pk>/train/',)
+chatbot_router = routers.DefaultRouter(trailing_slash=True)
+chatbot_router.register('', bot_view.ChatbotViewset)
+#XXX /chatbot/pk/delete_confirm/ for delete confirmation api(detail_route)
+chatbot_router.register(r'(?P<id>\d+)/history', his_view.HistoryViewset)
+chatbot_router.register(r'(?P<id>\d+)/report', rep_view.ReportViewset)
+chatbot_router.register(r'(?P<id>\d+)/faq', faq_view.FAQGrouptViewset)
+chatbot_router.register(r'(?P<id>\d+)/answer', faq_view.AnswerViewset)
+chatbot_router.register(r'(?P<id>\d+)/question', faq_view.QuestionViewset)
+chatbot_router.register(r'(?P<id>\d+)/matching', his_view.QuestionMatchHistoryViewset)
+chatbot_router.register(r'(?P<id>\d+)/line', bot_view.LineViewset)
+chatbot_router.register(r'(?P<id>\d+)/facebook', bot_view.FacebookViewset)
+
 
 
 # TODO: Do not have the exact feature for now. Need to make sure first.
 # Agent page chatbot. Use for checking member analysis and creating task chatbot for member
-# agent_bot_router = routers.DefaultRouter(trailing_slash=True)
-# agent_bot_router.register('',)
-# agent_bot_router.register('<int:pk>/history/',)
-# agent_bot_router.register('<int:pk>/faq/',)
-# agent_bot_router.register('<int:pk>/answer/',)
-# agent_bot_router.register('<int:pk>/question/',)
-# agent_bot_router.register('<int:pk>/confirm/',)
-# agent_bot_router.register('<int:pk>/upload/',)
-# agent_bot_router.register('<int:pk>/export/',)
-# agent_bot_router.register('<int:pk>/train/',)
+#XXX /agent/taskbot/pk/delete_confirm/ for delete confirmation api(detail_route)
+agent_bot_router = routers.DefaultRouter(trailing_slash=True)
+agent_bot_router.register('', task_view.TaskbotViewset)
+agent_bot_router.register(r'(?P<id>\d+)/history', his_view.HistoryViewset)
+agent_bot_router.register(r'(?P<id>\d+)/faq', faq_view.FAQGrouptViewset)
+agent_bot_router.register(r'(?P<id>\d+)/answer', faq_view.AnswerViewset)
+agent_bot_router.register(r'(?P<id>\d+)/question', faq_view.QuestionViewset)
+agent_bot_router.register(r'(?P<id>\d+)/matching', his_view.QuestionMatchHistoryViewset)
+agent_bot_router.register(r'(?P<id>\d+)/line', bot_view.LineViewset)
+agent_bot_router.register(r'(?P<id>\d+)/facebook', bot_view.FacebookViewset)
 
-# Both using api
-# thirdparty_router = routers.DefaultRouter(trailing_slash=True)
-# thirdparty_router.register('',)
+# Both used api
+thirdparty_router = routers.DefaultRouter(trailing_slash=True)
+thirdparty_router.register('',third_view.ThirdpartyViewset)
 
-# paidtype_router = routers.DefaultRouter(trailing_slash=True)
-# paidtype_router.register('',)
+paidtype_router = routers.DefaultRouter(trailing_slash=True)
+paidtype_router.register('', paid_view.PaidTypeViewset)
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Common urls(Could use by both member and agent)
-    # path('chatbot/', include(chatbot_router.urls), name='chatbot'),
-    # path('thirdparty/', include(thirdparty_router.urls), name='thirdparty'),
-    # path('paidtype/', include(paidtype_router.urls), name='paidtype')
+    path('chatbot/<int:pk>/upload/', faq_view.upload_faq_csv),
+    path('chatbot/<int:pk>/export/', faq_view.export_faq_csv),
+    path('chatbot/<int:pk>/train/', faq_view.train_bot_faq),
+    path('chatbot/', include(chatbot_router.urls), name='chatbot'),
+    path('thirdparty/', include(thirdparty_router.urls), name='thirdparty'),
+    path('paidtype/', include(paidtype_router.urls), name='paidtype'),
 
     # Member related urls
     path('member/login/', acc_view.member_login),
@@ -85,12 +98,15 @@ urlpatterns = [
     path('member/register/', acc_view.member_register),
     path('member/confirm/', acc_view.confirm_user),
     path('member/resend/', acc_view.resend_email),
-    path('member/', include(member_router.urls)),
+    path('member/', include(member_router.urls), name='member_profile'),
 
     # Agent related urls
-    # path('agent/<int:pk>/chatbot/', include(agent_bot_router.urls), name='agent_chatbot')
-    # path('agent/', include(account.urls.agent_urls), name='agent_account'),
-    # path('agent/login/',),
-    # path('agent/logout/',),
-    # path('agent/register/',),
+    path('agent/taskbot/<int:pk>/upload/', faq_view.upload_faq_csv),
+    path('agent/taskbot/<int:pk>/export/', faq_view.export_faq_csv),
+    path('agent/taskbot/<int:pk>/train/', faq_view.train_bot_faq),
+    path('agent/login/', acc_view.agent_login),
+    path('agent/logout/', acc_view.agent_logout),
+    path('agent/member/', include(agent_member_router.urls), name='agent_member'),
+    path('agent/taskbot/', include(agent_bot_router.urls), name='agent_taskbot'),
+    path('agent/', include(agent_router.urls), name='agent_profile'),
 ]
