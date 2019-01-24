@@ -1,6 +1,6 @@
 '''Put any functional tool in here
 '''
-import base64, urllib, uuid
+import base64, urllib, uuid, os
 from datetime import datetime, timedelta, timezone
 from Crypto.Cipher import AES
 
@@ -10,14 +10,24 @@ from django.core.mail import send_mail
 from django.http import Http404
 from rest_framework import exceptions
 from rest_framework.views import exception_handler
-
+from rest_framework.authtoken.models import Token
+from faq.models import FAQGroup, Question, Answer
+from chatbot.models import Chatbot, Line, Facebook
 
 from chat_console_3.settings.common import (URL_ENCODE_KEY, CONFIRM_DOMAIN,
                                             EMAIL_HOST_USER, TOKEN_DURATION)
 
-from rest_framework.authtoken.models import Token
-from faq.models import FAQGroup, Question, Answer
-from chatbot.models import Chatbot, Line, Facebook
+if os.environ.get('DEB'):
+    from chat_console_3.settings.development import (URL_ENCODE_KEY,
+                                                     CONFIRM_DOMAIN,
+                                                     EMAIL_HOST_USER,
+                                                     TOKEN_DURATION)
+elif os.environ.get('PROD'):
+    from chat_console_3.settings.production import (URL_ENCODE_KEY,
+                                                    CONFIRM_DOMAIN,
+                                                    EMAIL_HOST_USER,
+                                                    TOKEN_DURATION)
+
 
 
 def url_encoder(data):

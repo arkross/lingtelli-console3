@@ -61,11 +61,11 @@ class TaskbotViewset(viewsets.ModelViewSet):
                 Facebook.objects.create(chatbot=bot_obj)
                 nlumodel.initial_question_answer(bot_obj)
                 # TODO: Remove this when NLU is working fine
-                # nlu_create_status, err_msg = nlumodel.create_model(bot_obj)
-                create_bot_obj = bot_obj
-                # create_bot_obj = \
-                #     utils.delete_create_failed_model(nlu_create_status,
-                #                                      bot_obj)
+                nlu_create_status, err_msg = nlumodel.create_model(bot_obj)
+                # create_bot_obj = bot_obj
+                create_bot_obj = \
+                    utils.delete_create_failed_model(nlu_create_status,
+                                                     bot_obj)
                 if not create_bot_obj:
                     return Response({'errors':_('Create bot failed. '+\
                                      'Cause by NLU error.' + err_msg)},

@@ -195,7 +195,3 @@ class MatchingQuestionTest(TestCase):
         res_data = json.loads(response.content)
         for k in matching_keys:
             self.assertIn(k, res_data)
-
-
-    # TODO:def test_update
-

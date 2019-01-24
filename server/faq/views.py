@@ -450,10 +450,9 @@ def train_bot_faq(request, pk=None):
     if not bot_obj:
         return Response({'errors':_('Not found')},
                         status=HTTP_404_NOT_FOUND)
-    # TODO: Remove the comment after connect to nlu
-    # train_status, err_msg = nlumodel.train_model(bot_obj)
-    # if not train_status:
-    #     return Response({'errors': err_msg},
-    #                     status=HTTP_500_INTERNAL_SERVER_ERROR)
+    train_status, err_msg = nlumodel.train_model(bot_obj)
+    if not train_status:
+        return Response({'errors': err_msg},
+                        status=HTTP_500_INTERNAL_SERVER_ERROR)
     return Response({'success':_('Training bot succeeded')},
                     status=HTTP_200_OK)

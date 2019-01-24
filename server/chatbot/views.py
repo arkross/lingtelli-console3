@@ -146,15 +146,14 @@ class ChatbotViewset(viewsets.ModelViewSet):
                 nlu_create_status, err_msg = nlumodel.create_model(bot_obj)
                 # TODO: Remove this comment after the NLU has setup
                 # TODO: Remove create_bot_obj = bot_obj
-                # create_bot_obj = \
-                #     utils.delete_create_failed_model(nlu_create_status,
-                #                                      bot_obj)
-                create_bot_obj = bot_obj
+                create_bot_obj = \
+                    utils.delete_create_failed_model(nlu_create_status,
+                                                     bot_obj)
+                # create_bot_obj = bot_obj
                 if not create_bot_obj:
                     return Response({'errors':_('Create bot failed. '+\
                                      'Cause by NLU error.' + err_msg)},
                                      status=HTTP_400_BAD_REQUEST)
-                # TODO change bot_obj to create_bot_obj
                 res = {}
                 res['id'] = create_bot_obj.id
                 res['robot_name'] = create_bot_obj.robot_name
