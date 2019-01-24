@@ -47,8 +47,6 @@ logger = logging.getLogger(__name__)
 
 
 # MEMBER PART
-# TODO: Fix OPTIONS request appending content to method issue
-# XXX Please send OPTIONS request without content XXX
 @csrf_exempt
 @api_view(['POST'])
 @authentication_classes([])

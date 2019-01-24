@@ -44,7 +44,6 @@ agent_member_router = routers.DefaultRouter(trailing_slash=True)
 agent_member_router.register('', acc_view.AgentMemberViewset)
 # agent_member_router.register(r'(?P<pk>\d+)/report',) #Not sure what to provide yet
 
-
 # Member page chatbot related. Not specifiy member cause agent can also use it.
 chatbot_router = routers.DefaultRouter(trailing_slash=True)
 chatbot_router.register('', bot_view.ChatbotViewset)
@@ -58,9 +57,6 @@ chatbot_router.register(r'(?P<id>\d+)/matching', his_view.QuestionMatchHistoryVi
 chatbot_router.register(r'(?P<id>\d+)/line', bot_view.LineViewset)
 chatbot_router.register(r'(?P<id>\d+)/facebook', bot_view.FacebookViewset)
 
-
-
-# TODO: Do not have the exact feature for now. Need to make sure first.
 # Agent page chatbot. Use for checking member analysis and creating task chatbot for member
 #XXX /agent/taskbot/pk/delete_confirm/ for delete confirmation api(detail_route)
 agent_bot_router = routers.DefaultRouter(trailing_slash=True)
