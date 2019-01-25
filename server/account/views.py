@@ -156,7 +156,7 @@ def member_register(request):
         user_create_obj['is_active'] = False
         user = User.objects.create_user(**user_create_obj)
 
-        trail_obj = PaidType.objects.get(pk=1)
+        trail_obj = PaidType.objects.get(name='Trial')
         acc_create_obj['user'] = user
         acc_create_obj['paid_type'] = trail_obj
         acc_create_obj['confirmation_code'] = \
