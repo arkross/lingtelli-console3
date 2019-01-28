@@ -1,6 +1,11 @@
 from django.db import models
 from thirdparty.models import ThirdParty
 
+USER_TYPE_CHOICE = (
+    ('S', 'STAFF'),
+    ('M', 'MEMBER')
+)
+
 class PaidType(models.Model):
     '''Paid type
 
@@ -12,13 +17,15 @@ class PaidType(models.Model):
         duration: Time last when paid
         bot_amount: Can be used bot amount
         faq_amount: Can be used faq amount
-        thirdparty: Can be used third parties
+        third_party: Can be used third parties
     '''
     name = models.CharField(max_length=100, blank=False, null=False)
     duration = models.CharField(max_length=100, blank=False, null=False)
     bot_amount = models.CharField(max_length=100, blank=False, null=False)
     faq_amount = models.CharField(max_length=100, blank=False, null=False)
-    thirdparty = models.ManyToManyField(ThirdParty , related_name='paid_party')
+    third_party = models.ManyToManyField(ThirdParty , related_name='paid_party')
+    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICE,
+                                default='M')
 
     class Meta:
         db_table='paid_type'
@@ -27,4 +34,4 @@ class PaidType(models.Model):
         return self.name
 
     def get_third_parties(self):
-        return ",\n".join([t.name for t in self.thirdparty.all()])
+        return ",\n".join([t.name for t in self.third_party.all()])
