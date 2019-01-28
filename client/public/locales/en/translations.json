@@ -1,0 +1,449 @@
+{
+  "login": {
+    "loginBtn": "Login",
+    "description": "New to us? ",
+    "signUp": "Sign up"
+  },
+  "menu": {
+    "dashboard": "Dashboard",
+    "account": "Account",
+    "logout": "Logout",
+    "bot": "ChatBots",
+    "create": "Create",
+    "facebook": "Facebook",
+    "line": "LINE",
+    "web": "Web",
+    "api": "API"
+  },
+  "demo": {
+    "button": "Test Bot",
+    "title": "Demo Bot",
+    "input": "message...",
+    "warning": "Please choose a chatbot for test first."
+  },
+  "chatbot": {
+    "name": "Chatbot Name",
+    "greetingMsg": "Greeting Message",
+    "failedMsg": "Failed Message",
+    "postbackMsg": "Recommendation Title",
+    "expiredAt": "Expired at",
+    "placeholder": {
+      "name": "Give it a robot-like name e.g. Jarvis",
+      "greetingMsg": "The first message your bot speaks e.g. \"Hello!\"",
+      "failedMsg": "The bot will speak this message if it fails to understand e.g. \"Sorry, I don't understand.\"",
+      "postbackMsg": "The message when the bot offers recommendation e.g. \"Please select one\""
+    },
+    "update": "Update",
+    "delete": {
+      "title": "Confirm Delete Bot",
+      "button": "Delete",
+      "warning": "Are you sure you want to delete bot <0><0></0></0> ? This action cannot be undone.",
+      "cancel": "Cancel",
+      "success": "Bot successfully deleted",
+      "prompt_password": "Please input your password to confirm."
+    },
+    "create": {
+      "text": "Create Chatbot",
+      "bot_count": "Chatbot count / limit",
+      "close": "Close",
+      "btns": {
+        "create": "Create",
+        "cancel": "Cancel"
+      }
+    },
+    "copy": "Copy",
+    "copied": "Copied",
+    "success": "Chatbot settings saved successfully!",
+    "setting": {
+      "text": "Basic Setting",
+      "unavailable": "Unavailable in your current subscription.",
+      "line": {
+        "title": "Line Setting",
+        "token": "Channel Access Token",
+        "secret": "Channel Secret",
+        "webhookURL": "Webhook URL",
+        "description": "When you have already created a chatbot in our platform, activate it and follow the instructions to connect it to a LINE Channel.",
+        "steps": {
+          "_1": "If you don't have a LINE account, create a LINE account.",
+          "_2": "If you have a LINE account, go to <0>LINE developers page</0> and click <1>Messaging API</1>.",
+          "_3": "Click <0>Add new provider</0> button from the left menu. Follow the instructions to create a provider.",
+          "_4": "After creating the provider, click on <0>Messaging API</0> and fill in the information to create a new channel.",
+          "_5": "After creating the channel, click on the channel you just created.",
+          "_6": "In <0>Messaging settings</0> section, set <1>Use webhooks</1> to <2>Enabled</2>.",
+          "_7": "Issue a new <0>Channel access token</0> and copy it to our platform <1></1>.",
+          "_8": "Move to <0>Basic Information</0> section. Copy the <1>Channel secret</1> and paste it to <2></2> in our platform.",
+          "_9": "Copy the <0></0> from our platform, paste it into <1>Webhook URL</1> field and click <2>Verify</2>.",
+          "_10": "Now you can use our chatbot on your LINE."
+        }
+      },
+      "facebook": {
+        "title": "Facebook Setting",
+        "token": "Access Token",
+        "verify": "Verify Token",
+        "webhookURL": "Webhook URL",
+        "description": "When you have already created a chatbot in our platform, activate it and follow the instructions to connect it to a Fans Page.",
+        "steps": {
+          "_1": "If you don't have a Fans Page, create a Fans Page.",
+          "_2": "If you don't have a Facebook account, please create an account.",
+          "_3": "If you already have a Facebook account, go to <0>Facebook for Developers</0> page.",
+          "_4": "In Facebook for Developers page, look for <0>My Apps</0> on the top right of the page and choose <1>Add New App</1>.",
+          "_5": "After creating the new apps, click <0>Set Up</0> on <1>Messenger</1>.",
+          "_6": "Find <0>Token Generation</0> section and select your Fans Page, it will display a <1>Page Access Token</1>.",
+          "_7": "After generating <0>Page Access Token</0>, copy it to our platform's <1></1>.",
+          "_8": "Fill in <0></0> text box on our platform with \"Hello\".",
+          "_9": "Back to Facebook. Find <0>Webhooks</0> and click on <1>Setup Webhooks</1>.",
+          "_10": "Copy <0></0> from our platform and paste it to <1>Callback URL</1> in Facebook.",
+          "_11": "In our platform page, make sure <0></0> is the same as in Facebook's <1>Verify Token</1>, and click on <2></2> button.",
+          "_12": "Back to Facebook. In <0>Subscription Fields</0> section, check <1>messages</1> and click on <2>Verify and Save</2>.",
+          "_13": "If no any errors from above, you can select your Fans Page in Webhooks field, and click on <0>Subscribe</0> button.",
+          "_14": "Find <0>App Review for Messenger</0> section, click on <1>Add to Submission</1> for <2>page_messaging</2>.",
+          "_15": "Now you can start chatting with your Fans Page."
+        }
+      },
+      "web": {
+        "title": "Web Setting",
+        "description": "Activate this platform and copy the following script and paste it before the body closing tag (</body>) of your website.",
+        "customizations": "Customizations",
+        "custHeader": "Warning",
+        "custDescription": "System does not save any customization data. Please remember to copy the script before leaving this page",
+        "preview": "Preview",
+        "robotIcon": "Robot Icon (PNG, SVG, GIF, JPEG)",
+        "chatIcon": "Chat Icon (PNG, SVG, GIF, JPEG)",
+        "headerBackgroundColor": "Theme Background Color",
+        "headerTextColor": "Theme Text Color",
+        "chatLabel": "Icon Text"
+      },
+      "api": {
+        "title": "API Setting",
+        "description": "Activate this platform to start using the API.",
+        "noData": "None",
+        "object": "Object",
+        "objectList": "List of Objects",
+        "table": {
+          "name": "Name",
+          "value": "Value",
+          "description": "Description",
+          "optional": "Optional"
+        },
+        "headers": "Headers",
+        "params": "Request Parameters",
+        "paramSamples": "Request Samples",
+        "responses": "Response Description",
+        "respSamples": "Response Samples"
+      }
+    },
+    "top_page": {
+      "text": "Top"
+    },
+    "integration": {
+      "text": "Integration",
+      "facebook": "Facebook",
+      "line": "LINE",
+      "web": "Web",
+      "api": "API",
+      "see_tutorial": "See Tutorial",
+      "hide_tutorial": "Hide Tutorial",
+      "activated": "Activated",
+      "inactive": "Inactive"
+    },
+    "history": {
+      "text": "History",
+      "sender": "Sender",
+      "content": "Content",
+      "datetime": "Date/Time",
+      "empty": "No Data"
+    },
+    "analysis": {
+      "text": "Analysis",
+      "questions": "Total Questions",
+      "unhandled": "Unhandled Questions",
+      "label": "#Questions",
+      "top_5": "Top 5 Questions",
+      "options": {
+        "_7": "in 7 days",
+        "_14": "in 14 days",
+        "_30": "in 30 days"
+      }
+    },
+    "faq": {
+      "text": "FAQ",
+      "export": "Export CSV",
+      "import": "Import CSV",
+      "train": "Train Model",
+      "add": "Add New FAQ",
+      "question": "Add Question",
+      "answer": "Add Answer",
+      "search": "Search Answer",
+      "form": {
+        "question": "Click for Question",
+        "answer": "Click for Answer"
+      },
+      "delete_modal": {
+        "title": "Delete Group",
+        "message": "Are you sure you want to delete this group?"
+      },
+      "enable_postback": "Postback Disabled",
+      "disable_postback": "Postback Enabled"
+    },
+    "recommendations": {
+      "text": "Recommendations",
+      "ori_question": "Original Question",
+      "selected_question": "Selected Question",
+      "group": "Group"
+    },
+    "pricing": {
+      "text": "Pricing",
+      "selected": "Selected"
+    },
+    "selectLanguage": "Language",
+    "language": {
+      "undefined": "Unknown",
+      "en": "English",
+      "cn": "简体中文",
+      "tw": "繁體中文"
+    },
+    "tile": {
+      "last_7_days": "Last 7 Days",
+      "total_questions": "Total Questions",
+      "success_count": "Successfully Answered",
+      "success_rate": "Success Rate",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "this_week": "This Week",
+      "last_week": "Last Week",
+      "this_month": "This Month",
+      "last_month": "Last Month",
+      "detail": "Detail"
+    },
+    "test": {
+      "text": "Test"
+    }
+  },
+  "api": {
+    "info": {
+      "title": "Bot Info",
+      "responses": {
+        "reply": {
+          "title": "Reply",
+          "robotName_value": "",
+          "robotName_desc": "Chatbot name",
+          "activate_value": "",
+          "activate_desc": "Fixed value \"true\"",
+          "failedMsg_value": "",
+          "failedMsg_desc": "Message sent by the bot when it fails to understand.",
+          "greetingMsg_value": "",
+          "greetingMsg_desc": "Message sent by the bot in the beginning of conversation.",
+          "chatbotId_value": "",
+          "chatbotId_desc": "Chatbot primary key, used internally.",
+          "postbackTitle_value": "",
+          "postbackTitle_desc": "Recommendation title"
+        } 
+      },
+      "responseSamples": {
+        "success": "Success",
+        "notFound": "Bot Not Found"
+      }
+    },
+    "message": {
+      "title": "Message",
+      "params": {
+        "root": {
+          "title": "Payload Structure",
+          "userId_value": "",
+          "userId_desc": "User ID",
+          "message_value": "Message Object",
+          "message_desc": "See table Message Structure",
+          "type_value": "\"message\" or \"postback\"",
+          "type_desc": "\"message\" if the message is a plain text, \"postback\" if the message is a reply from a previously provided choices."
+        },
+        "message": {
+          "title": "Message Structure",
+          "text_value": "",
+          "text_desc": "The question content",
+          "id_value": "",
+          "id_desc": "Choice ID. Required if type=\"postback\"",
+          "oriQue_value": "",
+          "oriQue_desc": "The original question asked by the user. Required if type=\"postback\""
+        }
+      },
+      "responses": {
+        "reply": {
+          "title": "Reply",
+          "sender_value": "",
+          "sender_desc": "Fixed value \"BOT\"",
+          "type_value": "\"text\" or \"list\"",
+          "type_desc": "See table Choice Structure",
+          "state_value": "\"start\", \"in_progress\", or \"completed\"",
+          "state_desc": "Session's state",
+          "success_value": "true or false",
+          "success_desc": "Indicates if the last message is understood by the bot. True if the bot understands, false otherwise.",
+          "uid_value": "",
+          "uid_desc": "User ID",
+          "sid_value": "",
+          "sid_desc": "Session ID",
+          "oriQue_value": "",
+          "oriQue_desc": "The original question from the user",
+          "data_value": "Data Object",
+          "data_desc": "See table Data Structure"
+        },
+        "data": {
+          "title": "Data Structure",
+          "text_value": "",
+          "text_desc": "Reply content. Only appears when type=\"text\"",
+          "title_value": "",
+          "title_desc": "Choice title. Only appears when type=\"list\"",
+          "buttons_value": "List of Choice objects",
+          "buttons_desc": "Only appears when type=\"list\""
+        },
+        "choice": {
+          "title": "Choice Structure - type=\"list\"",
+          "id_value": "",
+          "id_desc": "Choice ID. Used when sending request with type=\"postback\"",
+          "oriQue_value": "",
+          "oriQue_desc": "Original question asked by the user",
+          "text_value": "",
+          "text_desc": "Question similar to the question asked by the user."
+        }
+      },
+      "responseSamples": {
+        "messageSuccess": "Success - Message",
+        "postbackSuccess": "Success - List",
+        "errorNotActivated": "Error - Platform is not activated"
+      }
+    },
+    "history": {
+      "title": "History",
+      "params": {
+        "payload": {
+          "title": "Payload Structure",
+          "userId_value": "",
+          "userId_desc": "User ID"
+        }
+      },
+      "responseSamples": {
+        "success": "Success",
+        "notFound": "Error - Not Found"
+      }
+    }
+  },
+  "register": {
+    "mail": "Email",
+    "registerBtn": "Register",
+    "nickname": "Nickname",
+    "password": "Password",
+    "password2": "Confirm Password",
+    "description": {
+      "context": "Back to ",
+      "title": "Login"
+    }
+  },
+  "errors": {
+    "token": "Token cannot be blank",
+    "secret": "Secret cannot be blank",
+    "nickname": "nickname cannot be blank",
+    "message": {
+      "header": "Error"
+    },
+    "robotName": {
+      "blank": "Robot name cannot be blank."
+    },
+    "greetingMsg": {
+      "blank": "Greeting message cannot be blank."
+    },
+    "failedMsg": {
+      "blank": "Failed message cannot be blank."
+    },
+    "language": {
+      "blank": "Please select this chatbot's language."
+    },
+    "package": {
+      "invalid": "Please select a package."
+    },
+    "password": {
+      "blank": "password cannot be blank",
+      "invalid": "invalid password format"
+    },
+    "password2": {
+      "blank": "password cannot be blank",
+      "invalid": "should be same as your password"
+    },
+    "mail": {
+      "blank": "mail cannot be blank",
+      "invalid": "invalid mail"
+    },
+    "analysis": {
+      "fetch": "failed to fetch data, please refresh webpage."
+    },
+    "demo": {
+      "ask": "Network problem, please try again.",
+      "recommendations_title": "Do you mean the question like below?"
+    },
+    "faq": {
+      "upload": "Failed to upload, please check your own file.",
+      "train": "Failed to train data.",
+      "export": "Failed to export data, please retry."
+    },
+    "global": {
+      "network": "Failed to fetch data. Please refresh the page. If this problem persists, contact system administrator.",
+      "bot_not_found": "The specified bot does not exist.",
+      "page_not_found": "The page you're looking for does not exist.",
+      "go_back": "Return to",
+      "integration_not_activated": "This platform is not active."
+    }
+  },
+  "success": {
+    "faq": {
+      "upload": "File uploaded successfully.",
+      "train": "Model has been trained successfully."
+    }
+  },
+  "account": {
+    "profile": "Profile",
+    "plan": "Active Plan",
+    "activation_date": "Activated At",
+    "expiration_date": "Expired At",
+    "bot_limit": "Chatbots",
+    "faq_limit": "FAQ Groups",
+    "edit": "Edit Account Details",
+    "success": "Account updated successfully!",
+    "confirmation": {
+      "description": "Please check your inbox to activate your account.",
+      "status": {
+        "wait": "Please wait <1><0>{{minutes}}</0></1> minutes to resend.",
+        "resend": "Click here to resend mail."
+      },
+      "reset_password": "Password reset successfully. Please log in again."
+    },
+    "validation": {
+      "loading": "Validating your email, please wait....",
+      "fail": "Invalid token, please re-click link from your email.",
+      "login": "Click here to login page",
+      "success": "You email has been verified."
+    },
+    "form": {
+      "mail": "Email",
+      "nickname": "Nickname",
+      "password_reset": "Password Reset",
+      "password": "Current Password",
+      "password2": "New Password",
+      "repassword": "Confirm New Password",
+      "submit": "Update",
+      "mail_placeholder": "Email Address",
+      "nickname_placeholder": "Choose a nickname",
+      "password_placeholder": "Leave blank if no change",
+      "password2_placeholder": "Leave blank if no change",
+      "repassword_placeholder": "Leave blank if no change"
+    }
+  },
+
+  "validation": {
+    "required": "{{field}} is required.",
+    "email": "{{field}} is not a valid email format.",
+    "regex": "{{field}} format is not valid.",
+    "length": "{{field}} should be {{param1}} characters.",
+    "min": "{{field}} should be more than {{param1}} characters.",
+    "max": "{{field}} should be less than {{param1}} characters.",
+    "range": "{{field}} should be between {{param1}} and {{param2}} characters.",
+    "match": "{{field}} should match {{param1}}."
+  }
+}

@@ -35,6 +35,7 @@ class Chatbot(models.Model):
         updated_at: Chatbot updated time.
         third_party: Platform chatbot is using on.
         user: User who's owning the chatbot.
+        expired_at: Expire time for chatbot.
         activate: Chatbot is activated or not.
         postback_activate: For forcing giving similar questions to client.
         postback_title: Showing postback title message.
@@ -45,7 +46,6 @@ class Chatbot(models.Model):
         assign_user: Only can be assigned when the bot type is task and the 
                      user type is staff. For assigning the task bot created by
                      the staff to client to use.
-        hide_status: Hiding the bot when user paid type downgraded
     '''
 
     robot_name = models.CharField(max_length=100, blank=False, null=False)
@@ -62,6 +62,8 @@ class Chatbot(models.Model):
                                          related_name='group_bot_party')
     user = models.ForeignKey(User, related_name='chatbot_user',
                              on_delete=models.CASCADE)
+    expired_at = models.DateTimeField(auto_now_add=False, auto_now=False,
+                                      blank=True, null=True)
     activate = models.BooleanField(default=True)
     language = models.CharField(max_length=10, choices=LANGUAGE_CHOICE,
                                 default='tw')
@@ -75,12 +77,11 @@ class Chatbot(models.Model):
     assign_user = models.ForeignKey(User, related_name='assign_user',
                                     blank=True, null=True,
                                     on_delete=models.CASCADE)
-    hide_status = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'chatbot'
-    
-    def __str__(self):
+
+    def __unicode__(self):
         return self.robot_name
 
     def get_third_parties(self):
@@ -99,7 +100,7 @@ class BotThirdPartyGroup(models.Model):
 
     chatbot = models.ForeignKey(Chatbot, related_name='group_chatbot',
                                 on_delete=models.CASCADE)
-    third_party = models.ForeignKey(ThirdParty, related_name='group_thirdparty',
+    thirdparty = models.ForeignKey(ThirdParty, related_name='group_thirdparty',
                                    on_delete=models.CASCADE)
 
     class Meta:
@@ -121,7 +122,13 @@ class Line(models.Model):
                                 on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'bot_line'
+        db_table = 'line'
+
+    def __str__(self):
+        return self.chatbot.robot_name
+    
+    def chatbot_user(self):
+        return self.chatbot.user.username
 
 
 class Facebook(models.Model):
@@ -139,4 +146,10 @@ class Facebook(models.Model):
                                 on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'bot_facebook'
+        db_table = 'facebook'
+
+    def __str__(self):
+        return self.chatbot.robot_name
+
+    def chatbot_user(self):
+        return self.chatbot.user.username

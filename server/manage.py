@@ -3,13 +3,7 @@ import os
 import sys
 
 if __name__ == '__main__':
-    setting_file = 'chat_console_3.settings.common'
-    if os.environ.get('ENV') == 'DEV':
-        setting_file = 'chat_console_3.settings.development'
-    elif os.environ.get('ENV') == 'PROD':
-        setting_file = 'chat_console_3.settings.production'
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', setting_file)
-
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chat_console_3.settings.development')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

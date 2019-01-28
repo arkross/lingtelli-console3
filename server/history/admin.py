@@ -1,6 +1,3 @@
 from django.contrib import admin
 
-from .models import History, QuestionMatchHistory
-
-admin.site.register(History)
-admin.site.register(QuestionMatchHistory)
+# Register your models here.

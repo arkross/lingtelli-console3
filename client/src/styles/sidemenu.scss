@@ -1,0 +1,38 @@
+.leftmenu-container {
+  .ui.vertical.menu {
+    /* background-color: rgb(3, 54, 61); */
+    &.item {
+      font-size: 15px;
+    }
+  }
+  
+  .ui.vertical.menu .bots {
+    color: #fff;
+
+    &.span {
+      color: #fff;
+      opacity: 0.55;
+    }
+
+    .item {
+      color: #fff;
+
+      &:hover {
+        color: #fff;
+        opacity: 1;
+      }
+    }
+
+    .bottomStyle {
+      .item {
+        color: #fff;
+        opacity: 0.55;
+      }
+    }
+  }
+  
+  .logo {
+    height: 30px
+  }
+  
+}
