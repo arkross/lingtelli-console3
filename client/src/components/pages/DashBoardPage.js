@@ -8,7 +8,7 @@ import { logout } from 'actions/auth';
 import { fetchDetail, fetchPackages } from 'actions/user'
 import { fetchAllBotDetails, fetchBot, fetchHistory, fetchPlatforms } from 'actions/bot';
 import { hideAllMessages } from 'actions/message'
-import { Dimmer, Loader, Dropdown, Menu, Divider, Container, Message, Icon} from 'semantic-ui-react';
+import { Dimmer, Loader, Dropdown, Menu, Divider, Container, Message, Icon, Label} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import LingBreadcrumbs from 'components/utils/LingBreadcrumbs'
 import SideMenuPage from './SideMenuPage';
@@ -91,7 +91,7 @@ class DashBoardPage extends React.Component {
 
 	render = () => {
 		const { loading, openDemoModal, openSideMenu } = this.state;
-		const { t, match, location, history, messages, hideAllMessages } = this.props
+		const { t, match, location, history, messages, hideAllMessages, user } = this.props
 
 		let dropdownText = _.find(options, el => el.value === localStorage.getItem('i18nextLng'))
 		if ( ! dropdownText) {
@@ -113,6 +113,10 @@ class DashBoardPage extends React.Component {
 							<LingBreadcrumbs t={t} pathname={location.pathname}/>
 						</Menu.Item>
 						<Menu.Menu position='right'>
+							{user.paid_type &&
+							<Menu.Item>
+								<Label>{user.paid_type}</Label>
+							</Menu.Item> }
 							<Menu.Item>
 								<Dropdown
 									text={dropdownText.text}
@@ -173,6 +177,7 @@ DashBoardPage.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
+	user: state.get('user'),
 	messages: state.get('messages')
 })
 

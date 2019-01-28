@@ -57,6 +57,8 @@ export default {
 
 	isExpired: async () => (await axios.get(`${API_HOST}/chatbot/`)).data,
 
+	agentIsExpired: async () => (await axios.get(`${API_HOST}/member/`)).data,
+
 	/**
 	 * @typedef LogoutResponse
 	 * @prop {string} success Success message

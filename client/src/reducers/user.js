@@ -4,6 +4,7 @@ import { fromJS } from 'immutable'
 const initState = fromJS({
 	info: {},
 	access_token: '',
+	agent_token: '',
 	packages: []
 })
 
@@ -30,6 +31,10 @@ export default function user(state = initState, action = {}) {
 		// return { ... state, ...action.detail}
 	case types.FETCH_USER_PACKAGES:
 		return state.set('packages', fromJS(action.packages))
+	case types.AGENT_LOGGED_IN:
+		return state.set('agent_token', action.auth)
+	case types.AGENT_LOGGED_OUT:
+		return state.set('agent_token', '')
 	default:
 		return state
 	}

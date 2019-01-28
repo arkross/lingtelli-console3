@@ -1,6 +1,6 @@
 import * as types from '../types'
 import api from '../apis/auth'
-import setAuthorizationHeader from '../utils/setAuthorizationHeader' 
+import setAuthorizationHeader from '../utils/setAuthorizationHeader'
 
 // login action function
 export const userLoggedIn = auth => ({

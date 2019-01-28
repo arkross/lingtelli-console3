@@ -2,6 +2,7 @@ import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { Dimmer, Loader } from 'semantic-ui-react';
 import { logout, logoutDirectly } from 'actions/auth';
+import { logout as agentLogout } from 'actions/agent'
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoginPage from 'components/pages/LoginPage';
@@ -13,8 +14,9 @@ import NotFoundPage from 'components/pages/NotFoundPage'
 import Group from 'components/utils/Group';
 import UserRoute from 'components/routes/UserRoute';
 import GuestRoute from 'components/routes/GuestRoute';
+import AgentApp from 'components/pages/agent/App'
 import setAuthorizationHeader from 'utils/setAuthorizationHeader';
-import isExpired from 'utils/isExpired';
+import {memberIsExpired, agentIsExpired} from 'utils/isExpired';
 
 import 'moment/locale/zh-cn'
 import 'moment/locale/zh-tw'
@@ -28,13 +30,13 @@ class App extends React.Component {
   }
 
   componentWillMount = () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token') || localStorage.getItem('agent_token')
 
     if (token) {
       this.setState({ loading: true });
       // Check token if it expred if token is exist.
       setAuthorizationHeader(token);
-      isExpired(token)
+      memberIsExpired(token)
         .then( (expired) => {
           if (expired) {
             this.props.logout()
@@ -48,7 +50,18 @@ class App extends React.Component {
                 this.setState({ loading: false });
               });
           } else {
-            this.setState({ loading: false });
+            agentIsExpired(token).then(expired => {
+              if (expired) {
+                this.props.agentLogout().then(() => {
+                  this.setState({ loading: false })
+                })
+                .catch(() => {
+                  this.setState({ loading: false })
+                })
+              } else {
+                this.setState({ loading: false })
+              }
+            })
           }
         })
     }
@@ -80,6 +93,7 @@ class App extends React.Component {
           path='/dashboard'
           component={DashBoardPage}
         />
+        <Route location={location} path='/agent*' component={AgentApp} />
         <Route component={NotFoundPage} />
       </Switch>
     )
@@ -92,4 +106,4 @@ App.propTypes = {
   }).isRequired
 }
 
-export default connect(null, { logout, logoutDirectly })(App)
+export default connect(null, { logout, logoutDirectly, agentLogout })(App)

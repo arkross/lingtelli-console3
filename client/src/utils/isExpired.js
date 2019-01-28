@@ -1,6 +1,6 @@
 import api from '../apis/auth'
 
-export default (token = null) => {
+export const memberIsExpired = (token = null) => {
 	return api.isExpired(token)
 		.then( () => {
 			return false
@@ -8,4 +8,11 @@ export default (token = null) => {
 		.catch( () => {
 			return true
 		})
+}
+
+
+export const agentIsExpired = token => {
+	return api.agentIsExpired(token)
+		.then(() => false)
+		.catch(() => true)
 }

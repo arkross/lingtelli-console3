@@ -143,7 +143,8 @@ class CreateBotPage extends React.Component {
 
 		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)
 
-		const bot_limit = user.paid_type ? currentPaidtype.bot_amount : 5
+		const bot_limit = (user.paid_type && currentPaidtype && currentPaidtype.bot_amount > 0) ? currentPaidtype.bot_amount : Infinity
+		const botLimitText = bot_limit === Infinity ? '∞' : bot_limit
 		const botCount = Object.keys(bots).length
 
 		const { errors, data, openModal, loading } = this.state
@@ -199,7 +200,7 @@ class CreateBotPage extends React.Component {
 				</Form>
 				<div>
 					<Label color={botCount < bot_limit ? 'green' : 'red'} size='large' basic>
-						{t('chatbot.create.bot_count')} : {botCount} / {bot_limit}
+						{t('chatbot.create.bot_count')} : {botCount} / {botLimitText}
 					</Label>
 					<Button
 						disabled={botCount >= bot_limit}
