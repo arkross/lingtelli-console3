@@ -1,0 +1,67 @@
+.bot-page {
+  width: 99%;
+  margin: auto;
+
+  .ui.pointing.menu a,
+  .ui.form .field>label {
+    font-size: 15px;
+  }
+
+  .bot-config-container.ui.form {
+    .field {
+      &>label {
+        margin-bottom: 12px;
+      }
+      input {
+        border: 1.5px solid #ccc;
+        border-radius: 25px;
+      }
+    }
+    .btn-group {
+      margin-top: 35px;
+    }
+  }
+
+  .analysis-container {
+    padding: 15px;
+
+    .analysis-dropdown {
+      margin-bottom: 25px;
+    }
+
+    .analysis-widget {
+      position: relative;
+      margin-bottom: 25px;
+
+      .analysis-graph {
+        position: relative;
+      }
+    }
+
+    .scale-button-group {
+      margin-bottom: 20px;
+    }
+  }
+}
+
+.tile-dashboard {
+  .add-bot {
+    .content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+  }
+}
+
+pre {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  background-color: #ddd;
+  border-radius: 5px;
+  padding: 4px;
+  
+  code {
+    padding: 10px;
+  }
+}
