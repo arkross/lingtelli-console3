@@ -98,8 +98,8 @@ class FAQConfigPage extends React.Component {
 		const { groups, activePage, keyword, openDeleteModal } = this.state
 
 		const totalPages = Math.ceil(length / PER_PAGE)
-		const startNumber = PER_PAGE * (activePage - 1) + 1
-		const displayGroups = _.slice(groups, startNumber, startNumber + PER_PAGE + 1)
+		const startNumber = PER_PAGE * (activePage - 1)
+		const displayGroups = _.slice(groups, startNumber, startNumber + PER_PAGE)
 		return (
 			<div>
 				<ToolComponent onKeywordSubmit={this.handleKeywordSubmit} keyword={keyword} onKeywordChange={this.handleKeywordChange} activeBot={activeBot} onCreateGroup={this.onCreateGroup} />
