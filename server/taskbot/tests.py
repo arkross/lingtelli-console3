@@ -9,8 +9,8 @@ from paidtype.models import PaidType
 from thirdparty.models import ThirdParty
 
 
-class ChatbotTest(TestCase):
-    '''Chatbot basic testing
+class TaskbotTest(TestCase):
+    '''Taskbot basic testing
 
     CRUD
     '''
@@ -21,7 +21,8 @@ class ChatbotTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '0'
+            'faq_amount': '0',
+            'user_type': 'S'
         }
 
         demo_data = {
@@ -31,7 +32,7 @@ class ChatbotTest(TestCase):
 
         staff_obj = PaidType.objects.create(**staff_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        staff_obj.thirdparty.add(demo_obj)
+        staff_obj.third_party.add(demo_obj)
 
         # Create new agent account
         agent_data = {'username': 'superuser', 'password': 'agentpassword',
@@ -50,7 +51,7 @@ class ChatbotTest(TestCase):
 
         # Initial header
         self.agent_header =\
-            {'HTTP_AUTHORIZATION': 'bearer ' + self.agent_token}
+            {'HTTP_AUTHORIZATION': 'Bearer ' + self.agent_token}
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
@@ -59,7 +60,7 @@ class ChatbotTest(TestCase):
         self.bot_obj = Chatbot.objects.create(**bot_data)
 
         # Initial uri
-        self.bot_uri = '/chatbot/' + str(self.bot_obj.id) + '/'
+        self.bot_uri = '/agent/taskbot/' + str(self.bot_obj.id) + '/'
 
     def test_no_auth(self):
         ''' Not authorize actions
@@ -68,7 +69,7 @@ class ChatbotTest(TestCase):
         '''
         c = Client()
         # POST
-        response = c.post('/chatbot/', json.dumps({'robot_name': 'thebot'}),
+        response = c.post('/agent/taskbot/', json.dumps({'robot_name': 'thebot'}),
                           content_type='application/json')
         self.assertEqual(response.status_code, 401)
 
@@ -116,36 +117,54 @@ class ChatbotTest(TestCase):
 
     def test_create(self):
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
-                    'failed_msg': 'Cannot understand'}
+                    'failed_msg': 'Cannot understand', 'language': 'tw',
+                    'postback_title': 'Similar'}
         bot_return_key = ['id', 'robot_name']
         c = Client()
-        response = c.post('/chatbot/', json.dumps(bot_data),
+        response = c.post('/agent/taskbot/', json.dumps(bot_data),
                           content_type='application/json', **self.agent_header)
         self.assertEqual(response.status_code, 201)
         res_data = json.loads(response.content)
         bot_obj = Chatbot.objects.get(id=res_data.get('id'))
-        self.assertEqual(bot_obj.bot_type, 'NORMAL')
+        self.assertEqual(bot_obj.bot_type, 'TASK')
         for k in bot_return_key:
             self.assertIn(k, res_data)
     
     def test_create_no_bot_name(self):
         c = Client()
-        response = c.post('/chatbot/', json.dumps({}),
+        response = c.post('/agent/taskbot/', json.dumps({}),
                           content_type='application/json', **self.agent_header)
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
     
-    def test_read(self):
+    def test_read_list(self):
+        bot_data = ['id', 'robot_name']
+        c = Client()
+        response = c.get('/agent/taskbot/', **self.agent_header)
+        self.assertEqual(response.status_code, 200)
+        res_data = json.loads(response.content)
+        for k in bot_data:
+            self.assertIn(k, res_data[0])
+
+    def test_read_retrieve(self):
+        bot_data = ['robot_name', 'greeting_msg', 'failed_msg',
+                    'postback_title', 'created_at', 'updated_at',
+                    'vendor_id', 'postback_activate', 'delete_confirm',
+                    'bot_type', 'assign_user', 'activate', 'language',
+                    'third_party', 'user']
         c = Client()
         response = c.get(self.bot_uri, **self.agent_header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
-        for k, v in bot_obj:
+        for k in bot_data:
             self.assertIn(k, res_data)
     
     def test_update(self):
-        bot_update_data = {'robot_name': 'newnamebot', 'greeting_msg': 'LOL'}
+        bot_update_data = {'robot_name': 'newnamebot', 'greeting_msg': 'LOL',
+                           'failed_msg': 'failed', 'postback_title': 'related',
+                           'postback_activate': True, 'assign_user': None,
+                           'activate': True}
 
         c = Client()
         response = c.put(self.bot_uri, json.dumps(bot_update_data),
@@ -154,9 +173,8 @@ class ChatbotTest(TestCase):
                                               user=self.agent_obj)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
-        for k, v in updated_bot_obj:
-            self.assertIn(k, res_data)
-            self.assertIn(v, res_data)
+        for k, v in bot_update_data.items():
+            self.assertEqual(getattr(updated_bot_obj, k), v)
     
     def test_update_bot_name_blank(self):
         c = Client()
@@ -195,7 +213,8 @@ class DeleteBotConfirmTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '0'
+            'faq_amount': '0',
+            'user_type': 'S'
         }
 
         demo_data = {
@@ -205,12 +224,12 @@ class DeleteBotConfirmTest(TestCase):
 
         staff_obj = PaidType.objects.create(**staff_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        staff_obj.thirdparty.add(demo_obj)
+        staff_obj.third_party.add(demo_obj)
 
         # Create new agent account
-        agent_data = {'username': 'superuser', 'password': 'agentpassword',
+        agent_data = {'username': 'superuser', 'password':'test1234',
                       'is_staff': True}
-        self.agent_obj = User.objects.create(**agent_data)
+        self.agent_obj = User.objects.create_user(**agent_data)
 
         # Create agent account info
         acc_data = {'user': self.agent_obj, 'paid_type': staff_obj,
@@ -224,7 +243,7 @@ class DeleteBotConfirmTest(TestCase):
 
         # Initial header
         self.agent_header =\
-            {'HTTP_AUTHORIZATION': 'bearer ' + self.agent_token}
+            {'HTTP_AUTHORIZATION': 'Bearer ' + self.agent_token}
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
@@ -233,7 +252,7 @@ class DeleteBotConfirmTest(TestCase):
         self.bot_obj = Chatbot.objects.create(**bot_data)
 
         # Initial bot uri
-        self.uri = '/chatbot/' + str(self.bot_obj.id) + '/confirm/'
+        self.uri = '/agent/taskbot/' + str(self.bot_obj.id) + '/delete_confirm/'
 
     def test_update_confirm_no_auth(self):
         ''' Delete bot confirm 
@@ -241,23 +260,22 @@ class DeleteBotConfirmTest(TestCase):
         PUT
         '''
         c = Client()
-        correct_password = {'password': 'thisispassword'}
+        correct_password = {'password': 'test1234'}
         response = c.put(self.uri, json.dumps(correct_password), 
                           content_type='application/json')
         self.assertEqual(response.status_code, 401)
 
     def test_update_confirm_correct_password(self):
         c = Client()
-        correct_password = {'password': 'thisispassword'}
+        correct_password = {'password': 'test1234'}
         response = c.put(self.uri, json.dumps(correct_password), 
                           content_type='application/json', **self.agent_header)
         agent_obj = User.objects.get(username='superuser')
-        acc_info = AccountInfo.objects.get(user=agent_obj)
+        bot_obj = Chatbot.objects.filter(user=agent_obj).first()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(acc_info.delete_confirm, True)
+        self.assertEqual(bot_obj.delete_confirm, True)
         res_data = json.loads(response.content)
-        self.assertEqual(res_data.get('success'),
-                         'Account deleting has confirmed')
+        self.assertIn('success', res_data)
     
     def test_update_confirm_wrong_password(self):
         c = Client()
@@ -281,7 +299,8 @@ class LineTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '0'
+            'faq_amount': '0',
+            'user_type': 'S'
         }
 
         demo_data = {
@@ -291,7 +310,7 @@ class LineTest(TestCase):
 
         staff_obj = PaidType.objects.create(**staff_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        staff_obj.thirdparty.add(demo_obj)
+        staff_obj.third_party.add(demo_obj)
 
         # Create new agent account
         agent_data = {'username': 'superuser', 'password': 'agentpassword',
@@ -310,7 +329,7 @@ class LineTest(TestCase):
 
         # Initial header
         self.agent_header =\
-            {'HTTP_AUTHORIZATION': 'bearer ' + self.agent_token}
+            {'HTTP_AUTHORIZATION': 'Bearer ' + self.agent_token}
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
@@ -324,7 +343,8 @@ class LineTest(TestCase):
         self.line_obj = Line.objects.create(**line_data)
 
         # Initial uri
-        self.uri = '/chatbot/' + str(self.bot_obj.id) + '/line/'
+        self.uri = '/agent/taskbot/' + str(self.bot_obj.id) + '/line/' +\
+                    str(self.line_obj.id) + '/'
 
     def test_no_auth(self):
         '''Line no authorization
@@ -372,7 +392,8 @@ class FacebookTest(TestCase):
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
-            'faq_amount': '0'
+            'faq_amount': '0',
+            'user_type': 'S'
         }
 
         demo_data = {
@@ -382,7 +403,7 @@ class FacebookTest(TestCase):
 
         staff_obj = PaidType.objects.create(**staff_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        staff_obj.thirdparty.add(demo_obj)
+        staff_obj.third_party.add(demo_obj)
 
         # Create new agent account
         agent_data = {'username': 'superuser', 'password': 'agentpassword',
@@ -401,7 +422,7 @@ class FacebookTest(TestCase):
 
         # Initial header
         self.agent_header =\
-            {'HTTP_AUTHORIZATION': 'bearer ' + self.agent_token}
+            {'HTTP_AUTHORIZATION': 'Bearer ' + self.agent_token}
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
@@ -415,7 +436,8 @@ class FacebookTest(TestCase):
         self.fb_obj = Facebook.objects.create(**fb_data)
 
         # Initial uri
-        self.uri = '/chatbot/' + str(self.bot_obj.id) + '/facebook/'
+        self.uri = '/agent/taskbot/' + str(self.bot_obj.id) + '/facebook/' +\
+                    str(self.fb_obj.id) + '/'
 
     def test_no_auth(self):
         '''Line no authorization
