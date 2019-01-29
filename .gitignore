@@ -1,4 +1,15 @@
-# See https://help.github.com/ignore-files/ for more about ignoring files.
+# VSCODE
+.vscode
+
+# PIPENV
+Pipfile.*
+Pipfile
+
+# python cache
+*__pycache__/
+
+# db
+db.*
 
 # dependencies
 node_modules/
@@ -23,12 +34,9 @@ yarn-error.log*
 
 *.pyc
 
-__pycache__/
-
 # enviornments
 .env/
 .python-version
 
 # tmp file
 *.swp
-migrations/
