@@ -1,0 +1,12 @@
+# VSCODE
+.vscode
+
+# PIPENV
+Pipfile.*
+Pipfile
+
+# python cache
+*__pycache__/
+
+# db
+db.*
