@@ -22,8 +22,7 @@ class ReportTest(TestCase):
             'name': 'Trail',
             'duration': '0_0',
             'bot_amount': '1',
-            'faq_amount': '50',
-            'user_type': 'M'
+            'faq_amount': '50'
         }
 
         demo_data = {
@@ -32,13 +31,13 @@ class ReportTest(TestCase):
         }
         trial_obj = PaidType.objects.create(**trial_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.third_party.add(demo_obj)
+        trial_obj.thirdparty.add(demo_obj)
 
         # Create new account
         user_data = {'username': 'cosmo.hu@lingtelli.com',
                      'password': 'thisispassword',
                      'first_name': 'cosmo'}
-        self.user_obj = User.objects.create_user(**user_data)
+        self.user_obj = User.objects.create(**user_data)
 
         # Create account info
         acc_data = {'user': self.user_obj, 'paid_type': trial_obj,
@@ -51,7 +50,7 @@ class ReportTest(TestCase):
         self.accesstoken = token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
@@ -88,12 +87,10 @@ class ReportTest(TestCase):
         Currently include: data, total_chat, success_count and question_count
         '''
         c = Client()
-        report_keys = ['date', 'total_chat', 'success_count', 'question_count']
+        report_keys = ['data', 'total_chat', 'success_count', 'question_count']
         response = c.get(self.report_uri, **self.header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
-        for k in report_keys:
-            if k == 'question_count':
-                self.assertIn(k, res_data[-1])
-                continue
-            self.assertIn(k, res_data[0])
+        self.assertEqual(len(report_keys), len(res_data))
+        for k in report_keysL:
+            self.assertIn(k, res_data)

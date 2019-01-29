@@ -3,72 +3,44 @@
         "model": "paidtype.paidtype",
         "pk": 1,
         "fields": {
-            "name": "Staff",
+            "name": "Trail",
             "duration": "0_0",
-            "bot_amount": "0",
-            "faq_amount": "0",
-            "third_party": [1,2,3,4,5],
-            "user_type": "S"
+            "bot_amount": "1",
+            "faq_amount": "50",
+            "thirdparty": [4]
         }
     },
     {
         "model": "paidtype.paidtype",
         "pk": 2,
         "fields": {
-            "name": "Trial",
-            "duration": "0_0",
+            "name": "Basic",
+            "duration": "1_y",
             "bot_amount": "1",
-            "faq_amount": "50",
-            "third_party": [4],
-            "user_type": "M"
+            "faq_amount": "100",
+            "thirdparty": [1,2,3,4,5]
         }
     },
     {
         "model": "paidtype.paidtype",
         "pk": 3,
         "fields": {
-            "name": "Tiny",
+            "name": "Pro",
             "duration": "1_y",
-            "bot_amount": "1",
-            "faq_amount": "50",
-            "third_party": [1,2,4],
-            "user_type": "M"
+            "bot_amount": "5",
+            "faq_amount": "500",
+            "thirdparty": [1,2,3,4,5]
         }
     },
     {
         "model": "paidtype.paidtype",
         "pk": 4,
         "fields": {
-            "name": "Standard",
-            "duration": "1_y",
-            "bot_amount": "1",
-            "faq_amount": "100",
-            "third_party": [1,2,4],
-            "user_type": "M"
-        }
-    },
-    {
-        "model": "paidtype.paidtype",
-        "pk": 5,
-        "fields": {
-            "name": "Enhanced",
-            "duration": "1_y",
-            "bot_amount": "5",
-            "faq_amount": "300",
-            "third_party": [1,2,3,4,5],
-            "user_type": "M"
-        }
-    },
-    {
-        "model": "paidtype.paidtype",
-        "pk": 6,
-        "fields": {
-            "name": "Ultimate",
-            "duration": "1_y",
-            "bot_amount": "5",
-            "faq_amount": "500",
-            "third_party": [1,2,3,4,5],
-            "user_type": "M"
+            "name": "Staff",
+            "duration": "0_0",
+            "bot_amount": "0",
+            "faq_amount": "0",
+            "thirdparty": [1,2,3,4,5]
         }
     }
 ]

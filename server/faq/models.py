@@ -17,8 +17,6 @@ class FAQGroup(models.Model):
 
     chatbot = models.ForeignKey(Chatbot, related_name='faqgroup_chatbot',
                                 on_delete=models.CASCADE)
-    csv_group = models.IntegerField(default=0)
-    hide_status = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'faqgroup'
@@ -68,7 +66,7 @@ class Answer(models.Model):
                               on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'faq_answer'
+        db_table = 'answer'
 
     def __str__(self):
         return self.chatbot.robot_name
@@ -96,7 +94,7 @@ class Question(models.Model):
     group = models.ForeignKey(FAQGroup, related_name='question_faqgroup',
                               on_delete=models.CASCADE)
     class Meta:
-        db_table = 'faq_question'
+        db_table = 'question'
 
     def __str__(self):
         return self.chatbot.robot_name
