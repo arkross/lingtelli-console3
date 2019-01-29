@@ -20,9 +20,8 @@ class ChatbotTest(TestCase):
             'pk': 1,
             'name': 'Trail',
             'duration': '0_0',
-            'bot_amount': '2',
-            'faq_amount': '50',
-            'user_type': 'M'
+            'bot_amount': '1',
+            'faq_amount': '50'
         }
 
         demo_data = {
@@ -31,7 +30,7 @@ class ChatbotTest(TestCase):
         }
         trial_obj = PaidType.objects.create(**trial_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.third_party.add(demo_obj)
+        trial_obj.thirdparty.add(demo_obj)
 
         # Create new account
         user_data = {'username': 'cosmo.hu@lingtelli.com',
@@ -50,7 +49,7 @@ class ChatbotTest(TestCase):
         self.accesstoken = token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
@@ -115,8 +114,7 @@ class ChatbotTest(TestCase):
 
     def test_create(self):
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
-                    'failed_msg': 'Cannot understand', 'language': 'tw',
-                    'postback_title': 'postback'}
+                    'failed_msg': 'Cannot understand'}
         bot_return_key = ['id', 'robot_name']
         c = Client()
         response = c.post('/chatbot/', json.dumps(bot_data),
@@ -152,32 +150,16 @@ class ChatbotTest(TestCase):
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
     
-    def test_read_list(self):
-        bot_data = ['id', 'robot_name']
-        c = Client()
-        response = c.get('/chatbot/', **self.header)
-        self.assertEqual(response.status_code, 200)
-        res_data = json.loads(response.content)
-        for k in bot_data:
-            self.assertIn(k, res_data[0])
-
-    def test_read_retrieve(self):
-        bot_data = ['robot_name', 'greeting_msg', 'failed_msg',
-                    'postback_title', 'created_at', 'updated_at','vendor_id',
-                    'postback_activate', 'delete_confirm', 'bot_type',
-                    'assign_user', 'activate', 'language', 'third_party',
-                    'user']
+    def test_read(self):
         c = Client()
         response = c.get(self.bot_uri, **self.header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
-        for k in bot_data:
+        for k, v in bot_obj:
             self.assertIn(k, res_data)
     
     def test_update(self):
-        bot_update_data = {'robot_name': 'newnamebot', 'greeting_msg': 'LOL',
-                           'failed_msg':'bye', 'postback_title':'similar',
-                           'postback_activate': True}
+        bot_update_data = {'robot_name': 'newnamebot', 'greeting_msg': 'LOL'}
 
         c = Client()
         response = c.put(self.bot_uri, json.dumps(bot_update_data),
@@ -186,8 +168,9 @@ class ChatbotTest(TestCase):
                                               user=self.user_obj)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
-        for k, v in bot_update_data.items():
-            self.assertEqual(getattr(updated_bot_obj, k), v)
+        for k, v in updated_bot_obj:
+            self.assertIn(k, res_data)
+            self.assertIn(v, res_data)
     
     def test_update_bot_name_blank(self):
         c = Client()
@@ -243,8 +226,7 @@ class DeleteBotConfirmTest(TestCase):
             'name': 'Trail',
             'duration': '0_0',
             'bot_amount': '1',
-            'faq_amount': '50',
-            'user_type': 'M'
+            'faq_amount': '50'
         }
 
         demo_data = {
@@ -253,13 +235,13 @@ class DeleteBotConfirmTest(TestCase):
         }
         trial_obj = PaidType.objects.create(**trial_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.third_party.add(demo_obj)
+        trial_obj.thirdparty.add(demo_obj)
 
         # Create new account
         user_data = {'username': 'cosmo.hu@lingtelli.com',
                      'password': 'thisispassword',
                      'first_name': 'cosmo'}
-        self.user_obj = User.objects.create_user(**user_data)
+        self.user_obj = User.objects.create(**user_data)
 
         # Create account info
         acc_data = {'user': self.user_obj, 'paid_type': trial_obj,
@@ -272,14 +254,14 @@ class DeleteBotConfirmTest(TestCase):
         self.accesstoken = token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
 
         # Initial bot
         bot_data = {'robot_name': 'test', 'user': self.user_obj}
-        self.bot_obj = Chatbot.objects.create(**bot_data)
+        bot_obj = Chatbot.objects.create(**bot_data)
 
         # Initial bot uri
-        self.uri = '/chatbot/' + str(self.bot_obj.id) + '/delete_confirm/'
+        self.uri = '/chatbot/' + str(bot_obj.id) + '/confirm/'
 
     def test_update_confirm_no_auth(self):
         ''' Delete bot confirm 
@@ -298,12 +280,12 @@ class DeleteBotConfirmTest(TestCase):
         response = c.put(self.uri, json.dumps(correct_password), 
                           content_type='application/json', **self.header)
         user_obj = User.objects.get(username='cosmo.hu@lingtelli.com')
-        pk = self.bot_obj.id
-        updated_bot_obj = Chatbot.objects.filter(id=pk, user=user_obj).first()
+        acc_info = AccountInfo.objects.get(user=user_obj)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(updated_bot_obj.delete_confirm, True)
+        self.assertEqual(acc_info.delete_confirm, True)
         res_data = json.loads(response.content)
-        self.assertIn('success', res_data)
+        self.assertEqual(res_data.get('success'),
+                         'Account deleting has confirmed')
     
     def test_update_confirm_wrong_password(self):
         c = Client()
@@ -327,8 +309,7 @@ class LineTest(TestCase):
             'name': 'Trail',
             'duration': '0_0',
             'bot_amount': '1',
-            'faq_amount': '50',
-            'user_type': 'M'
+            'faq_amount': '50'
         }
 
         demo_data = {
@@ -338,7 +319,7 @@ class LineTest(TestCase):
 
         trial_obj = PaidType.objects.create(**trial_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.third_party.add(demo_obj)
+        trial_obj.thirdparty.add(demo_obj)
 
         # Create new account
         user_data = {'username': 'cosmo.hu@lingtelli.com',
@@ -357,7 +338,7 @@ class LineTest(TestCase):
         self.accesstoken = token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
 
         # Initial bot
         bot_data = {'robot_name': 'test', 'user': self.user_obj}
@@ -369,8 +350,7 @@ class LineTest(TestCase):
         self.line_obj = Line.objects.create(**line_data)
 
         # Initial uri
-        self.uri = '/chatbot/' + str(bot_obj.id) + '/line/'\
-                   + str(self.line_obj.id) + '/'
+        self.uri = '/chatbot/' + str(bot_obj.id) + '/line/'
 
     def test_no_auth(self):
         '''Line no authorization
@@ -391,7 +371,7 @@ class LineTest(TestCase):
 
     def test_read(self):
         c = Client()
-        line_keys = ['id', 'secret', 'token']
+        line_keys = ['secret', 'token', 'chatbot']
         response = c.get(self.uri, **self.header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
@@ -405,7 +385,7 @@ class LineTest(TestCase):
         response = c.put(self.uri, json.dumps(line_data), **self.header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
-        self.assertIn('success', res_data)
+        self.assertIn('newsecret', res_data)
 
 
 class FacebookTest(TestCase):
@@ -420,8 +400,7 @@ class FacebookTest(TestCase):
             'name': 'Trail',
             'duration': '0_0',
             'bot_amount': '1',
-            'faq_amount': '50',
-            'user_type': 'M'
+            'faq_amount': '50'
         }
 
         demo_data = {
@@ -431,7 +410,7 @@ class FacebookTest(TestCase):
 
         trial_obj = PaidType.objects.create(**trial_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
-        trial_obj.third_party.add(demo_obj)
+        trial_obj.thirdparty.add(demo_obj)
 
         # Create new account
         user_data = {'username': 'cosmo.hu@lingtelli.com',
@@ -450,7 +429,7 @@ class FacebookTest(TestCase):
         self.accesstoken = token_obj.key
 
         # Initial header
-        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
+        self.header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
 
         # Initial bot
         bot_data = {'robot_name': 'test', 'user': self.user_obj}
@@ -462,8 +441,7 @@ class FacebookTest(TestCase):
         self.fb_obj = Facebook.objects.create(**fb_data)
 
         # Initial uri
-        self.uri = '/chatbot/' + str(bot_obj.id) + '/facebook/'\
-                   + str(self.fb_obj.id) + '/'
+        self.uri = '/chatbot/' + str(bot_obj.id) + '/facebook/'
 
     def test_no_auth(self):
         '''Line no authorization
@@ -484,7 +462,7 @@ class FacebookTest(TestCase):
 
     def test_read(self):
         c = Client()
-        fb_keys = ['id', 'verify_str', 'token']
+        fb_keys = ['verify_str', 'token', 'chatbot']
         response = c.get(self.uri, **self.header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
@@ -498,4 +476,4 @@ class FacebookTest(TestCase):
         response = c.put(self.uri, json.dumps(fb_data), **self.header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
-        self.assertIn('success', res_data)
+        self.assertIn('newverifystr', res_data)

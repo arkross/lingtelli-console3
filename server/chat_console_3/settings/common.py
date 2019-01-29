@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+# from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -19,33 +20,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'localtestingsecretkey'
+SECRET_KEY = '8)gd6qq-1yq=%&yst+@-s%#ujq7z0ki_&4*wn51o_h@000_r)5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    '0.0.0.0',
-    '127.0.0.1',
-    '192.168.10.7',
-    '192.168.10.10'
-]
+ALLOWED_HOSTS = []
 
 CORS_ORIGIN_ALLOW_ALL = False
 
-CORS_ORIGIN_WHITELIST = (
-    '0.0.0.0:8000',
-    '127.0.0.1:8000',
-    '192.168.10.10:3000',
-)
-
-CORS_ALLOW_METHODS = (
-    'DELETE',
-    'GET',
-    'POST',
-    'PUT',
-    'OPTIONS',
-)
 
 # Application definition
 
@@ -59,7 +42,6 @@ INITIAL = [
 ]
 
 THIRD_PARTY = [
-    'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
 ]
@@ -77,34 +59,17 @@ OUR_APP =[
 
 INSTALLED_APPS = INITIAL + THIRD_PARTY + OUR_APP
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'USER': 'superuser',
-        'NAME': 'console',
-        'PASSWORD': 'pass1234',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'OPTIONS': {
-            'charset': 'utf8mb4'
-        }
-    }
-}
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # Set the token parameter to Bearer
-        'chat_console_3.middlewares.BearerTokenAuthentication',
+        'rest_framework.authentication.TokenAuthentication'
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
-
     ),
     'EXCEPTION_HANDLER': 'chat_console_3.utils.custom_exception_handler',
 }
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -135,6 +100,18 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'chat_console_3.wsgi.application'
+
+
+# Database
+# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -180,18 +157,9 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'contact@lingtelli.com'
 EMAIL_HOST_PASSWORD = 'gong1si1mi4ma3'
 EMAIL_PORT = 587
+
 CONFIRM_URL_EXPIRE = 30 # Expires after 30 minutes
 URL_ENCODE_KEY = 'FuckingChatbot!!' # Need to be length 16 long
-CONFIRM_DOMAIN='http://127.0.0.1:3000/confirm/?code='
+CONFIRM_DOMAIN = 'http://127.0.0.1:3000/confirm/?code='
 
-# Token related
 TOKEN_DURATION = 10080 # Expires every week
-
-# NLU related
-NLU_HOST='http://192.168.10.16:8787/chatbot/'
-
-# Iniital password for agent user
-INIT_PASSWORD = 'test1234'
-
-# Celery related settings
-CELERY_BROKER_URL = 'redis://localhost:6379'
