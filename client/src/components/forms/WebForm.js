@@ -51,7 +51,7 @@ WebForm.propTypes = {
 }
 
 const mapStateToProps = (state, props) => ({
-  venderId: state.getIn(['bot', 'bots', props.match.params.id, 'vender_id'])
+  venderId: state.getIn(['bot', 'bots', props.match.params.id, 'vendor_id'])
 });
 
 export default connect(mapStateToProps)(translate()(toJS(WebForm)));
