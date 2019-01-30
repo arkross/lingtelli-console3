@@ -19,6 +19,8 @@ import MemberPage from './MemberPage'
 import LoginPage from './LoginPage'
 import PlanPage from './PlanPage'
 import TaskbotsPage from './TaskbotsPage'
+import CreateTaskbotPage from './CreateTaskbotPage'
+import TaskbotDetailPage from './TaskbotDetailPage'
 
 const options = [
 	{ key: 'en', text: 'English', value: 'en-US' },
@@ -101,6 +103,7 @@ class Dashboard extends React.Component {
 
 		const topMenuOptions = [
 			{text: 'Members', id: 'member'},
+			{text: 'Taskbots', id: 'taskbots'},
 			{text: 'Profile', id: 'profile'},
 			{text: 'Plans', id: 'plan'}
 		]
@@ -159,6 +162,9 @@ class Dashboard extends React.Component {
 				<Route location={location} path={`${match.path}/login`} component={LoginPage} />
 				<Route location={location} path={`${match.path}/plan`} component={PlanPage} />
 				<Route location={location} path={`${match.path}/member/:id`} exact component={TaskbotsPage} />
+				<Route location={location} path={`${match.path}/taskbots`} exact component={TaskbotsPage} />
+				<Route location={location} path={`${match.path}/taskbots/create`} exact component={CreateTaskbotPage} />
+				<Route location={location} path={`${match.path}/taskbots/:id`} exact component={TaskbotDetailPage} />
 				<Route render={props => <Redirect to={`${match.path}/member`} />} />
 			</Switch>
 		</Container>
