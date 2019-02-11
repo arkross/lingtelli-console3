@@ -99,7 +99,7 @@ class DemoModal extends React.Component {
 }
 
 const mapStateToProps = (state, props) => ({
-  venderId: state.getIn(['bot', 'bots', props.match.params.id, 'vender_id']),
+  venderId: state.getIn(['bot', 'bots', props.match.params.id, 'vendor_id']),
   greeting: state.getIn(['bot', 'bots', props.match.params.id, 'greeting_msg'])
 })
 

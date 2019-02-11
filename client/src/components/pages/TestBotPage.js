@@ -46,14 +46,14 @@ class TestBotPage extends Component {
 	}
 	
 	submitMessage(message, mode = 'text', id = 'NoId', oriQue = '') {
-		const { info: { vender_id }, t} = this.props
+		const { info: { vendor_id }, t} = this.props
 		const { currentPostback } = this.state
 		let request = null
 		if (mode === 'text') {
-			request = api.ask(vender_id, message)
+			request = api.ask(vendor_id, message)
 		}
 		else if (mode === 'postback') {
-			request = api.postback(vender_id, {oriQue, id}, message)
+			request = api.postback(vendor_id, {oriQue, id}, message)
 		}
 		request = request
 			.then(res => {
