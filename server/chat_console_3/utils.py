@@ -12,21 +12,25 @@ from rest_framework import exceptions
 from rest_framework.views import exception_handler
 from rest_framework.authtoken.models import Token
 from faq.models import FAQGroup, Question, Answer
-from chatbot.models import Chatbot, Line, Facebook
+from chatbot.models import Chatbot, Line, Facebook, BotThirdPartyGroup
 
-from chat_console_3.settings.common import (URL_ENCODE_KEY, CONFIRM_DOMAIN,
-                                            EMAIL_HOST_USER, TOKEN_DURATION)
-
-if os.environ.get('DEB'):
-    from chat_console_3.settings.development import (URL_ENCODE_KEY,
-                                                     CONFIRM_DOMAIN,
-                                                     EMAIL_HOST_USER,
-                                                     TOKEN_DURATION)
-elif os.environ.get('PROD'):
-    from chat_console_3.settings.production import (URL_ENCODE_KEY,
-                                                    CONFIRM_DOMAIN,
-                                                    EMAIL_HOST_USER,
-                                                    TOKEN_DURATION)
+env = os.environ.get('ENV')
+if env:
+    if env == 'DEV':
+        from chat_console_3.settings.development import (URL_ENCODE_KEY,
+                                                         CONFIRM_DOMAIN,
+                                                         EMAIL_HOST_USER,
+                                                         TOKEN_DURATION)
+    else:
+        from chat_console_3.settings.production import (URL_ENCODE_KEY,
+                                                        CONFIRM_DOMAIN,
+                                                        EMAIL_HOST_USER,
+                                                        TOKEN_DURATION)
+else:
+    from chat_console_3.settings.common import (URL_ENCODE_KEY,
+                                                CONFIRM_DOMAIN,
+                                                EMAIL_HOST_USER,
+                                                TOKEN_DURATION)
 
 
 
@@ -262,6 +266,7 @@ def downgrade(user, new_paid_type):
 
     Delete oldest bots first. If faqs are still over upper limit,
     Delete oldest faqs.
+    Assign new thirdparty for remaining bots.
     '''
     bot_limit = int(new_paid_type.bot_amount)
     faq_limit = int(new_paid_type.faq_amount)
@@ -277,8 +282,12 @@ def downgrade(user, new_paid_type):
         return False, '===== Downgrade deleting bot failed ====='
 
     bots_remain = Chatbot.objects.filter(user=user).order_by('id')
+    allow_third_party = new_paid_type.third_party.all()
     total_faq = 0
     for bot in bots_remain:
+        BotThirdPartyGroup.objects.filter(chatbot=bot).delete()
+        for party in allow_third_party:
+            BotThirdPartyGroup.objects.create(chatbot=bot, third_party=party)
         faq_count = FAQGroup.objects.filter(chatbot=bot).count()
         total_faq += faq_count
     try:
@@ -292,3 +301,33 @@ def downgrade(user, new_paid_type):
         print('Downgrade deleting faq failed: ', e)
         return False, '===== Downgrade deleting faq failed ====='
     return True, ''
+
+def upgrade(user, new_paid_type):
+    '''Pay type upgrading
+
+    Assign new thirdparty for remaining bots.
+    '''
+
+    allow_third_party = new_paid_type.third_party.all()
+    remain_bot = Chatbot.objects.filter(user=user)
+    for bot in remain_bot:
+        BotThirdPartyGroup.objects.filter(chatbot=bot).delete()
+        for party in allow_third_party:
+            BotThirdPartyGroup.objects.create(chatbot=bot, third_party=party)
+
+# def send_agent_change_type_email(user, acc):
+#     '''Send email to inform user's paidtype changed
+#     '''
+
+#     to_mail = user.username
+#     from_mail = EMAIL_HOST_USER
+#     subject = 'Account Type Changed Inform Email'
+#     member_name = user.first_name if user.first_name else user.username
+#     html_email = render_to_string('email.html',
+#                                   {'name': member_name,
+#                                    'acc_type': acc.paid_type.name,
+#                                    'bot_amount': acc.paid_type.bot_amount),
+#                                    'faq_total': acc.paid_type.faq_amount,
+#                                    'start_date': acc.start_date,
+#                                    'expire_date': acc.expire_date})
+#     txt_email = strip_tags(html_email)
