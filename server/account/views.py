@@ -697,6 +697,8 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
                         print(err)
                         return Response({'errors':_('Something went wrong')},
                                         status=HTTP_500_INTERNAL_SERVER_ERROR)
+                else:
+                    utils.upgrade(user_obj, paid_obj)
                 acc_obj.paid_type = paid_obj
                 time_now = datetime.now(timezone.utc)
                 acc_obj.start_date = time_now
