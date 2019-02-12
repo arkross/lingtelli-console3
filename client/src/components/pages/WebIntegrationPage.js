@@ -168,7 +168,7 @@ ${str}</script>
 
 	render() {
 		const { supportPlatforms, t, user, user: {packages} } = this.props
-		const { info: {platform: third_party}, copied, loading, show, robotIcon, chatIcon, headerTextColor, headerBackgroundColor, chatLabel} = this.state
+		const { info, info: {third_party}, copied, loading, show, robotIcon, chatIcon, headerTextColor, headerBackgroundColor, chatLabel} = this.state
 		const currentPlatforms = _.filter(supportPlatforms, plat => _.find(third_party, p => p == plat.id))
 
 		const webScript = this.generateScript()
