@@ -22,9 +22,12 @@ class TestBotPage extends Component {
 
 			this.setState({
 				messages: [{
-					role: 'bot',
+					sender: 'bot',
 					type: 'text',
 					text: this.props.info.greeting_msg,
+					data: {
+						title: this.props.info.greeting_msg
+					},
 					date: moment().format('YYYY-MM-DD HH:mm:ss')
 				}]
 			})
@@ -36,9 +39,11 @@ class TestBotPage extends Component {
 		if (this.props.info && this.props.info.greeting_msg) {
 			this.setState({
 				messages: [...this.state.messages, {
-					role: 'bot',
+					sender: 'bot',
 					type: 'text',
-					text: this.props.info.greeting_msg,
+					data: {
+						title: this.props.info.greeting_msg
+					},
 					date: moment().format('YYYY-MM-DD HH:mm:ss')
 				}]
 			})
@@ -58,11 +63,9 @@ class TestBotPage extends Component {
 		request = request
 			.then(res => {
 				this.setState({ messages: [...this.state.messages, {
-					role: 'bot',
+					sender: 'bot',
 					type: res.type,
-					buttons: res.data.buttons,
-					text: res.data.text,
-					title: res.data.title,
+					data: res.data,
 					oriQue: res.oriQue,
 					date: moment().format('YYYY-MM-DD HH:mm:ss')
 				}]})
@@ -70,9 +73,11 @@ class TestBotPage extends Component {
 			.catch(() => {
 				this.setState({
 					messages: [...this.state.messages, {
-						role: 'bot',
+						sender: 'bot',
 						type: 'text',
-						text: t('errors.demo.ask'),
+						data: {
+							title: t('errors.demo.ask')
+						},
 						date: moment().format('YYYY-MM-DD HH:mm:ss')
 					}]
 				})
@@ -86,9 +91,11 @@ class TestBotPage extends Component {
 		this.setState({ 
 			currentMessage: '',
 			messages: [...this.state.messages, {
-				role: 'user',
+				sender: 'user',
 				type: 'text',
-				text: message,
+				data: {
+					title: message
+				},
 				date: moment().format('YYYY-MM-DD HH:mm:ss')
 			}]
 		})
@@ -106,9 +113,11 @@ class TestBotPage extends Component {
 			return false
 		}
 		this.setState({currentMessage: '', messages: [...this.state.messages, {
-			role: 'user',
+			sender: 'user',
 			type: 'text',
-			text: this.state.currentMessage,
+			data: {
+				title: this.state.currentMessage
+			},
 			date: moment().format('YYYY-MM-DD HH:mm:ss')
 		}]})
 		this.submitMessage(this.state.currentMessage, this.state.mode)
@@ -119,9 +128,11 @@ class TestBotPage extends Component {
 	}
 	onRecommendationSelected = recommendation => {
 		this.setState({ messages: [...this.state.messages, {
-			role: 'user',
+			sender: 'user',
 			type: 'text',
-			text: recommendation.text,
+			data: {
+				title: recommendation.text
+			},
 			oriQue: recommendation.oriQue,
 			date: moment().format('YYYY-MM-DD HH:mm:ss')
 		}]})
@@ -144,16 +155,17 @@ class TestBotPage extends Component {
 		const { info, t } = this.props
 		const { messages, currentMessage } = this.state
 		moment.locale(localStorage.i18nextLng.toLowerCase())
+		let keyCounter = 0
 		return <Container text className='chat-container'>
 			<Header as='h3'>{info.robot_name}</Header>
 			<div ref={el => {this.chatMessages = el}} className='chat-messages-container'>
 				{
 					_.map(messages, message => {
-						if (message.type === 'list') {
-							return <RecommendationBalloon t={t} oriQue={message.oriQue} date={message.date} title={message.title} data={message.buttons} key={message.role + moment(message.date).valueOf()} onSelect={this.onRecommendationSelected} />
+						if (message.type === 'list' || (message.type === 'answer' && message.data.buttons) || message.type === 'no_answer') {
+							return <RecommendationBalloon t={t} oriQue={message.oriQue} date={message.date} title={message.data.title || message.data.text} data={message.data.buttons} key={keyCounter++} onSelect={this.onRecommendationSelected} />
 						}
 						else {
-							return <TextBalloon key={message.role + message.text + moment(message.date).valueOf()} date={message.date} role={message.role}>{message.text}</TextBalloon>
+							return <TextBalloon key={keyCounter++} date={message.date} sender={message.sender}>{message.data.title || message.data.text}</TextBalloon>
 						}
 					})
 				}
@@ -180,8 +192,8 @@ export default compose(
 
 class TextBalloon extends Component {
 	render() {
-		const { date, role, children } = this.props
-		return <div className={'text-balloon-wrapper ' + (role ? role : 'user')}>
+		const { date, sender, children } = this.props
+		return <div className={'text-balloon-wrapper ' + (sender ? sender : 'user')}>
 			<div className='flexer'>
 				<div className='text-balloon-text'>
 					{children}
@@ -204,7 +216,7 @@ class RecommendationBalloon extends Component {
 		const links = _.map(data, question => <List.Item as='a' key={question.id + counter++} onClick={this.handleClick.bind(this, question)}>
 			{question.text}
 		</List.Item>)
-		return <TextBalloon role='bot' date={date}>
+		return <TextBalloon sender='bot' date={date}>
 			<div className='recommendation-title'>{title}</div>
 			<List divided>{links}</List>
 		</TextBalloon>

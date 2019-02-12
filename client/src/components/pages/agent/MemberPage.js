@@ -31,7 +31,6 @@ class Member extends React.Component {
 
 	fetchMembers = () => {
 		return this.props.fetchMembers().then(() => {
-			this.props.fetchTaskbots()
 			const pts = this.props.members.map(el => ({
 				id: el.id,
 				pid: this.props.paidtypes.find(o => o.name === el.paid_type).id,
@@ -123,7 +122,7 @@ class Member extends React.Component {
 							<Table.Cell>{member.expire_date ? moment(member.expire_date, 'YYYY-MM-DD HH:mm:ss.SSSZ').format('YYYY-MM-DD HH:mm') : 'N/A'}</Table.Cell>
 							<Table.Cell>
 								<NavLink to={`${match.path}/${member.id}`} className='ui button' role='button'>
-									<Icon name='user' />
+									<Icon name='android' />
 									Taskbots
 								</NavLink>
 							</Table.Cell>
