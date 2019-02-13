@@ -33,7 +33,7 @@ class HistoryPage extends React.Component {
 
 	createHistoryElements = () => {
 		const { histories } = this.props;
-		const activeHistories = histories.results || []
+		const activeHistories = histories || []
 
 		return _.chain(activeHistories)
 			.map((history, index) => 
@@ -72,8 +72,8 @@ class HistoryPage extends React.Component {
 			<Container fluid textAlign='center' className='history-container'>
 				<Loader active={loading} />
 				<Dimmer inverted active={loading} />
-				{(!histories.results || !histories.results.length) && <Header as='h4'>{t('chatbot.history.empty')}</Header>} 
-				{(!!histories.results && !!histories.results.length) &&
+				{(!histories || !histories.length) && <Header as='h4'>{t('chatbot.history.empty')}</Header>} 
+				{(!!histories && !!histories.length) &&
 						<div>
 							<Table celled>
 								<Table.Header>

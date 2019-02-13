@@ -4,7 +4,8 @@ import _ from 'lodash'
 
 const initState = fromJS({
 	profile: {},
-	members: []
+	members: [],
+	bots: []
 })
 
 /**
@@ -23,7 +24,7 @@ export default function(state = initState, action) {
 			elementKey = state.get('members').findKey(el => action.id === el.get('id'))
 			return state.withMutations(s => {
 				Object.keys(action.data).forEach(okey => {
-					s.setIn(['members', elementKey + '', okey], action.data[okey])
+					s.setIn(['members', elementKey + '', okey], fromJS(action.data[okey]))
 				})
 				return s
 			})
@@ -32,10 +33,10 @@ export default function(state = initState, action) {
 				_.chain(action.data)
 					.groupBy('user')
 					.forEach((userId, botsGroup) => {
-						const elkey = s.get('member').ifndKey(m => (m.id + '') === (userId + ''))
-						s.setIn(['members', elkey + '', 'bots'], botsGroup)
+						const elkey = s.get('member').findKey(m => (m.id + '') === (userId + ''))
+						s = s.setIn(['members', elkey + '', 'bots'], fromJS(botsGroup))
 					})
-				return s
+				return s.set('bots', fromJS(action.data))
 			})
 		default: return state
 	}

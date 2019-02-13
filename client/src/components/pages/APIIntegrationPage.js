@@ -93,9 +93,9 @@ class APIIntegration extends Component {
 
 	render() {
 		const { supportPlatforms, t, info, user, user: {packages} } = this.props
-		const { info: {platform: third_party, vendor_id}} = this.state
+		const { info: {third_party, vendor_id}} = this.state
 		const currentPlatforms = _.filter(supportPlatforms, plat => _.find(third_party, p => p === plat.id))
- 
+
 		const webActive = !!_.find(currentPlatforms, plat => plat.name == 'Api')
 		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)
 		const isActivable = currentPaidtype && currentPaidtype.third_party.find(el => el.name === 'Api')

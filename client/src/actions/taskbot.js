@@ -14,7 +14,12 @@ export const actionFetchTaskbot = (id, data) => ({
 })
 
 export const fetchTaskbots = () => dispatch => api.list()
-	.then(data => dispatch(actionFetchTaskbots(data)))
+	.then(data => {
+		const promises = _.map(data, bot => api.info(bot.id))
+		return Promise.all(promises).then(result => {
+			dispatch(actionFetchTaskbots(result))
+		})
+	})
 
 export const fetchTaskbot = id => dispatch => api.info(id)
 	.then(data => dispatch(actionFetchTaskbot(id, data)))
