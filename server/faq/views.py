@@ -420,21 +420,21 @@ def export_faq_csv(request, pk=None):
                     que = ''
                     if a < len(questions):
                         que = questions[a].content
-                    rows.append([faqgroup.csv_group, que, ans])
+                    rows.append([str(faqgroup.csv_group), que, ans])
             else:
                 for q in range(len(questions)):
                     que = questions[q].content
                     ans = ''
                     if q < len(answers):
                         ans = answers[q].content
-                    rows.append([faqgroup.csv_group, que, ans])
+                    rows.append([str(faqgroup.csv_group), que, ans])
         csv_file = StringIO()
-        writer = csv.writer(csv_file, delimiter=',')
+        writer = csv.writer(csv_file, delimiter=',', dialect='excel')
         for row in rows:
             writer.writerow(row)
         headers = {'Content-Disposition': 'attachment;filename=faq.csv'}
-        return Response(csv_file.getvalue(), headers=headers,
-                        content_type='text/csv')
+        return Response(csv_file.getvalue().encode('utf-8-sig'),
+                        headers=headers, content_type='text/csv')
     return Response({'errors':_('Bot not found')},
                         status=HTTP_404_NOT_FOUND)
 
