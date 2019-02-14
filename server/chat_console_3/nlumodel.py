@@ -1,12 +1,20 @@
 '''NLU Related Features
 '''
-import requests, json
+import requests, json, os
 
 from django.http import HttpResponse
 
-from .settings.common import NLU_HOST
 from chatbot.models import Chatbot
 from faq.models import FAQGroup, Answer, Question
+
+env = os.environ.get('ENV')
+if env:
+    if env == 'DEV':
+        from .settings.development import NLU_HOST
+    else:
+        from .settings.production import NLU_HOST
+else:
+    from .settings.common import NLU_HOST
 
 def create_model(chatbot_obj):
     '''Create NLU model
