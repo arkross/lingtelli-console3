@@ -184,9 +184,8 @@ ${str}</script>
 				<Grid.Column width={12}><Header>Web</Header></Grid.Column>
 				<Grid.Column floated='right' width={3}>
 				{isActivable ? 
-					<Button floated='right' disabled={!isActivable} onClick={this.handleToggle.bind(this, 'Web')} color={webActive ? 'green' : 'grey'} icon={webActive ? 'check' : 'remove'} content={webActive ? t('chatbot.integration.activated') : t('chatbot.integration.inactive')}
-					/>
-				: <Label color='grey' basic><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label>}
+					<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>
+				: <Label color='grey' style={{ float: 'right'}} basic><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label>}
 				</Grid.Column>
 			</Grid.Row>
 			<Grid.Row>

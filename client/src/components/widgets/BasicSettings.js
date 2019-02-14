@@ -11,13 +11,21 @@ import { Link } from 'react-router-dom'
 
 class BasicSettingsWidget extends Component {
 	onChange = (key, val) => {
-		return this.props.updateBot(this.props.match.params.id, {[key]: val})
+		const { info: { robot_name, greeting_msg, failed_msg, postback_title, postback_activate }} = this.props
+		return this.props.updateBot(this.props.match.params.id, Object.assign({
+			robot_name,
+			greeting_msg,
+			failed_msg,
+			postback_title,
+			postback_activate
+		}, {[key]: val}))
 	}
 	render = () => {
-		const { t, info: {robot_name, failed_msg, greeting_msg, platform: botPlatforms}, supportPlatforms } = this.props
+		const { t, info: {third_party, robot_name, failed_msg, greeting_msg, platform: botPlatforms}, supportPlatforms } = this.props
+		const currentPlatforms = _.filter(supportPlatforms, plat => _.find(third_party, p => p == plat.id))
 		const platformsArray = _.map(supportPlatforms, platform => ({
 			name: platform.name,
-			active: (botPlatforms ? botPlatforms.indexOf(platform.id) > -1 : false),
+			active: (currentPlatforms ? currentPlatforms.find(p => p.id === platform.id) : false),
 			id: platform.id
 		}))
 		return <Grid divided='vertically'>
@@ -65,8 +73,8 @@ class BasicSettingsWidget extends Component {
 				<Grid.Column stretched>
 					<Label.Group>
 					{_.map(platformsArray, p => 
-						<Label key={p.name}>
-							{p.active && <Icon name='check' color='green'/>}
+						<Label key={p.name} color={p.active ? 'green' : 'grey'}>
+							{p.active && <Icon name='check' />}
 							{!p.active && <Icon name='broken chain' />}
 							{p.name} 
 						</Label>
