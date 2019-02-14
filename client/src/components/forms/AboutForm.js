@@ -52,7 +52,7 @@ class AboutForm extends React.Component {
 			},
 			first_name: {
 				name: 'account.form.nickname',
-				rules: ['required', {range: [5, 10]}]
+				rules: ['required', { max: 30 }]
 			},
 			password: {
 				name: 'account.form.password',
@@ -192,6 +192,7 @@ class AboutForm extends React.Component {
 									value={form.first_name}
 									onChange={this.onChange}
 									error={errors.first_name.error}
+									maxLength={30}
 								/>
 								{errors.first_name.error && <Label color='red' pointing>{errors.first_name.messages.join(' ')}</Label>}
 							</Form.Field>
