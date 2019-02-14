@@ -141,9 +141,8 @@ class FBIntegration extends Component {
 			<Grid.Column><Header>Facebook</Header></Grid.Column>
 			<Grid.Column floated='right' width={3}>
 			{isActivable ? 
-				<Button floated='right' disabled={!isActivable} onClick={this.handleToggle.bind(this, 'Facebook')} color={facebookActive ? 'green' : 'grey'} icon={facebookActive ? 'check' : 'remove'} content={facebookActive ? t('chatbot.integration.activated') : t('chatbot.integration.inactive')}
-				/>
-			: <Label color='grey' basic><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label>}
+				<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>
+			: <Label color='grey' basic style={{ float: 'right'}}><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label>}
 			</Grid.Column>
 		</Grid.Row>
 		<Grid.Row>

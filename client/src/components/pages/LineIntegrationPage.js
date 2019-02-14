@@ -131,9 +131,8 @@ class LineIntegration extends Component {
 			<Grid.Column width={12}><Header>LINE</Header></Grid.Column>
 			<Grid.Column floated='right' width={3}>
 				{!isActivable ?
-				<Label basic color='grey'><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label> :
-				<Button floated='right' disabled={!isActivable} onClick={this.handleToggle.bind(this, 'Line')} color={lineActive ? 'green' : 'grey'} icon={lineActive ? 'check' : 'remove'} content={lineActive ? t('chatbot.integration.activated') : t('chatbot.integration.inactive')}
-				/>}
+				<Label basic color='grey' style={{ float: 'right' }}><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label> :
+				<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>}
 			</Grid.Column>
 		</Grid.Row>
 		<Grid.Row>

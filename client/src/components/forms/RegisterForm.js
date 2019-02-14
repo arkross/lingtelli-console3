@@ -128,6 +128,7 @@ class RegisterForm extends React.Component {
                 placeholder={t('register.nickname')}
                 onChange={this.onChange}
                 value={data.nickname}
+                maxLength={30}
               />
               {errors.username && <InlineError text={errors.username} />}
             </Form.Field>

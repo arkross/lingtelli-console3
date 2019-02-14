@@ -3,6 +3,7 @@ import Group from 'components/utils/Group'
 import ToolComponent from 'components/utils/ToolComponent'
 import groupApis from 'apis/group'
 import answerApis from 'apis/answer'
+import questionApis from 'apis/question'
 import _ from 'lodash'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
@@ -52,11 +53,12 @@ class FAQConfigPage extends React.Component {
 
 	onCreateGroup = (e) => {
 		groupApis.create(this.props.activeBot)
-			.then(({ id }) => {
+			.then(({ id }) =>
 				answerApis.create(this.props.activeBot, id)
+					.then(() => questionApis.create(this.props.activeBot, id))
 					.then(() => this._fetchGroups())
 					.catch(() => console.log('Failed to create answer.'))
-			})
+			)
 			.catch(() => console.log('Failed to create group.'))
 	}
 
