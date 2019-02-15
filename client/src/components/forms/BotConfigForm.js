@@ -175,7 +175,7 @@ class BotConfigForm extends React.Component {
 	}
 
 	render = () => {
-		const { t, loading, showSuccess, match } = this.props;
+		const { t, loading, showSuccess, match, user } = this.props;
 		const { info, openModal, openDeleteModal } = this.state;
 
 		return (
@@ -231,8 +231,8 @@ class BotConfigForm extends React.Component {
 				<Grid>
 					<Grid.Row>
 						<Grid.Column>
-							<NavLink className='ui button facebook large' to={`/dashboard/bot/${match.params.id}/integration/facebook`}><Icon name='facebook' /> {t('chatbot.integration.facebook')}</NavLink>
-							<NavLink className='ui button green large' to={`/dashboard/bot/${match.params.id}/integration/line`}><Icon name='chat' /> {t('chatbot.integration.line')}</NavLink>
+							{(!info.assign_user && user.paid_type === 'Staff') && <NavLink className='ui button facebook large' to={`/dashboard/bot/${match.params.id}/integration/facebook`}><Icon name='facebook' /> {t('chatbot.integration.facebook')}</NavLink>}
+							{(!info.assign_user && user.paid_type === 'Staff') && <NavLink className='ui button green large' to={`/dashboard/bot/${match.params.id}/integration/line`}><Icon name='chat' /> {t('chatbot.integration.line')}</NavLink>}
 							<NavLink className='ui button teal large' to={`/dashboard/bot/${match.params.id}/integration/web`}><Icon name='globe' /> {t('chatbot.integration.web')}</NavLink>
 						</Grid.Column>
 					</Grid.Row>
@@ -264,6 +264,7 @@ class BotConfigForm extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
+	user: state.get('user'),
 	info: state.getIn(['bot', 'bots', ownProps.match.params.id + '']) || {},
 	supportPlatforms: state.getIn(['bot', 'supportPlatforms'])
 })

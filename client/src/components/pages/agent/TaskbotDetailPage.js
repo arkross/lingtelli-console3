@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import _ from 'lodash'
 import Dropzone from "react-dropzone"
 import { fetchGroups, uploadGroups, trainGroups } from "actions/group"
-import { Button, Icon, Form, Input, Grid, Message } from 'semantic-ui-react'
+import { Button, Icon, Form, Input, Grid, Message, Header } from 'semantic-ui-react'
 import FileDownload from "react-file-download"
 import groupApis from "apis/group"
 import { updateTaskbot, fetchTaskbots, deleteTaskbot } from '../../../actions/taskbot'
@@ -108,6 +108,22 @@ class TaskbotDetailPage extends React.Component {
 		this.setState({ openDeleteModal: false })
 	}
 
+	onVendorClick = (e) => {
+		const el = e.target
+		el.setSelectionRange(0, el.value.length)
+	}
+
+	onAddGroupClick = () => {
+		const { data } = this.state
+		groupApis.create(data.id).then(() => {
+
+		})
+	}
+
+	onAddQuestionClick = () => {
+
+	}
+
 	render() {
 		const { data, errors, success, openDeleteModal } = this.state
 		const { t } = this.props
@@ -121,6 +137,14 @@ class TaskbotDetailPage extends React.Component {
 				<Grid.Row divided>
 					<Grid.Column width={10}>
 						<Form>
+							<Form.Field
+								id='vendor_id'
+								name='vendor_id'
+								label='Vendor ID (read only)'
+								control={Input}
+								value={data.vendor_id}
+								onClick={this.onVendorClick}
+								readOnly />
 							<Form.Field
 								id='robot_name'
 								name='robot_name'
@@ -149,7 +173,7 @@ class TaskbotDetailPage extends React.Component {
 								control={Input}
 								value={data.postback_title}
 								onChange={this.onFormChange} />
-							<Button onClick={this.onSubmit} content='Update Taskbot' icon={'save'} primary />
+							<Button onClick={this.onSubmit} content='Update' icon={'save'} primary />
 							<Button onClick={this.onOpenDeleteModal} negative icon='trash' content='Delete' />
 							<DeletionModal
 								title={t('chatbot.delete.title')}
@@ -163,17 +187,26 @@ class TaskbotDetailPage extends React.Component {
 						</Form>
 					</Grid.Column>
 					<Grid.Column width={6}>
+						<Header content={'FAQ'} />
 						<Dropzone
 							onDrop={this.onDrop.bind(null, data.id)}
 							style={{ display: 'none' }}
 							ref={(node) => { this.dropzoneRef = node }}
 						>
 						</Dropzone>
-						<Button onClick={() => this.dropzoneRef.open()} color='orange' icon><Icon name='download' /> Import FAQ</Button>
-						<Button onClick={this.onExport.bind(null, data.id)} color='violet' icon><Icon name='upload' /> Export FAQ</Button>
-						<Button color='brown' onClick={this.onTrain.bind(null, data.id)} icon><Icon name='flask' /> Train Model</Button>
+						<Button onClick={() => this.dropzoneRef.open()} color='orange' icon><Icon name='download' /> Import</Button>
+						<Button onClick={this.onExport.bind(null, data.id)} color='violet' icon><Icon name='upload' /> Export</Button>
+						<Button color='brown' onClick={this.onTrain.bind(null, data.id)} icon><Icon name='flask' /> Train</Button>
 					</Grid.Column>
 				</Grid.Row>
+				{/**<Grid.Row columns={1}>
+					<Grid.Column>
+						<Button content='Add Group' icon='plus' />
+					</Grid.Column>
+				</Grid.Row>
+				<Grid.Row>
+					
+				</Grid.Row> */}
 			</Grid>
 	}
 }

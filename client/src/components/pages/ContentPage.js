@@ -146,13 +146,15 @@ class ContentPage extends React.Component {
 	}
 
 	render = () => {
-		const { t, match, location } = this.props;
+		const { t, match, location, info, user } = this.props;
 		const { loading, scale, openDemoModal } = this.state;
+
+		const isHidden = user.paid_type === 'Staff' && !!info.assign_user
 
 		const subMenus = [
 			{ text: t('chatbot.setting.text') , id: 'setting'},
-			{ text: t('chatbot.integration.facebook') , id: 'integration/facebook'},
-			{ text: t('chatbot.integration.line') , id: 'integration/line'},
+			{ text: t('chatbot.integration.facebook') , id: 'integration/facebook', hide: isHidden},
+			{ text: t('chatbot.integration.line') , id: 'integration/line', hide: isHidden},
 			{ text: t('chatbot.integration.web') , id: 'integration/web'},
 			{ text: t('chatbot.integration.api') , id: 'integration/api'},
 			{ text: t('chatbot.analysis.text'), id: 'analysis' },
@@ -160,7 +162,9 @@ class ContentPage extends React.Component {
 			{ text: t('chatbot.recommendations.text'), id: 'recommendations'},
 			{ text: t('chatbot.faq.text'), id: 'faq' },
 			{ text: t('chatbot.test.text'), id: 'test'}
-		].map(el => Object.assign({value: `${match.url}/${el.id}`, key: el.id}, el))
+		]
+		.filter(el => !el.hide)
+		.map(el => Object.assign({value: `${match.url}/${el.id}`, key: el.id}, el))
 
 		const dropdownMenu = [{
 			text: t('chatbot.top_page.text'),
@@ -214,6 +218,7 @@ class ContentPage extends React.Component {
 }
 
 const mapStateToProps = (state, props) => ({
+	user: state.get('user'),
 	info: state.getIn(['bot', 'bots', props.match.params.id]) || {}
 });
 

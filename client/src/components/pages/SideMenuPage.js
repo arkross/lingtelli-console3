@@ -44,7 +44,7 @@ class SideMenuPage extends React.Component {
 
 	onCloseBot = () => {
 		this.setState({ openModal: false });
-		this.props.fetchAllBotDetails()
+		this.props.fetchAllBotDetails(this.props.user.paid_type)
 			.catch( err => {
 				this.setState({ errors: err.message });
 			});
@@ -115,6 +115,7 @@ SideMenuPage.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
+	user: state.get('user'),
 	bots: state.getIn(['bot', 'bots']).filter(el => el.get('id')) || {},
 	info: state.getIn(['bot', 'info']) || {},
 });
