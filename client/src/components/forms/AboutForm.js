@@ -99,15 +99,24 @@ class AboutForm extends React.Component {
 		const updateData = {
 			first_name: form.first_name
 		}
-		if (form.password2) {
-			updateData.old_password = form.password,
-			updateData.password = form.password2
-		}
 
-		this.props.updateUser(updateData)
-		.then(() => {
-			showInfo(t('account.success'))
-			this.setState({loading: false, showSuccess: !!form.password2, showModal: !!form.password2})
+		return this.props.updateUser({
+			first_name: form.first_name
+		}).then(() => {
+			if (form.password2) {
+				return this.props.updateUser({
+					old_password: form.password,
+					password: form.password2
+				}).then(() => {
+					showInfo(t('account.success'))
+					this.setState({ loading: false, showSuccess: !!form.password2, showModal: !!form.password2})
+				}, err => {
+					this.setState({ loading: false })
+				})
+			} else {
+				showInfo(t('account.success'))
+				this.setState({ loading: false, showSuccess: !!form.password2, showModal: !!form.password2})
+			}
 		}, err => {
 			this.setState({ loading: false })
 		})
