@@ -275,8 +275,9 @@ class LineViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         return Line.objects.filter(chatbot=bot_id)
 
     def list(self, request, id=None):
-        if request.user.is_staff == True:
-            return Response({'errors': _('Not allowed to get user fb data')},
+        bot = Chatbot.objects.filter(id=id).first()
+        if request.user.is_staff == True and bot.assign_user != None:
+            return Response({'errors': _('Not allowed to get user line data')},
                             status=HTTP_403_FORBIDDEN)
 
         line_obj = Line.objects.filter(chatbot=id).first()
@@ -284,8 +285,9 @@ class LineViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         return Response(serializer.data, status=HTTP_200_OK)
 
     def retrieve(self, request, id=None, pk=None):
-        if request.user.is_staff == True:
-            return Response({'errors': _('Not allowed to get user fb data')},
+        bot = Chatbot.objects.filter(id=id).first()
+        if request.user.is_staff == True and bot.assign_user != None:
+            return Response({'errors': _('Not allowed to get user line data')},
                             status=HTTP_403_FORBIDDEN)
         line_obj = Line.objects.filter(chatbot=id).first()
         serializer = LineSerializer(line_obj)
@@ -298,8 +300,9 @@ class LineViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
             id = Chatbot object id
             pk = Line object id
         '''
-        if request.user.is_staff == True:
-            return Response({'errors': _('Not allowed to get user fb data')},
+        bot = Chatbot.objects.filter(id=id).first()
+        if request.user.is_staff == True and bot.assign_user != None:
+            return Response({'errors': _('Not allowed to get user line data')},
                             status=HTTP_403_FORBIDDEN)
         if request.body:
             user_obj = request.user
@@ -349,7 +352,8 @@ class FacebookViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         return Facebook.objects.filter(chatbot=bot_id)
 
     def list(self, request, id=None):
-        if request.user.is_staff == True:
+        bot = Chatbot.objects.filter(id=id).first()
+        if request.user.is_staff == True and bot.assign_user != None:
             return Response({'errors': _('Not allowed to get user fb data')},
                             status=HTTP_403_FORBIDDEN)
         fb_obj = Facebook.objects.filter(chatbot=id).first()
@@ -357,7 +361,8 @@ class FacebookViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         return Response(serializer.data, status=HTTP_200_OK)
 
     def retrieve(self, request, id=None, pk=None):
-        if request.user.is_staff == True:
+        bot = Chatbot.objects.filter(id=id).first()
+        if request.user.is_staff == True and bot.assign_user != None:
             return Response({'errors': _('Not allowed to get user fb data')},
                             status=HTTP_403_FORBIDDEN)
         fb_obj = Facebook.objects.filter(chatbot=id).first()
@@ -371,7 +376,8 @@ class FacebookViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
             id = Chatbot object id
             pk = Line object id
         '''
-        if request.user.is_staff == True:
+        bot = Chatbot.objects.filter(id=id).first()
+        if request.user.is_staff == True and bot.assign_user != None:
             return Response({'errors': _('Not allowed to get user fb data')},
                             status=HTTP_403_FORBIDDEN)
         if request.body:
