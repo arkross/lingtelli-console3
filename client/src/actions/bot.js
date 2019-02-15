@@ -112,7 +112,6 @@ export const fetchAllBotDetails = (paidtype) => async (dispatch) => {
 			data.activeBot = bot.id
 			// Also fetch FAQ to get the counts
 			fetchGroupLength(bot.id, 1)(dispatch)
-			console.log(data, paidtype)
 			if ( ! (data.assign_user && paidtype === 'Staff')) {
 				facebookRead(bot.id)(dispatch)
 				lineRead(bot.id)(dispatch)
