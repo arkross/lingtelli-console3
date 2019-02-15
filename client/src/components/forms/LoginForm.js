@@ -67,8 +67,6 @@ class LoginForm extends React.Component {
 
 		if (!data.email)
 			errors.email = t('errors.mail.blank');
-		else if (!Validator.isEmail(data.email))
-			errors.email = t('errors.mail.invalid');
 
 		if (!data.password)
 			errors.password = t('errors.password.blank');
@@ -99,7 +97,6 @@ class LoginForm extends React.Component {
 							<Input
 								icon='mail'
 								iconPosition='left'
-								type='email'
 								name='email'
 								placeholder={t('register.mail')}
 								onChange={this.onChange}

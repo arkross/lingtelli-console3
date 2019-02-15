@@ -96,15 +96,16 @@ class ToolComponent extends React.Component {
 		const currentPaidtype = _.find(user.packages, p => p.name === user.paid_type)
 		const faqCount = _.reduce(bots, (acc, bot) => (acc += (bot && bot.group && bot.group.length) || 0), 0)
 		const faqLimit = currentPaidtype ? currentPaidtype.faq_amount : 0
+		const faqLimitText = faqLimit > 0 ? faqLimit : '∞'
 
 		return (
 			<div style={{ margin: "10px" }}>
 				{errors && <Message error={!!errors} header={errors} />}
 				{success && <Message success={!!success} header={success} />}
-				<Button disabled={faqCount >= faqLimit} onClick={onCreateGroup} color='green'>
+				<Button disabled={faqCount >= faqLimit && faqLimit > 0} onClick={onCreateGroup} color='green'>
 					<Icon name="pencil" />
 					<span>{t("chatbot.faq.add")}&nbsp;
-					{'(' + faqCount + ' / ' + faqLimit + ')'}</span>
+					{'(' + faqCount + ' / ' + faqLimitText + ')'}</span>
 				</Button>
 				<Button onClick={this.onExport} color='orange'>
 					<Icon name="download"/>

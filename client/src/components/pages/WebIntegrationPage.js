@@ -193,6 +193,7 @@ ${str}</script>
 					<div>{t('chatbot.setting.web.description')}</div>
 					<Form>
 						<TextArea rows={5} style={{fontFamily: 'monospace', backgroundColor: '#eee'}} value={webScript}></TextArea>
+						<br /><br />
 						<CopyToClipboard text={webScript}>
 							<Button disabled={!webActive} onClick={this.handleCopy} primary>
 								<Icon name='copy' />

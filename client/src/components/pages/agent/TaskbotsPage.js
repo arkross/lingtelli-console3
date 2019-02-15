@@ -50,7 +50,7 @@ class TaskbotsPage extends React.Component {
 	onSubmit = e => {
 		const { data: taskbots, changes } = this.state
 		const promises = changes.map(bot => this.props.updateTaskbot(bot.id, {
-			user: bot.user,
+			assign_user: bot.user,
 			robot_name: bot.robot_name
 		}))
 		this.setState({loading: true})
@@ -97,7 +97,7 @@ class TaskbotsPage extends React.Component {
 						const isChanged = changes.findIndex(c => c.id === bot.id) >= 0
 						return <Table.Row key={bot.id} warning={isChanged}>
 							<Table.Cell><Input name='robot_name' onChange={this.onFormChange.bind(null, bot.id)} value={bot.robot_name} /></Table.Cell>
-							<Table.Cell><Dropdown name='user' options={memberOptions} onChange={this.onFormChange.bind(null, bot.id)} selection value={bot.user} placeholder={'Select User'} /></Table.Cell>
+							<Table.Cell><Dropdown name='user' options={memberOptions} onChange={this.onFormChange.bind(null, bot.id)} selection value={bot.assign_user} placeholder={'Select User'} clearable /></Table.Cell>
 							<Table.Cell>
 								<Button.Group>
 									<NavLink className='ui button' to={`${match.path}/${bot.id}`}><Icon name='file alternate' />Details</NavLink>

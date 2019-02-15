@@ -104,7 +104,7 @@ export const fetchMatching = (activeBot, currentPage = 1) => dispatch =>
 	api.matching(activeBot, currentPage)
 		.then(data => dispatch(fetchBotMatching(data, activeBot, currentPage)))
 
-export const fetchAllBotDetails = () => async (dispatch) => {
+export const fetchAllBotDetails = (paidtype) => async (dispatch) => {
 	const bots = await api.list()
 	dispatch(fetchAllBots(bots))
 	return Promise.all(_.map(bots, bot => {
@@ -112,8 +112,11 @@ export const fetchAllBotDetails = () => async (dispatch) => {
 			data.activeBot = bot.id
 			// Also fetch FAQ to get the counts
 			fetchGroupLength(bot.id, 1)(dispatch)
-			facebookRead(bot.id)(dispatch)
-			lineRead(bot.id)(dispatch)
+			console.log(data, paidtype)
+			if ( ! (data.assign_user && paidtype === 'Staff')) {
+				facebookRead(bot.id)(dispatch)
+				lineRead(bot.id)(dispatch)
+			}
 			dispatch(fetchBotInfo(data))
 		})
 		return api.report(bot.id).then(data => dispatch(fetchBotReport(data, bot.id)))
