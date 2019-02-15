@@ -359,7 +359,7 @@ def upload_faq_csv(request, pk=None):
                                 'Should be type utf8 or big5.')},
                                 status=HTTP_400_BAD_REQUEST)
             buff = StringIO(str(f_s_result))
-            data = csv.reader(buff, delimiter=',', quotechar='|')
+            data = csv.reader(buff, delimiter=',', quotechar='"')
             next(data) # Skip header
             acc_obj = AccountInfo.objects.filter(user=request.user).first()
             faq_limit = acc_obj.paid_type.faq_amount
