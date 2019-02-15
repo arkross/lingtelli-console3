@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from collections import OrderedDict
 from django.shortcuts import render
-from django.db.models import Count, Case, When
+from django.db.models import Count, Case, When, Q
 from django.utils.translation import gettext as _
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
@@ -50,7 +50,9 @@ class ReportViewset(viewsets.ReadOnlyModelViewSet):
     def list(self, request, id=None):
         user_obj = request.user
         bot_id = id
-        bot_obj = Chatbot.objects.filter(id=bot_id, user=user_obj).first()
+        bots = Chatbot.objects.filter(Q(user=user_obj) |
+                                      Q(assign_user=user_obj))
+        bot_obj = bots.filter(id=bot_id).first()
         if bot_obj:
             if not request.GET.get('days'):
                 day_range = 7
