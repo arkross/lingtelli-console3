@@ -35,6 +35,9 @@ class FBIntegration extends Component {
 	componentWillReceiveProps(nextProps) {
 		if (JSON.stringify(nextProps.info) !== JSON.stringify(this.state.info)) {
 			this.setState({ info: nextProps.info })
+			if (nextProps.info.assign_user && nextProps.user.paid_type === 'Staff') {
+				nextProps.history.push(`/dashboard/bot/${nextProps.info.id}/setting`)
+			}
 		}
 	}
 

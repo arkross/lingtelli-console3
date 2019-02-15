@@ -50,18 +50,19 @@ class DashBoardPage extends React.Component {
 	componentDidMount() {
 		const token = localStorage.getItem('token')
 		setAuthorizationHeader(token)
-		this.props.fetchDetail()
-		this.updateBots()
-		this.props.fetchPlatforms()
-		this.props.fetchPackages()
-		this.isUpdate = true
+		this.props.fetchDetail().then(() => {
+			this.updateBots()
+			this.props.fetchPlatforms()
+			this.props.fetchPackages()
+			this.isUpdate = true
+		})
 	}
 
 	componentDidUpdate() {
 	}
 
 	updateBots = () => {
-		return this.props.fetchAllBotDetails()
+		return this.props.fetchAllBotDetails(this.props.user.paid_type)
 	}
 
 	handleItemClick = () => {
