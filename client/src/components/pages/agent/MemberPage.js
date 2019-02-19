@@ -91,6 +91,7 @@ class Member extends React.Component {
 
 		return <div>
 			<Button content='Save Changes' color='blue' icon='save' floated='right' disabled={changes.length === 0} onClick={this.onSaveButtonClick} loading={loading} />
+			<br /><br />
 			<Table size='small'>
 				<Table.Header>
 					<Table.Row>

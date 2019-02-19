@@ -121,7 +121,7 @@ class TaskbotsPage extends React.Component {
 
 const mapStateToProps = (state, props) => ({
 	members: state.getIn(['agent', 'members']) || [],
-	taskbots: (props.match.params.id ? state.getIn(['agent', 'members', props.match.params.id, 'bots']) : state.getIn(['agent', 'bots'])) || []
+	taskbots: (props.match.params.id ? state.getIn(['agent', 'members', state.getIn(['agent', 'members']).findIndex(m => (m.get('id') + '') === (props.match.params.id + '')) + '', 'bots']) : state.getIn(['agent', 'bots'])) || []
 })
 
 export default compose(

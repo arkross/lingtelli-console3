@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { translate } from 'react-i18next'
 import _ from 'lodash'
 import { Form, Table, Button, Label, Dropdown, Input } from 'semantic-ui-react'
-import { fetchPackages } from '../../../actions/user'
+import { fetchPackages, updatePackage } from '../../../actions/user'
 import { fetchPlatforms } from '../../../actions/bot'
 import toJS from 'components/utils/ToJS'
 
@@ -13,7 +13,8 @@ class Plan extends React.Component {
 		super(props)
 		this.state = {
 			loading: false,
-			paidtypes: props.paidtypes
+			paidtypes: props.paidtypes,
+			changes: []
 		}
 	}
 	componentDidMount() {
@@ -23,17 +24,22 @@ class Plan extends React.Component {
 		})
 	}
 	fetchPaidtypes = () => {
-		this.props.fetchPackages()
+		return this.props.fetchPackages()
 			.then(data => {
-				this.setState({loading: false, paidtypes: this.props.paidtypes })
+				this.calculateChanges(this.props.paidtypes)
+				this.setState({ loading: false })
 			})
+	}
+	calculateChanges = (newPaidtypes) => {
+		const changes = _.filter(newPaidtypes, pt => JSON.stringify(this.props.paidtypes.find(dpt => dpt.id === pt.id)) !== JSON.stringify(pt))
+		this.setState({ paidtypes: newPaidtypes, changes })
 	}
 	onFormChange = (id, e, {name, value}) => {
 		const { paidtypes } = this.state
 		const ptClone = _.cloneDeep(this.state.paidtypes)
 		const index = _.findIndex(ptClone, pt => pt.id === id)
 		if (name !== 'durNumber' && name !== 'durUnit') {
-			const newState = _.set(ptClone, [index, name], value)
+			_.set(ptClone, [index, name], value)
 		} else {
 			const durElements = _.get(ptClone, [index, 'duration'], '0_0').split('_')
 			if (name === 'durNumber') {
@@ -42,13 +48,25 @@ class Plan extends React.Component {
 				_.set(ptClone, [index, 'duration'], `${durElements[0]}_${value}`)
 			}
 		}
-		this.setState({ paidtypes: ptClone })
+		this.calculateChanges(ptClone)
 	}
 	onSaveButtonClick = e => {
-
+		const { paidtypes, changes } = this.state
+		const promises = changes.map(pt => this.props.updatePackage(pt.id, {
+			third_party: pt.third_party.map(el => el.id),
+			name: pt.name,
+			bot_amount: pt.bot_amount,
+			faq_amount: pt.faq_amount,
+			user_type: pt.user_type,
+			duration: pt.duration
+		}))
+		this.setState({loading: true})
+		return Promise.all(promises).finally(() => {
+			return this.fetchPaidtypes()
+		})
 	}
 	render() {
-		const { paidtypes, loading } = this.state
+		const { paidtypes, loading, changes } = this.state
 		const { platforms } = this.props
 		const ddOptions = platforms.map(plat => ({
 			key: plat.id,
@@ -61,7 +79,8 @@ class Plan extends React.Component {
 			{key: 'y', text: 'Year(s)', value: 'y'}
 		]
 		return <div>
-			<Button content='Save Changes' color='blue' icon='save' floated='right' onClick={this.onSaveButtonClick} loading={loading} />
+			<Button content='Save Changes' color='blue' icon='save' floated='right' onClick={this.onSaveButtonClick} loading={loading} disabled={changes.length === 0} />
+			<br /><br />
 			<Table size='small'>
 				<Table.Header>
 					<Table.Row>
@@ -74,13 +93,14 @@ class Plan extends React.Component {
 				</Table.Header>
 				<Table.Body>
 					{paidtypes && _.map(paidtypes, pt => {
+						const isChanged = changes.findIndex(c => c.id === pt.id) >= 0
 						const durElements = pt.duration.split('_')
 						const durDropdowns =
 							<Input name='durNumber' value={durElements[0]} type='number' onChange={this.onFormChange.bind(null, pt.id)} action>
 								<input style={{width: '50px'}} />
 								<Dropdown selection options={timeUnitOptions} name='durUnit' onChange={this.onFormChange.bind(null, pt.id)} value={durElements[1]} />
 							</Input>
-						return <Table.Row key={pt.id}>
+						return <Table.Row key={pt.id} warning={isChanged}>
 							<Table.Cell><Input name='name' value={pt.name} type='text' onChange={this.onFormChange.bind(null, pt.id)} /></Table.Cell>
 							<Table.Cell><Input fluid name='bot_amount' min='0' step='1' value={pt.bot_amount} type='number' onChange={this.onFormChange.bind(null, pt.id)}><input style={{ minWidth: '50px'}} /></Input></Table.Cell>
 							<Table.Cell><Input fluid name='faq_amount' min='0' step='1' value={pt.faq_amount} type='number' onChange={this.onFormChange.bind(null, pt.id)}><input minLength={5} style={{minWidth: '50px'}} /></Input></Table.Cell>
@@ -100,7 +120,7 @@ const mapStateToProps = (state, props) => ({
 })
 
 export default compose(
-	connect(mapStateToProps, {fetchPackages, fetchPlatforms}),
+	connect(mapStateToProps, {fetchPackages, fetchPlatforms, updatePackage}),
 	toJS,
 	translate()
 )(Plan)
