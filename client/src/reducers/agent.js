@@ -30,12 +30,10 @@ export default function(state = initState, action) {
 			})
 		case types.FETCH_TASKBOTS:
 			return state.withMutations(s => {
-				_.chain(action.data)
-					.groupBy('user')
-					.forEach((userId, botsGroup) => {
-						const elkey = s.get('member').findKey(m => (m.id + '') === (userId + ''))
-						s = s.setIn(['members', elkey + '', 'bots'], fromJS(botsGroup))
-					})
+				_.forEach(_.groupBy(action.data, 'assign_user'), (botsGroup, userId) => {
+					const elkey = s.get('members').findIndex(m => (m.get('id') + '') === (userId + ''))
+					s = s.setIn(['members', elkey + '', 'bots'], fromJS(botsGroup))
+				})
 				return s.set('bots', fromJS(action.data))
 			})
 		default: return state
