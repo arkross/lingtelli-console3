@@ -181,7 +181,7 @@ class TestBotPage extends Component {
 }
 
 const mapStateToProps = (state, props) => ({
-	info: state.getIn(['bot', 'bots', props.match.params.id]) || {}
+	info: props.info ? props.info : (state.getIn(['bot', 'bots', props.match.params.id]) || {})
 })
 
 export default compose(
