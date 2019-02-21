@@ -104,7 +104,7 @@ class Dashboard extends React.Component {
 		const topMenuOptions = [
 			{text: 'Members', id: 'member'},
 			{text: 'Taskbots', id: 'taskbots'},
-			{text: 'Profile', id: 'profile'},
+			// {text: 'Profile', id: 'profile'},
 			{text: 'Plans', id: 'plan'}
 		]
 
@@ -113,9 +113,6 @@ class Dashboard extends React.Component {
 		return <Container>
 			<Dimmer active={openSideMenu} onClick={this.closeSidebar} className='sidemenu-dimmer' />
 			<Menu secondary>
-				<Menu.Item className='leftmenu-switch'>
-					<Icon name='bars' link onClick={this.toggleSidebar} />
-				</Menu.Item>
 				<Menu.Item header>
 					Lingtelli Agent Console
 				</Menu.Item>

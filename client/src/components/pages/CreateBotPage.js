@@ -118,8 +118,7 @@ class CreateBotPage extends React.Component {
 			.then(() => {
 				this.setState({ loading: false, openModal: true })
 				this.modalButton.focus()
-			})
-			.catch(err => {
+			}, err => {
 				const error = err.message
 				this.setState({errors: {create: error}, loading: false})
 				console.log('Failed to create bot', error);

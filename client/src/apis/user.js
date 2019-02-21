@@ -11,6 +11,8 @@ export default {
 
 	packages: async () => (await axios.get(`${API_HOST}/paidtype/`)).data,
 
+	updatePackage: async (id, data) => (await axios.put(`${API_HOST}/paidtype/${id}/`, data)).data,
+
 	edit: async (id, data) => (await axios.put(`${API_HOST}/member/${id}/`, {
 		username: data.username,
 		first_name: data.first_name,

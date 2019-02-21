@@ -53,3 +53,6 @@ export const resetPassword = data => dispatch =>
 
 export const fetchPackages = () => dispatch =>
 	api.packages().then(packages => dispatch(fetchUserPackage(packages)))
+
+export const updatePackage = (id, data) => dispatch =>
+	api.updatePackage(id, data).then(result => result)

@@ -231,8 +231,8 @@ class BotConfigForm extends React.Component {
 				<Grid>
 					<Grid.Row>
 						<Grid.Column>
-							{(!info.assign_user && user.paid_type === 'Staff') && <NavLink className='ui button facebook large' to={`/dashboard/bot/${match.params.id}/integration/facebook`}><Icon name='facebook' /> {t('chatbot.integration.facebook')}</NavLink>}
-							{(!info.assign_user && user.paid_type === 'Staff') && <NavLink className='ui button green large' to={`/dashboard/bot/${match.params.id}/integration/line`}><Icon name='chat' /> {t('chatbot.integration.line')}</NavLink>}
+							{!(info.assign_user && user.paid_type === 'Staff') && <NavLink className='ui button facebook large' to={`/dashboard/bot/${match.params.id}/integration/facebook`}><Icon name='facebook' /> {t('chatbot.integration.facebook')}</NavLink>}
+							{!(info.assign_user && user.paid_type === 'Staff') && <NavLink className='ui button green large' to={`/dashboard/bot/${match.params.id}/integration/line`}><Icon name='chat' /> {t('chatbot.integration.line')}</NavLink>}
 							<NavLink className='ui button teal large' to={`/dashboard/bot/${match.params.id}/integration/web`}><Icon name='globe' /> {t('chatbot.integration.web')}</NavLink>
 						</Grid.Column>
 					</Grid.Row>

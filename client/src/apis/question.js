@@ -9,7 +9,7 @@ export default {
 	})).data,
 
 	update: async (activeBot, payload) => (await axios.put(`${API_HOST}/chatbot/${activeBot}/question/${payload.id}/`, {
-		content: payload.content,
+		content: payload.content.replace(',', '，'),
 	})).data,
 
 	delete: async (activeBot, id) => (await axios.delete(`${API_HOST}/chatbot/${activeBot}/question/${id}/`)).data

@@ -50,7 +50,7 @@ class TaskbotsPage extends React.Component {
 	onSubmit = e => {
 		const { data: taskbots, changes } = this.state
 		const promises = changes.map(bot => this.props.updateTaskbot(bot.id, {
-			assign_user: bot.user,
+			assign_user: bot.assign_user,
 			robot_name: bot.robot_name
 		}))
 		this.setState({loading: true})
@@ -74,12 +74,20 @@ class TaskbotsPage extends React.Component {
 	render() {
 		const { members, match } = this.props
 		const { data: taskbots, changes, openDeleteModal } = this.state
-		const memberOptions = members.map(member => ({
-			id: member.id,
-			text: member.username,
-			key: member.id,
-			value: member.id
-		}))
+		const memberOptions = [
+			{
+				id: null,
+				text: '-- Unassigned --',
+				key: '0',
+				value: null
+			},
+			...members.map(member => ({
+				id: member.id,
+				text: member.username,
+				key: member.id,
+				value: member.id
+			}))
+		]
 		
 		return <div>
 			<NavLink to='/agent/taskbots/create' className='ui button green'><Icon name='plus' /> Create</NavLink>
@@ -97,10 +105,10 @@ class TaskbotsPage extends React.Component {
 						const isChanged = changes.findIndex(c => c.id === bot.id) >= 0
 						return <Table.Row key={bot.id} warning={isChanged}>
 							<Table.Cell><Input name='robot_name' onChange={this.onFormChange.bind(null, bot.id)} value={bot.robot_name} /></Table.Cell>
-							<Table.Cell><Dropdown name='user' options={memberOptions} onChange={this.onFormChange.bind(null, bot.id)} selection value={bot.assign_user} placeholder={'Select User'} clearable /></Table.Cell>
+							<Table.Cell><Dropdown name='assign_user' options={memberOptions} onChange={this.onFormChange.bind(null, bot.id)} selection value={bot.assign_user} placeholder={'Select User'} /></Table.Cell>
 							<Table.Cell>
 								<Button.Group>
-									<NavLink className='ui button' to={`${match.path}/${bot.id}`}><Icon name='file alternate' />Details</NavLink>
+									<NavLink className='ui button' to={`/agent/taskbots/${bot.id}`}><Icon name='file alternate' />Details</NavLink>
 								</Button.Group>
 							</Table.Cell>
 						</Table.Row>
@@ -113,7 +121,7 @@ class TaskbotsPage extends React.Component {
 
 const mapStateToProps = (state, props) => ({
 	members: state.getIn(['agent', 'members']) || [],
-	taskbots: (props.match.params.id ? state.getIn(['agent', 'members', props.match.params.id, 'bots']) : state.getIn(['agent', 'bots'])) || []
+	taskbots: (props.match.params.id ? state.getIn(['agent', 'members', state.getIn(['agent', 'members']).findIndex(m => (m.get('id') + '') === (props.match.params.id + '')) + '', 'bots']) : state.getIn(['agent', 'bots'])) || []
 })
 
 export default compose(
