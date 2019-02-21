@@ -687,18 +687,12 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
                 acc_obj = user_obj.acc_user.filter().first()
                 old_paid_type = acc_obj.paid_type
                 paid_obj = PaidType.objects.filter(id=paid_type_id).first()
-                if paid_obj.name == 'Staff':
+                if paid_obj.user_type == 'S':
                     return Response({'errors':_('Invalid type')},
                                     status=HTTP_403_FORBIDDEN)
-                if paid_obj.bot_amount < old_paid_type.bot_amount or\
-                    paid_obj.faq_amount < old_paid_type.faq_amount:
-                    status, err = utils.downgrade(user_obj, paid_obj)
-                    if not status:
-                        print(err)
-                        return Response({'errors':_('Something went wrong')},
-                                        status=HTTP_500_INTERNAL_SERVER_ERROR)
-                else:
-                    utils.upgrade(user_obj, paid_obj)
+                # TODO: Send email to inform user type changed
+                utils.change_to_new_paidtype_limitation(user_obj, paid_obj,
+                                                        to_delete=True)
                 acc_obj.paid_type = paid_obj
                 time_now = datetime.now(timezone.utc)
                 acc_obj.start_date = time_now
@@ -713,6 +707,8 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
                     else:
                         total_days = int(duration_time)
                     acc_obj.expire_date = time_now + timedelta(days=total_days)
+                else:
+                    acc_obj.expire_date = None
                 acc_obj.save()
                 return Response({'success':_('Update successed')},
                                 status=HTTP_200_OK)

@@ -5,6 +5,7 @@ from .models import FAQGroup, Answer, Question
 class FAQGrouptSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     chatbot = serializers.IntegerField()
+    hide_status = serializers.BooleanField()
 
     def to_representation(self, instance):
         res = {}
