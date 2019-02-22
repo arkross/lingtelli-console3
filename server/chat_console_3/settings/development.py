@@ -31,14 +31,12 @@ NLU_HOST = os.environ.get('NLU')
 # Initial staff's password
 INIT_PASSWORD = os.environ.get('INIT_PASS')
 
-# Celery related settings
-# TODO Should be get from env
-CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_BROKER_URL = os.environ.get('BROKER')
 
 CELERY_BEAT_SCHEDULE = {
     'check_token_expired_every_minutes': {
         'task': 'delete_token',
-        'schedule': 60.0
+        'schedule': crontab()
     },
     'send_email_when_expire': {
         'task': 'send_email_inform_expired',
