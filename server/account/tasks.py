@@ -1,5 +1,5 @@
 from celery import task
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, date
 
 from rest_framework.authtoken.models import Token
 
@@ -19,13 +19,12 @@ def delete_expired_token():
 
 @task(name='send_email_inform_expired')
 def inform_expire():
-    accounts = AccountInfo.objects.exclude(expire_date__isnull=True)\
-               .exclude(expire_date__exact='')
-    today_date = datetime.date.today()
+    accounts = AccountInfo.objects.filter(expire_date__isnull=False)
+    today_date = date.today()
     trial_obj = PaidType.objects.filter(name='Trial').first()
     for acc in accounts:
         e_date = acc.expire_date.date()
-        delta_date = (today_date - e_date).days
+        delta_date = (e_date - today_date).days
         if delta_date == 30 or delta_date == 7:
             utils.send_task_downgrade_email(acc.user, acc, trial_obj)
         if delta_date < 0:
@@ -35,16 +34,17 @@ def inform_expire():
             acc.save()
 
 @task(name='delete_over_15days')
-def delete_over_15days():
-    accounts = AccountInfo.objects.exlude(delete_date__isnull=True)\
-               .exlude(delete_date__exact='')
-    today_date = datetime.date.today()
+def delete_over_15days_bots_faqs():
+    accounts = AccountInfo.objects.filter(delete_date__isnull=False)
+    today_date = date.today()
     trial_obj = PaidType.objects.filter(name='Trial').first()
     for acc in accounts:
         d_date = acc.delete_date.date()
-        delta_date = (today_date - d_date).days
+        delta_date = (d_date - today_date).days
         if delta_date <= 0:
             Chatbot.objects.filter(user=acc.user, hide_status=True).delete()
             remain_bots = Chatbot.objects.filter(user=acc.user)
             for bot in remain_bots:
                 FAQGroup.objects.filter(chatbot=bot, hide_status=True).delete()
+            acc.delete_date = None
+            acc.save()

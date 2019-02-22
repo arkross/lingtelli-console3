@@ -42,39 +42,39 @@ CELERY_BEAT_SCHEDULE = {
     },
     'send_email_when_expire': {
         'task': 'send_email_inform_expired',
-        'schedule': 86400.0
+        'schedule': crontab(minute=0, hour=0)
     },
     'delete_over_15days_hidden_data': {
         'task': 'delete_over_15days',
-        'schedule': 86400.0
+        'schedule': crontab(minute=0, hour=0)
     }
 }
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters':{
-        'verbose': {
-            'format': '{levelname} {asctime} {message}',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'propagate': True
-        },
-        'account.views': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-            'propagate': True
-        }
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters':{
+#         'verbose': {
+#             'format': '{levelname} {asctime} {message}',
+#             'style': '{',
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'verbose'
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'propagate': True
+#         },
+#         'account.views': {
+#             'level': 'DEBUG',
+#             'handlers': ['console'],
+#             'propagate': True
+#         }
+#     },
+# }

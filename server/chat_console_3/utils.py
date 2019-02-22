@@ -401,8 +401,15 @@ def send_task_downgrade_email(user, acc, new_paidtype, to_send_file=False):
             except Exception as e:
                 print('Sending inform email failed: ' + str(e))
         else:
+            expire_email = \
+                    render_to_string('expired_inform.html',
+                                     {'name': member_name,
+                                     'acc_type': acc.paid_type.name,
+                                     'bot_amount': new_paidtype.bot_amount,
+                                     'faq_total': new_paidtype.faq_amount})
+            txt_email = strip_tags(expire_email)
             msg = EmailMultiAlternatives(subject, txt_email, from_mail, [to_mail])
-            msg.attach_alternative(html_email, 'text/html')
+            msg.attach_alternative(expire_email, 'text/html')
             compress_file = get_all_bots_faqs(user)
             today_date = str(date.today())
             zip_name = '問題集備份-' + today_date + '.zip'
