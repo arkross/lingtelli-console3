@@ -152,7 +152,7 @@ class TestBotPage extends Component {
 		return true
 	}
 	render() {
-		const { info, t } = this.props
+		const { info, t, cancelAutoFocus } = this.props
 		const { messages, currentMessage } = this.state
 		moment.locale(localStorage.i18nextLng.toLowerCase())
 		let keyCounter = 0
@@ -172,7 +172,7 @@ class TestBotPage extends Component {
 			</div>
 			<div className='chat-input-container'>
 				<Input icon placeholder={t('demo.input')}>
-					<input type='text' ref={el => {this.messageField = el}} onChange={this.onTextboxChange} onKeyUp={this.onKeyUp} autoFocus value={currentMessage} />
+					<input type='text' ref={el => {this.messageField = el}} onChange={this.onTextboxChange} onKeyUp={this.onKeyUp} autoFocus={ ! cancelAutoFocus} value={currentMessage} />
 					<Icon name='send' link={!!currentMessage} onClick={this.onClickSend} />
 				</Input>
 			</div>

@@ -15,8 +15,8 @@ export const deleted = () => ({
 	type: types.DELETE_QUESTION,
 })
 
-export const createQuestion = (activeBot, gid) => dispatch =>
-	api.create(activeBot, gid).then(() => dispatch(update()))
+export const createQuestion = (activeBot, gid, content=' ') => dispatch =>
+	api.create(activeBot, gid, content).then(() => dispatch(update()))
 
 export const updateQuestion = (activeBot, { id, content }) => dispatch =>
 	api.update(activeBot, { id, content }).then(data => dispatch(update(data)))
