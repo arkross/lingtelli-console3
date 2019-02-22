@@ -7,9 +7,10 @@ import { fetchGroups, uploadGroups, trainGroups } from "../../../actions/group"
 import { Button, Icon, Form, Input, Grid, Message, Header, Pagination, Table, Divider } from 'semantic-ui-react'
 import FileDownload from "react-file-download"
 import groupApis from "apis/group"
+import { deleteGroup } from '../../../actions/group'
 import { updateTaskbot, fetchTaskbots, deleteTaskbot } from '../../../actions/taskbot'
-import { updateQuestion } from '../../../actions/question'
-import { updateAnswer } from '../../../actions/answer'
+import { createQuestion, updateQuestion, deleteQuestion } from '../../../actions/question'
+import { updateAnswer, createAnswer } from '../../../actions/answer'
 import toJS from 'components/utils/ToJS'
 import { translate, Trans } from 'react-i18next'
 import DeletionModal from '../../modals/TaskbotDeletionModal'
@@ -24,6 +25,10 @@ class TaskbotDetailPage extends React.Component {
 			errors: '',
 			success: '',
 			openDeleteModal: false,
+			addGroupLoading: false,
+			trainLoading: false,
+			importLoading: false,
+			exportLoading: false,
 			data: props.bot || {
 				vendor_id: '',
 				robot_name: '',
@@ -45,12 +50,16 @@ class TaskbotDetailPage extends React.Component {
 			if ( ! this.props.bot) {
 				this.props.history.push('/agent/taskbots')
 			} else {
-				this.props.fetchGroups(this.props.bot.id, this.state.activePage, '').then(() => {
-					this.setState( { data: this.props.bot, loading: false, faq: this.props.groups })
-				}).catch(err => {
-					this.setState({ data: this.props.bot, loading: false, faq: []})
-				})
+				this.fetchGroups()
 			}
+		})
+	}
+
+	fetchGroups = () => {
+		return this.props.fetchGroups(this.props.bot.id, this.state.activePage, '').then(() => {
+			this.setState( { data: this.props.bot, loading: false, faq: this.props.groups })
+		}, err => {
+			this.setState({ data: this.props.bot, loading: false, faq: []})
 		})
 	}
 
@@ -64,9 +73,11 @@ class TaskbotDetailPage extends React.Component {
 	}
 
 	onExport = (id, e) => {
+		this.setState({ exportLoading: true })
 		groupApis.export(id)
-			.then(data => FileDownload(data, 'export.csv'))
-			.catch(() => this.setState({ errors: 'Export FAQ Error' }));
+			.then(data => FileDownload(data, 'export.csv'),
+			() => this.setState({ errors: 'Export FAQ Error' }))
+			.finally(() => this.setState({ exportLoading: false }));
 	}
 
 	onDrop = (id, acceptedFiles, rejectedFiles) => {
@@ -76,16 +87,17 @@ class TaskbotDetailPage extends React.Component {
 			const files = new FormData()
 			files.append('file', acceptedFiles[0])
 
-			this.setState({ loading: true })
+			this.setState({ importLoading: true })
 
-			uploadGroups(id, files)
+			return uploadGroups(id, files)
 				.then(() => {
+					this.props.trainGroups(this.props.bot.id)
 					return this.props.fetchGroups(this.props.bot.id, this.state.activePage, '').then(() => {
-						this.setState({ success: 'Import FAQ Successful', errors: null, faq: this.props.groups })
+						this.setState({ success: 'Import FAQ Successful', errors: null, faq: this.props.groups, importLoading: false })
 					})
 				})
 				.catch( res =>
-					this.setState({ loading: false , success: null, errors: 'Import FAQ Error' })
+					this.setState({ importLoading: false , success: null, errors: 'Import FAQ Error' })
 				)
 		}
 	}
@@ -93,16 +105,16 @@ class TaskbotDetailPage extends React.Component {
 	onTrain = id => {
 		const { t, trainGroups } = this.props
 
-		this.setState({ loading: true })
+		this.setState({ trainLoading: true })
 
-		trainGroups(id)
-			.then(() => this.setState({ loading: false, success: 'Training Successful' }))
-			.catch(() => this.setState({ loading: false, errors: 'Training Failed' }))
+		return trainGroups(id)
+			.then(() => this.setState({ trainLoading: false, success: 'Training Successful' }))
+			.catch(() => this.setState({ trainLoading: false, errors: 'Training Failed' }))
 	}
 
 	onSubmit = e => {
 		this.setState({ loading: true })
-		this.props.updateTaskbot(this.props.match.params.id, this.state.data).then(() => {
+		return this.props.updateTaskbot(this.props.match.params.id, this.state.data).then(() => {
 			this.setState({ loading: false })
 			this.props.history.push('/agent/taskbots')
 		})
@@ -110,7 +122,7 @@ class TaskbotDetailPage extends React.Component {
 
 	onDelete = () => {
 		const { bot, history } = this.props
-		this.props.deleteTaskbot(bot.id).then(() => {
+		return this.props.deleteTaskbot(bot.id).then(() => {
 			history.push('/agent/taskbots')
 		})
 	}
@@ -131,8 +143,15 @@ class TaskbotDetailPage extends React.Component {
 
 	onAddGroupClick = () => {
 		const { data } = this.state
-		groupApis.create(data.id).then(() => {
-
+		this.setState({ addGroupLoading: true })
+		return groupApis.create(data.id).then(result => {
+			return this.props.createAnswer(this.props.bot.id, result.id).then(() => {
+				return this.props.createQuestion(this.props.bot.id, result.id).then(() => {
+					return this.fetchGroups().then(() => {
+						this.setState({ addGroupLoading: false })
+					})
+				})
+			})
 		})
 	}
 
@@ -140,43 +159,100 @@ class TaskbotDetailPage extends React.Component {
 		this.setState({ activePage })
 	}
 
-	onAddQuestionClick = () => {
+	onDeleteGroup = (groupId, e) => {
+		const localIndex = _.findIndex(this.state.faq, el => el.group === groupId)
+		this.setState({
+			faq: _.set(_.cloneDeep(this.state.faq), [localIndex, 'deleteLoading'], true)
+		})
+		return this.props.deleteGroup(this.props.bot.id, groupId).then(() => {
+			return this.fetchGroups()
+		}, err => {
+			this.setState({
+				faq: _.set(_.cloneDeep(this.state.faq), [localIndex, 'deleteLoading'], false)
+			})
+		})
+	}
 
+	onAddQuestionClick = (groupId, e) => {
+		return this.props.createQuestion(this.props.bot.id, groupId).then(() => this.fetchGroups())
 	}
 
 	onCellInputChange = (type, id, e, { groupid, value }) => {
 		const localIndex = _.findIndex(this.state.faq, el => el.group === groupid)
 		const groupObj = _.find(this.state.faq, el => el.group === groupid)
 		const localSubIndex = _.findIndex(groupObj[type], el => el.id === id)
-		this.setState({ 'faq': _.set(_.cloneDeep(this.state.faq), [localIndex, type, localSubIndex, 'content'], value) })
+		this.setState({ faq: _.set(_.cloneDeep(this.state.faq), [localIndex, type, localSubIndex, 'content'], value) })
+	}
+
+	onNewCellKeyDown = (type, groupId, e) => {
+		if (e.keyCode == 13) {
+			let promise = new Promise(() => {})
+			const localIndex = _.findIndex(this.state.faq, el => el.group === groupId)
+			const groupObj = _.find(this.state.faq, el => el.group === groupId)
+			const newContent = groupObj.newContent ? (groupObj.newContent[type] || '') : ''
+			if ( ! newContent) {
+				return false
+			}
+			this.setState({
+				faq: _.set(_.cloneDeep(this.state.faq), [localIndex, 'newState', type], 'loading')
+			})
+			if (type === 'question') {
+				promise = this.props.createQuestion(this.props.bot.id, groupId, newContent)
+			}
+			else if (type === 'answer') {
+				promise = this.props.createAnswer(this.props.bot.id, groupId, newContent)
+			}
+			return promise.then(() => {
+				return this.fetchGroups()
+			}, err => {
+				this.setState({
+					faq: _.set(_.cloneDeep(this.stat.faq), [localIndex, 'newState', type], 'error')
+				})
+			})
+		}
+	}
+
+	onNewCellInputChange = (type, groupId, e, { value }) => {
+		const localIndex = _.findIndex(this.state.faq, el => el.group === groupId)
+		this.setState({
+			faq: _.set(_.cloneDeep(this.state.faq), [localIndex, 'newContent', type], value)
+		})
+	}
+
+	onCellKeyDown = (type, id, groupId, e) => {
+		if (e.keyCode == 13) {
+			return this.onCellBlur(type, id, groupId, e)
+		}
 	}
 
 	onCellBlur = (type, id, groupId, e) => {
 		const localIndex = _.findIndex(this.state.faq, el => el.group === groupId)
 		const groupObj = _.find(this.state.faq, el => el.group === groupId)
 		const localSubIndex = _.findIndex(groupObj[type], el => el.id === id)
-		this.setState({ 'faq': _.set(_.cloneDeep(this.state.faq), [localIndex, type, localSubIndex, 'state'], 'loading') })
+		this.setState({ faq: _.set(_.cloneDeep(this.state.faq), [localIndex, type, localSubIndex, 'state'], 'loading') })
 		const item = _.find(groupObj[type], el => el.id === id)
 		let promise = new Promise(() => {})
 		if (type === 'question') {
-			promise = this.props.updateQuestion(this.props.bot.id, {
-				id,
-				content: item.content
-			})
+			if (item.content) {
+				promise = this.props.updateQuestion(this.props.bot.id, {
+					id,
+					content: item.content
+				})
+			} else {
+				promise = this.props.deleteQuestion(this.props.bot.id, id)
+			}
 		} else if (type === 'answer') {
 			promise = this.props.updateAnswer(this.props.bot.id, {
-				id,
-				content: item.content
+					id,
+					content: item.content
 			})
 		}
 		return promise.then(() => {
-			this.setState({ 'faq': _.set(_.cloneDeep(this.state.faq), [localIndex, type, localSubIndex, 'state'], 'success') })
+			this.setState({ faq: _.set(_.cloneDeep(this.state.faq), [localIndex, type, localSubIndex, 'state'], 'success') })
 		}, err => {
-			this.setState({ 'faq': _.set(_.cloneDeep(this.state.faq), [localIndex, type, localSubIndex, 'state'], 'error') })
+			this.setState({ faq: _.set(_.cloneDeep(this.state.faq), [localIndex, type, localSubIndex, 'state'], 'error') })
 		}).finally(() => {
-			setTimeout(() => {
-				this.setState({ 'faq': _.set(_.cloneDeep(this.state.faq), [localIndex, type, localSubIndex, 'state'], null) })
-			}, 2000)
+			return this.fetchGroups()
 		})
 
 	}
@@ -191,13 +267,18 @@ class TaskbotDetailPage extends React.Component {
 	}
 
 	render() {
-		const { data, errors, success, openDeleteModal, faq, activePage } = this.state
+		const { data, errors, success, openDeleteModal, faq, activePage,
+			addGroupLoading,
+			trainLoading,
+			importLoading,
+			exportLoading
+		} = this.state
 		const { t, bot } = this.props
 
 		const perPage = 10
 		const totalPages = Math.ceil(faq.length / perPage)
 		const startNumber = perPage * (activePage - 1)
-		const displayGroups = _.slice(faq, startNumber, startNumber + perPage + 1)
+		const displayGroups = _.slice(faq, startNumber, startNumber + perPage)
 
 		return <Grid>
 			<Grid.Row columns={1}>
@@ -212,9 +293,9 @@ class TaskbotDetailPage extends React.Component {
 						<Form.Field
 							id='vendor_id'
 							name='vendor_id'
-							label='Vendor ID (read only)'
+							label='Vendor ID'
 							control={Input}
-							
+							transparent
 							value={data.vendor_id}
 							onClick={this.onVendorClick}
 							readOnly />
@@ -269,9 +350,10 @@ class TaskbotDetailPage extends React.Component {
 						ref={(node) => { this.dropzoneRef = node }}
 					>
 					</Dropzone>
-					<Button onClick={() => this.dropzoneRef.open()} color='orange' icon><Icon name='download' /> Import</Button>
-					<Button onClick={this.onExport.bind(null, data.id)} color='violet' icon><Icon name='upload' /> Export</Button>
-					<Button color='brown' onClick={this.onTrain.bind(null, data.id)} icon><Icon name='flask' /> Train</Button>
+					<Button loading={importLoading} onClick={() => this.dropzoneRef.open()} color='orange' icon><Icon name='upload' /> Import</Button>
+					<Button loading={exportLoading} onClick={this.onExport.bind(null, data.id)} color='violet' icon><Icon name='download' /> Export</Button>
+					<Button loading={trainLoading} color='brown' onClick={this.onTrain.bind(null, data.id)} icon><Icon name='flask' /> Train</Button>
+					<Button icon='plus' content='Add Group' onClick={this.onAddGroupClick} color='green' loading={addGroupLoading} />
 				</Grid.Column>
 				<Grid.Column>
 					{totalPages > 0 && <Pagination
@@ -288,13 +370,14 @@ class TaskbotDetailPage extends React.Component {
 			</Grid.Row>
 			<Grid.Row columns={1}>
 				<Grid.Column>
-				{displayGroups && displayGroups.length && 
+				{displayGroups && !!displayGroups.length && 
 					<Table celled structured>
 						<Table.Header>
 							<Table.Row>
-								<Table.HeaderCell style={{width: '2rem'}}>ID</Table.HeaderCell>
+								<Table.HeaderCell style={{width: '2rem'}}>Group</Table.HeaderCell>
 								<Table.HeaderCell>Question</Table.HeaderCell>
 								<Table.HeaderCell>Answer</Table.HeaderCell>
+								<Table.HeaderCell style={{width: '2rem'}}>Action</Table.HeaderCell>
 							</Table.Row>
 						</Table.Header>
 						
@@ -302,36 +385,49 @@ class TaskbotDetailPage extends React.Component {
 							<Table.Row key={item.group}>
 								<Table.Cell>{item.group}</Table.Cell>
 								<Table.Cell>
-								{item.question && item.question.length && item.question.map(que => 
+								{item.question && !!item.question.length && item.question.map(que => 
 									<Fragment key={que.id}>
 										<Input
 											fluid
 											loading={que.state === 'loading'}
 											error={que.state === 'error'}
-											iconPosition='right'
 											icon={que.state === 'success' ? 'check' : null}
 											groupid={item.group}
 											onChange={this.onCellInputChange.bind(null, 'question', que.id)}
 											onBlur={this.onCellBlur.bind(null, 'question', que.id, item.group)}
+											onKeyDown={this.onCellKeyDown.bind(null, 'question', que.id, item.group)}
 											value={que.content}
 										/>
 									</Fragment>) }
+									<Input
+										loading={item.newState && (item.newState.question === 'loading')}
+										error={item.newState && (item.newState.question === 'error')}
+										icon='plus'
+										placeholder='New Question'
+										value={item.newContent ? (item.newContent.question || '') : ''}
+										fluid
+										onChange={this.onNewCellInputChange.bind(null, 'question', item.group)}
+										onKeyDown={this.onNewCellKeyDown.bind(null, 'question', item.group)}
+									/>
 								</Table.Cell>
 								<Table.Cell>
-								{item.answer && item.answer.length && item.answer.map(ans => 
+								{item.answer && !!item.answer.length && item.answer.map(ans => 
 									<Fragment key={ans.id}>
 										<Input
 											fluid
 											loading={ans.state === 'loading'}
 											error={ans.state === 'error'}
-											iconPosition='right'
 											icon={ans.state === 'success' ? 'check' : null}
 											groupid={item.group}
 											onChange={this.onCellInputChange.bind(null, 'answer', ans.id)}
 											onBlur={this.onCellBlur.bind(null, 'answer', ans.id, item.group)}
+											onKeyDown={this.onCellKeyDown.bind(null, 'answer', ans.id, item.group)}
 											value={ans.content}
 										/>
 									</Fragment>) }
+								</Table.Cell>
+								<Table.Cell>
+									<Button icon='remove' color='red' onClick={this.onDeleteGroup.bind(null, item.group)} loading={item.deleteLoading} />
 								</Table.Cell>
 							</Table.Row>
 						)}</Table.Body>
@@ -356,7 +452,7 @@ class TaskbotDetailPage extends React.Component {
 			<Grid.Row>
 				<Grid.Column>
 					<Divider />
-					<TestBotPage info={bot} />
+					<TestBotPage info={bot} cancelAutoFocus={true} />
 				</Grid.Column>
 			</Grid.Row>
 		</Grid>
@@ -376,7 +472,11 @@ export default compose(
 		fetchGroups,
 		uploadGroups,
 		deleteTaskbot,
+		createQuestion,
 		updateQuestion,
+		deleteQuestion,
+		deleteGroup,
+		createAnswer,
 		updateAnswer
 	}),
 	translate(),

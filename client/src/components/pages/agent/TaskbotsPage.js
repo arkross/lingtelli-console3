@@ -71,6 +71,11 @@ class TaskbotsPage extends React.Component {
 		})
 	}
 
+	onVendorClick = (e) => {
+		const el = e.target
+		// do select text
+	}
+
 	render() {
 		const { members, match } = this.props
 		const { data: taskbots, changes, openDeleteModal } = this.state
@@ -96,6 +101,7 @@ class TaskbotsPage extends React.Component {
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell>Name</Table.HeaderCell>
+						<Table.HeaderCell>Vendor ID</Table.HeaderCell>
 						<Table.HeaderCell>Assigned to</Table.HeaderCell>
 						<Table.HeaderCell>Actions</Table.HeaderCell>
 					</Table.Row>
@@ -105,6 +111,9 @@ class TaskbotsPage extends React.Component {
 						const isChanged = changes.findIndex(c => c.id === bot.id) >= 0
 						return <Table.Row key={bot.id} warning={isChanged}>
 							<Table.Cell><Input name='robot_name' onChange={this.onFormChange.bind(null, bot.id)} value={bot.robot_name} /></Table.Cell>
+							<Table.Cell>
+								<div onClick={this.onVendorClick}>{bot.vendor_id}</div>
+							</Table.Cell>
 							<Table.Cell><Dropdown name='assign_user' options={memberOptions} onChange={this.onFormChange.bind(null, bot.id)} selection value={bot.assign_user} placeholder={'Select User'} /></Table.Cell>
 							<Table.Cell>
 								<Button.Group>

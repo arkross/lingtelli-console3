@@ -154,7 +154,7 @@ class AnalysisWidget extends Component {
 							}}
 							data={{
 								json: chartData,
-								type: 'area-spline',
+								type: 'line',
 								names: {
 									total_chat: t('chatbot.analysis.questions'),
 									unhandled_count: t('chatbot.analysis.unhandled')

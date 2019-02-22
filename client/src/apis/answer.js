@@ -3,9 +3,9 @@ import axios from 'axios'
 const API_HOST = process.env.REACT_APP_API_HOST
 
 export default {
-	create: async (activeBot, gid) => (await axios.post(`${API_HOST}/chatbot/${activeBot}/answer/`, {
+	create: async (activeBot, gid, content='') => (await axios.post(`${API_HOST}/chatbot/${activeBot}/answer/`, {
 		group: gid,
-		content: ' ',
+		content,
 	})).data,
 
 	update: async (activeBot, payload) => (await axios.put(`${API_HOST}/chatbot/${activeBot}/answer/${payload.id}/`, {
