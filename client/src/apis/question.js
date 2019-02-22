@@ -3,7 +3,7 @@ import axios from 'axios'
 const API_HOST = process.env.REACT_APP_API_HOST
 
 export default {
-	create: async (activeBot, gid, content=' ') => (await axios.post(`${API_HOST}/chatbot/${activeBot}/question/`, {
+	create: async (activeBot, gid, content='') => (await axios.post(`${API_HOST}/chatbot/${activeBot}/question/`, {
 		group: gid,
 		content,
 	})).data,

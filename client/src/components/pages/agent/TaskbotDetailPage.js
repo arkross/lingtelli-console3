@@ -145,8 +145,8 @@ class TaskbotDetailPage extends React.Component {
 		const { data } = this.state
 		this.setState({ addGroupLoading: true })
 		return groupApis.create(data.id).then(result => {
-			return this.props.createAnswer(this.props.bot.id, result.id, ' ').then(() => {
-				return this.props.createQuestion(this.props.bot.id, result.id, ' ').then(() => {
+			return this.props.createAnswer(this.props.bot.id, result.id).then(() => {
+				return this.props.createQuestion(this.props.bot.id, result.id).then(() => {
 					return this.fetchGroups().then(() => {
 						this.setState({ addGroupLoading: false })
 					})
@@ -189,7 +189,7 @@ class TaskbotDetailPage extends React.Component {
 			let promise = new Promise(() => {})
 			const localIndex = _.findIndex(this.state.faq, el => el.group === groupId)
 			const groupObj = _.find(this.state.faq, el => el.group === groupId)
-			const newContent = groupObj.newContent ? (groupObj.newContent[type] || ' ') : ''
+			const newContent = groupObj.newContent ? (groupObj.newContent[type] || '') : ''
 			if ( ! newContent) {
 				return false
 			}
