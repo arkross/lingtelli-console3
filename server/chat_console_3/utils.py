@@ -1,12 +1,12 @@
 '''Put any functional tool in here
 '''
-import base64, urllib, uuid, os
-from datetime import datetime, timedelta, timezone
+import base64, urllib, uuid, os, zlib, zipfile, io, csv
+from datetime import datetime, timedelta, timezone, date
 from Crypto.Cipher import AES
 
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.http import Http404
 from rest_framework import exceptions
 from rest_framework.views import exception_handler
@@ -261,73 +261,160 @@ def delete_create_failed_model(create_status, chatbot_obj):
         create_obj = None
     return create_obj
 
-def downgrade(user, new_paid_type):
-    '''Pay type downgrading
+def get_all_bots_faqs(user):
+    bots = Chatbot.objects.filter(user=user)
+    zip_file = io.BytesIO()
+    zip_obj = zipfile.ZipFile(zip_file, 'w')
+    for bot in bots:
+        faqgroups = FAQGroup.objects.filter(chatbot=bot)
+        rows = [['Group', 'Question', 'Answer']]
+        for faqgroup in faqgroups:
+            answers = Answer.objects.filter(group=faqgroup).order_by('-id')
+            questions = Question.objects.filter(group=faqgroup).order_by('-id')
+            if len(answers) >= len(questions):
+                for a in range(len(answers)):
+                    ans = answers[a].content
+                    que = ''
+                    if a < len(questions):
+                        que = questions[a].content
+                    rows.append([str(faqgroup.csv_group), que, ans])
+            else:
+                for q in range(len(questions)):
+                    que = questions[q].content
+                    ans = ''
+                    if q < len(answers):
+                        ans = answers[q].content
+                    rows.append([str(faqgroup.csv_group), que, ans])
+        csv_file = io.StringIO()
+        writer = csv.writer(csv_file, delimiter=',', dialect='excel')
+        for row in rows:
+            writer.writerow(row)
+        try:
+            file_name = bot.robot_name + '.csv'
+            zip_obj.writestr(file_name,
+                             csv_file.getvalue().encode('utf-8-sig'))
+        except Exception as e:
+            print('Compress file error: ',str(e))
+        finally:
+            csv_file.close()
+    zip_obj.close()
+    return zip_file
 
-    Delete oldest bots first. If faqs are still over upper limit,
-    Delete oldest faqs.
-    Assign new thirdparty for remaining bots.
+def set_bot_faq_to_hidden(user):
+    '''Initial all bots and faqs to hidden
+
+    For changing to other type, this is easier to check the status for bot
+    and faq
     '''
+
+    bots = Chatbot.objects.filter(user=user)
+    for bot in bots:
+        bot.hide_status = True
+        FAQGroup.objects.filter(chatbot=bot).update(hide_status=True)
+        bot.save()
+
+def setup_all_bots_thirdparty(user, new_paid_type):
+    '''Setup the new thirdparty for all existing bots
+    '''
+
+    bots = Chatbot.objects.filter(user=user)
+    allow_third_party = new_paid_type.third_party.all()
+    for bot in bots:
+        BotThirdPartyGroup.objects.filter(chatbot=bot).delete()
+        for party in allow_third_party:
+            BotThirdPartyGroup.objects.create(chatbot=bot, third_party=party)
+
+
+def change_to_new_paidtype_limitation(user, new_paid_type, to_delete=False):
+    '''Update the bots and faqs based on paidtype
+    '''
+    # Initial all the hide_status to hidden
+    set_bot_faq_to_hidden(user)
+
     bot_limit = int(new_paid_type.bot_amount)
     faq_limit = int(new_paid_type.faq_amount)
-    bots = Chatbot.objects.filter(user=user).order_by('id')
-    bot_count = bots.count()
-    try:
-        if bot_count > bot_limit:
-            the_amount = bot_count - bot_limit
-            for i in range(the_amount):
-                bots[0].delete()
-    except Exception as e:
-        print('Downgrade deleting bot failed: ', e)
-        return False, '===== Downgrade deleting bot failed ====='
+    # Unlimited bots
+    if bot_limit == 0:
+        bots = Chatbot.objects.filter(user=user).update(hide_status=False)
+    # Unlimited faqs
+    if faq_limit == 0:
+        bots = Chatbot.objects.fliter(user=user, hide_status=False)
+        for bot in bots:
+            FAQGroup.objects.filter(chatbot=bot).update(hide_status=False)
+    if bot_limit != 0:
+        bots = Chatbot.objects.filter(user=user).order_by('-id')
+        bot_count = 0
+        for bot in bots:
+            if bot_count > len(bots):
+                break
+            if bot_count < bot_limit:
+                bot.hide_status = False
+                bot.save()
+                bot_count += 1
+        if to_delete:
+            bots.filter(hide_status=True).delete()
+    if faq_limit != 0:
+        bots = Chatbot.objects.filter(user=user, hide_status=False).\
+                order_by('-id')
+        faq_total_count = 0
+        for bot in bots:
+            faqs = FAQGroup.objects.filter(chatbot=bot).order_by('-id')
+            for faq in faqs:
+                faq_count = 0
+                if faq_count > len(faqs):
+                    break
+                if faq_total_count < faq_limit:
+                    faq.hide_status = False
+                    faq.save()
+                    faq_total_count += 1
+                    faq_count += 1
+            if to_delete:
+                faqs.filter(hide_status=True).delete()
+    # Setup thirdparty for the remaining bots
+    setup_all_bots_thirdparty(user, new_paid_type)
 
-    bots_remain = Chatbot.objects.filter(user=user).order_by('id')
-    allow_third_party = new_paid_type.third_party.all()
-    total_faq = 0
-    for bot in bots_remain:
-        BotThirdPartyGroup.objects.filter(chatbot=bot).delete()
-        for party in allow_third_party:
-            BotThirdPartyGroup.objects.create(chatbot=bot, third_party=party)
-        faq_count = FAQGroup.objects.filter(chatbot=bot).count()
-        total_faq += faq_count
-    try:
-        if total_faq > faq_limit:
-            for bot in bots_remain:
-                faqs = FAQGroup.objects.filter(chatbot=bot).order_by('id')
-                the_amout = total_faq - faq_limit
-                for i in range(the_amout):
-                    faqs[0].delete()
-    except Exception as e:
-        print('Downgrade deleting faq failed: ', e)
-        return False, '===== Downgrade deleting faq failed ====='
-    return True, ''
+def send_task_downgrade_email(user, acc, new_paidtype, to_send_file=False):
+    '''Send email to inform user's paidtype is going to change
 
-def upgrade(user, new_paid_type):
-    '''Pay type upgrading
-
-    Assign new thirdparty for remaining bots.
+    Send only inform email when it's 30 days and 7 days remaining.
+    Send with attachment when it's expired.
     '''
-
-    allow_third_party = new_paid_type.third_party.all()
-    remain_bot = Chatbot.objects.filter(user=user)
-    for bot in remain_bot:
-        BotThirdPartyGroup.objects.filter(chatbot=bot).delete()
-        for party in allow_third_party:
-            BotThirdPartyGroup.objects.create(chatbot=bot, third_party=party)
-
-# def send_agent_change_type_email(user, acc):
-#     '''Send email to inform user's paidtype changed
-#     '''
-
-#     to_mail = user.username
-#     from_mail = EMAIL_HOST_USER
-#     subject = 'Account Type Changed Inform Email'
-#     member_name = user.first_name if user.first_name else user.username
-#     html_email = render_to_string('email.html',
-#                                   {'name': member_name,
-#                                    'acc_type': acc.paid_type.name,
-#                                    'bot_amount': acc.paid_type.bot_amount),
-#                                    'faq_total': acc.paid_type.faq_amount,
-#                                    'start_date': acc.start_date,
-#                                    'expire_date': acc.expire_date})
-#     txt_email = strip_tags(html_email)
+    if acc.expire_date:
+        to_mail = user.username
+        from_mail = EMAIL_HOST_USER
+        subject = 'Account Type Changed Inform Email'
+        member_name = user.first_name if user.first_name else user.username
+        delta_days = (acc.expire_date.date() - date.today()).days
+        html_email = render_to_string('change_type_inform.html',
+                                        {'name': member_name,
+                                        'acc_type': acc.paid_type.name,
+                                        'new_acc_type': new_paidtype.name,
+                                        'bot_amount': new_paidtype.bot_amount,
+                                        'faq_total': new_paidtype.faq_amount,
+                                        'remain_days': delta_days,
+                                        'expire_date': acc.expire_date.date()})
+        txt_email = strip_tags(html_email)
+        if not to_send_file:
+            try:
+                send_mail(subject, txt_email, from_mail, [to_mail],
+                        fail_silently=False, html_message=html_email)
+            except Exception as e:
+                print('Sending inform email failed: ' + str(e))
+        else:
+            expire_email = \
+                    render_to_string('expired_inform.html',
+                                     {'name': member_name,
+                                     'acc_type': acc.paid_type.name,
+                                     'bot_amount': new_paidtype.bot_amount,
+                                     'faq_total': new_paidtype.faq_amount})
+            txt_email = strip_tags(expire_email)
+            msg = EmailMultiAlternatives(subject, txt_email, from_mail, [to_mail])
+            msg.attach_alternative(expire_email, 'text/html')
+            compress_file = get_all_bots_faqs(user)
+            today_date = str(date.today())
+            zip_name = '問題集備份-' + today_date + '.zip'
+            msg.attach(zip_name, compress_file.getvalue(), 'application/zip')
+            try:
+                msg.send()
+            except Exception as e:
+                print('Sending inform mail with file failed: ' + str(e))

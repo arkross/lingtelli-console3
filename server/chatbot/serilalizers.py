@@ -21,6 +21,7 @@ class ChatbotSerializer(serializers.Serializer):
     postback_title = serializers.CharField()
     delete_confirm = serializers.BooleanField()
     bot_type = serializers.CharField()
+    hide_status = serializers.BooleanField()
 
     def to_representation(self, instance):
         chatbot_data = super().to_representation(instance)

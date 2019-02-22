@@ -83,9 +83,9 @@ class FAQGrouptViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         bot_id = self.kwargs.get('id')
         user_obj = self.request.user
-        bot_obj = Chatbot.objects.filter(Q(id=bot_id) &
-                                         (Q(user=user_obj) |
-                                         Q(assign_user=user_obj))).first()
+        bot_obj = Chatbot.objects.filter(Q(user=user_obj) |
+                                         Q(assign_user=user_obj),
+                                         id=bot_id, hide_status=False,).first()
         return self.queryset.filter(chatbot=bot_obj).order_by('-id')
 
     def create(self, request, id=None):
@@ -100,13 +100,14 @@ class FAQGrouptViewset(viewsets.ModelViewSet):
         user_obj = request.user
         acc_obj = AccountInfo.objects.filter(user=user_obj).first()
         faq_group_limit = acc_obj.paid_type.faq_amount
-        bot_obj = Chatbot.objects.filter(id=id, user=user_obj).first()
+        bot_obj = Chatbot.objects.filter(id=id, user=user_obj,
+                                         hide_status=False).first()
         if not bot_obj:
             return Response({'errors':_('Not found')},
                              status=HTTP_404_NOT_FOUND)
         # Get total count first
         faq_count = 0
-        bots = Chatbot.objects.filter(user=user_obj)
+        bots = Chatbot.objects.filter(user=user_obj, hide_status=False)
         for bot in bots:
             bot_faq_count = FAQGroup.objects.filter(chatbot=bot).count()
             faq_count += bot_faq_count
@@ -163,15 +164,16 @@ class AnswerViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         user_obj = self.request.user
         bot_id = self.kwargs.get('id')
-        bot_obj = Chatbot.objects.filter(Q(id=bot_id) &
-                                         (Q(user=user_obj) |
-                                         Q(assign_user=user_obj))).first()
+        bot_obj = Chatbot.objects.filter(Q(user=user_obj) |
+                                         Q(assign_user=user_obj,
+                                         id=bot_id, hide_status=False)).first()
         return self.queryset.filter(chatbot=bot_obj)
 
     def create(self, request, id=None):
         if request.body:
             user_obj = request.user
-            bot_obj = Chatbot.objects.filter(id=id, user=user_obj).first()
+            bot_obj = Chatbot.objects.filter(id=id, hide_status=False,
+                                             user=user_obj).first()
             if not bot_obj:
                 return Response({'errors':_('Not found')},
                                 status=HTTP_404_NOT_FOUND)
@@ -204,7 +206,8 @@ class AnswerViewset(viewsets.ModelViewSet):
     def update(self, request, id=None, pk=None):
         if request.body:
             user_obj = request.user
-            bot_obj = Chatbot.objects.filter(id=id, user=user_obj).first()
+            bot_obj = Chatbot.objects.filter(id=id, hide_status=False,
+                                             user=user_obj).first()
             if not bot_obj:
                 return Response({'errors':_('Not found')},
                                 status=HTTP_404_NOT_FOUND)
@@ -265,17 +268,17 @@ class QuestionViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         user_obj = self.request.user
         bot_id = self.kwargs.get('id')
-        bot_obj = Chatbot.objects.filter(Q(id=bot_id) &
-                                         (Q(user=user_obj) |
-                                         Q(assign_user=user_obj))).first()
+        bot_obj = Chatbot.objects.filter(Q(user=user_obj) |
+                                         Q(assign_user=user_obj),
+                                         id=bot_id, hide_status=False).first()
         return self.queryset.filter(chatbot=bot_obj)
 
     def create(self, request, id=None):
         if request.body:
             user_obj = request.user
-            bot_obj = Chatbot.objects.filter(Q(id=id) &
-                                         (Q(user=user_obj) |
-                                         Q(assign_user=user_obj))).first()
+            bot_obj = Chatbot.objects.filter(Q(user=user_obj) |
+                                             Q(assign_user=user_obj),
+                                             id=id, hide_status=False).first()
             if not bot_obj:
                 return Response({'errors':_('Not found')},
                                 status=HTTP_404_NOT_FOUND)
@@ -308,9 +311,9 @@ class QuestionViewset(viewsets.ModelViewSet):
     def update(self, request, id=None, pk=None):
         if request.body:
             user_obj = request.user
-            bot_obj = Chatbot.objects.filter(Q(id=id) &
-                                         (Q(user=user_obj) |
-                                         Q(assign_user=user_obj))).first()
+            bot_obj = Chatbot.objects.filter(Q(user=user_obj) |
+                                             Q(assign_user=user_obj),
+                                             id=id, hide_status=False).first()
             if not bot_obj:
                 return Response({'errors':_('Not found')},
                                 status=HTTP_404_NOT_FOUND)
@@ -348,7 +351,8 @@ def upload_faq_csv(request, pk=None):
     "2", "Hi Hi", "Hello Hello"
     '''
     if request.FILES.get('file'):
-        bot_obj = Chatbot.objects.filter(id=pk, user=request.user).first()
+        bot_obj = Chatbot.objects.filter(id=pk, hide_status=False,
+                                         user=request.user).first()
         if bot_obj:
             FAQGroup.objects.filter(chatbot=bot_obj).delete()
             f = request.FILES.get('file')
@@ -407,7 +411,8 @@ def upload_faq_csv(request, pk=None):
 def export_faq_csv(request, pk=None):
     '''Export FAQ data to CSV file
     '''
-    bot_obj = Chatbot.objects.filter(id=pk, user=request.user).first()
+    bot_obj = Chatbot.objects.filter(id=pk, hide_status=False,
+                                     user=request.user).first()
     if bot_obj:
         faqgroups = FAQGroup.objects.filter(chatbot=bot_obj)
         rows = [['Group', 'Question', 'Answer']]
@@ -433,8 +438,9 @@ def export_faq_csv(request, pk=None):
         for row in rows:
             writer.writerow(row)
         headers = {'Content-Disposition': 'attachment;filename=faq.csv'}
-        return Response(csv_file.getvalue().encode('utf-8-sig'),
-                        headers=headers, content_type='text/csv')
+        contents = csv_file.getvalue().encode('utf-8-sig')
+        csv_file.close()
+        return Response(contents, headers=headers, content_type='text/csv')
     return Response({'errors':_('Bot not found')},
                         status=HTTP_404_NOT_FOUND)
 
@@ -446,7 +452,8 @@ def train_bot_faq(request, pk=None):
     '''Train bot based on FAQ data
     '''
     user_obj = request.user
-    bot_obj = Chatbot.objects.filter(id=pk, user=user_obj).first()
+    bot_obj = Chatbot.objects.filter(id=pk, hide_status=False,
+                                     user=user_obj).first()
     if not bot_obj:
         return Response({'errors':_('Not found')},
                         status=HTTP_404_NOT_FOUND)

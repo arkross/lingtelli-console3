@@ -87,7 +87,8 @@ class ChatbotViewset(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user_obj = self.request.user
-        return self.queryset.filter(Q(user=user_obj) | Q(assign_user=user_obj))
+        return self.queryset.filter(Q(user=user_obj) | Q(assign_user=user_obj),
+                                    hide_status=False,)
 
     def create(self, request):
         '''Create chatbot
@@ -105,7 +106,9 @@ class ChatbotViewset(viewsets.ModelViewSet):
             acc_obj = AccountInfo.objects.filter(user=user_obj).first()
             # Check if bot creation is over upper limit
             bot_create_limit = acc_obj.paid_type.bot_amount
-            bot_owned_amount = Chatbot.objects.filter(user=user_obj).count()
+            bot_owned_amount = \
+                Chatbot.objects.filter(user=user_obj,
+                                       hide_status=False).count()
             if acc_obj.paid_type.user_type != 'S' and\
                 bot_owned_amount >= int(bot_create_limit):
                 return Response({'errors':_('Reach bot create limitation')},
@@ -114,7 +117,7 @@ class ChatbotViewset(viewsets.ModelViewSet):
             # Check if faq creation is over upper limit
             faq_create_limit = acc_obj.paid_type.faq_amount
             faq_owned_amount = 0
-            bots = Chatbot.objects.filter(user=user_obj)
+            bots = Chatbot.objects.filter(user=user_obj, hide_status=False)
             for bot in bots:
                 faq_count = FAQGroup.objects.filter(chatbot=bot).count()
                 faq_owned_amount += faq_count
@@ -143,13 +146,13 @@ class ChatbotViewset(viewsets.ModelViewSet):
                 Line.objects.create(chatbot=bot_obj)
                 Facebook.objects.create(chatbot=bot_obj)
                 nlumodel.initial_question_answer(bot_obj)
-                nlu_create_status, err_msg = nlumodel.create_model(bot_obj)
+                # nlu_create_status, err_msg = nlumodel.create_model(bot_obj)
                 # TODO: Remove this comment after the NLU has setup
                 # TODO: Remove create_bot_obj = bot_obj
-                create_bot_obj = \
-                    utils.delete_create_failed_model(nlu_create_status,
-                                                     bot_obj)
-                # create_bot_obj = bot_obj
+                # create_bot_obj = \
+                #     utils.delete_create_failed_model(nlu_create_status,
+                #                                      bot_obj)
+                create_bot_obj = bot_obj
                 if not create_bot_obj:
                     return Response({'errors':_('Create bot failed. '+\
                                      'Cause by NLU error.' + err_msg)},
@@ -167,9 +170,9 @@ class ChatbotViewset(viewsets.ModelViewSet):
         if request.body:
             user_obj = request.user
             bot_obj = \
-                Chatbot.objects.filter(Q(id=pk) &
-                                       (Q(user=user_obj) |
-                                        Q(assign_user=user_obj))).first()
+                Chatbot.objects.filter(Q(user=user_obj) |
+                                       Q(assign_user=user_obj),
+                                       id=pk, hide_status=False,).first()
             if not bot_obj:
                 return Response({'errors':_('Not found')},
                                  status=HTTP_404_NOT_FOUND)
@@ -195,7 +198,8 @@ class ChatbotViewset(viewsets.ModelViewSet):
         Need to check if delete_confirm has become True first
         '''
         user_obj = request.user
-        bot_obj = Chatbot.objects.filter(id=pk, user=user_obj).first()
+        bot_obj = Chatbot.objects.filter(id=pk, hide_status=False,
+                                         user=user_obj).first()
         if not bot_obj:
             return Response({'errors':_('Not found')},
                              status=HTTP_404_NOT_FOUND)
@@ -224,7 +228,8 @@ class ChatbotViewset(viewsets.ModelViewSet):
         '''
         if request.body:
             user_obj = request.user
-            bot_obj = Chatbot.objects.filter(id=pk, user=user_obj).first()
+            bot_obj = Chatbot.objects.filter(id=pk, hide_status=False,
+                                             user=user_obj).first()
             if not bot_obj:
                 return Response({'errors':_('Not found')},
                                 status=HTTP_404_NOT_FOUND)
@@ -272,21 +277,26 @@ class LineViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
     def get_queryset(self):
         user_obj = self.request.user
         bot_id = self.kwargs.get('id')
-        return Line.objects.filter(chatbot=bot_id)
+        return Line.objects.filter(chatbot=bot_id, chatbot__hide_status=False)
 
     def list(self, request, id=None):
-        bot = Chatbot.objects.filter(id=id).first()
+        bot = Chatbot.objects.filter(id=id, hide_status=False).first()
+        if not bot:
+            return Response({'errors': _('Not found')},
+                            status=HTTP_404_NOT_FOUND)
         if request.user.is_staff == True and bot.bot_type == 'Task'\
             and bot.assign_user != None:
             return Response({'errors': _('Not allowed to get user line data')},
                             status=HTTP_403_FORBIDDEN)
-
         line_obj = Line.objects.filter(chatbot=id).first()
         serializer = LineSerializer(line_obj)
         return Response(serializer.data, status=HTTP_200_OK)
 
     def retrieve(self, request, id=None, pk=None):
-        bot = Chatbot.objects.filter(id=id).first()
+        bot = Chatbot.objects.filter(id=id, hide_status=False).first()
+        if not bot:
+            return Response({'errors': _('Not found')},
+                            status=HTTP_404_NOT_FOUND)
         if request.user.is_staff == True and bot.bot_type == 'Task'\
             and bot.assign_user != None:
             return Response({'errors': _('Not allowed to get user line data')},
@@ -302,7 +312,10 @@ class LineViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
             id = Chatbot object id
             pk = Line object id
         '''
-        bot = Chatbot.objects.filter(id=id).first()
+        bot = Chatbot.objects.filter(id=id, hide_status=False).first()
+        if not bot:
+            return Response({'errors': _('Not found')},
+                            status=HTTP_404_NOT_FOUND)
         if request.user.is_staff == True and bot.bot_type == 'Task'\
             and bot.assign_user != None:
             return Response({'errors': _('Not allowed to get user line data')},
@@ -352,10 +365,14 @@ class FacebookViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
     def get_queryset(self):
         user_obj = self.request.user
         bot_id = self.kwargs.get('id')
-        return Facebook.objects.filter(chatbot=bot_id)
+        return Facebook.objects.filter(chatbot=bot_id,
+                                       chatbot__hide_status=False)
 
     def list(self, request, id=None):
-        bot = Chatbot.objects.filter(id=id).first()
+        bot = Chatbot.objects.filter(id=id, hide_status=False).first()
+        if not bot:
+            return Response({'errors': _('Not found')},
+                            status=HTTP_404_NOT_FOUND)
         if request.user.is_staff == True and bot.bot_type == 'Task'\
             and bot.assign_user != None:
             return Response({'errors': _('Not allowed to get user fb data')},
@@ -365,7 +382,10 @@ class FacebookViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         return Response(serializer.data, status=HTTP_200_OK)
 
     def retrieve(self, request, id=None, pk=None):
-        bot = Chatbot.objects.filter(id=id).first()
+        bot = Chatbot.objects.filter(id=id, hide_status=False).first()
+        if not bot:
+            return Response({'errors': _('Not found')},
+                            status=HTTP_404_NOT_FOUND)
         if request.user.is_staff == True and bot.bot_type == 'Task'\
             and bot.assign_user != None:
             return Response({'errors': _('Not allowed to get user fb data')},
@@ -381,7 +401,10 @@ class FacebookViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
             id = Chatbot object id
             pk = Line object id
         '''
-        bot = Chatbot.objects.filter(id=id).first()
+        bot = Chatbot.objects.filter(id=id, hide_status=False).first()
+        if not bot:
+            return Response({'errors': _('Not found')},
+                            status=HTTP_404_NOT_FOUND)
         if request.user.is_staff == True and bot.bot_type == 'Task'\
             and bot.assign_user != None:
             return Response({'errors': _('Not allowed to get user fb data')},
