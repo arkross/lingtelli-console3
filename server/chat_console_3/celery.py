@@ -4,7 +4,13 @@ import os
 from celery import Celery
 
 # set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chat_console_3.settings.development')
+setting_file = 'chat_console_3.settings.common'
+if os.environ.get('ENV') == 'DEV':
+    setting_file = 'chat_console_3.settings.development'
+elif os.environ.get('ENV') == 'PROD':
+    setting_file = 'chat_console_3.settings.production'
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', setting_file)
 
 app = Celery('chat_console_3')
 
