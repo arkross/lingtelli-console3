@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -195,3 +196,18 @@ INIT_PASSWORD = 'test1234'
 
 # Celery related settings
 CELERY_BROKER_URL = 'redis://localhost:6379'
+
+CELERY_BEAT_SCHEDULE = {
+    'check_token_expired_every_minutes': {
+        'task': 'delete_token',
+        'schedule': crontab()
+    },
+    'send_email_when_expire': {
+        'task': 'send_email_inform_expired',
+        'schedule': crontab(minute=0, hour=0)
+    },
+    'delete_over_15days_hidden_data': {
+        'task': 'delete_over_15days',
+        'schedule': crontab(minute=0, hour=0)
+    }
+}

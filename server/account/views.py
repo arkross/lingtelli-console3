@@ -43,7 +43,7 @@ from rest_framework.authtoken.models import Token
 from account.models import AccountInfo
 from paidtype.models import PaidType
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
 # MEMBER PART
@@ -76,7 +76,7 @@ def member_login(request):
 
     user = User.objects.filter(username=username).first()
     if not user:
-        logger.warning('=== User ' + username + ' not found ===')
+        # logger.warning('=== User ' + username + ' not found ===')
         return Response({'errors': 'User does not exist.' +\
                                    'Please register an account first'},
                         status=HTTP_404_NOT_FOUND)
@@ -89,16 +89,16 @@ def member_login(request):
         if expired == True:
             new_token = utils.create_token_with_expire_time(user)
             if new_token:
-                logger.info('=== User ' + user.username + ' logged in ===')
+                # logger.info('=== User ' + user.username + ' logged in ===')
                 return \
                     Response({'success': new_token.key}, status=HTTP_200_OK)
             else:
-                logger.error('XXX Service with login error, please check XXX')
+                # logger.error('XXX Service with login error, please check XXX')
                 return Response({'errors': 'Something went wrong'+\
                     'Please try again'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
         else:
-            logger.info('=== User ' + user.username + ' logged in with' +\
-                        ' old token ===')
+            # logger.info('=== User ' + user.username + ' logged in with' +\
+                        # ' old token ===')
             return Response({'success': old_token_obj.key}, status=HTTP_200_OK)
     else:
         return Response({'errors': 'Username or password is not correct'},
@@ -111,7 +111,7 @@ def member_login(request):
 def member_logout(request):
     user = request.user
     Token.objects.filter(user=user).delete()
-    logger.info('=== User ' + user.username + ' has logged out ===')
+    # logger.info('=== User ' + user.username + ' has logged out ===')
     return Response({'success': 'You have successfully logged out'},
                     status=HTTP_200_OK)
 
@@ -687,21 +687,16 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
                 acc_obj = user_obj.acc_user.filter().first()
                 old_paid_type = acc_obj.paid_type
                 paid_obj = PaidType.objects.filter(id=paid_type_id).first()
-                if paid_obj.name == 'Staff':
+                if paid_obj.user_type == 'S':
                     return Response({'errors':_('Invalid type')},
                                     status=HTTP_403_FORBIDDEN)
-                if paid_obj.bot_amount < old_paid_type.bot_amount or\
-                    paid_obj.faq_amount < old_paid_type.faq_amount:
-                    status, err = utils.downgrade(user_obj, paid_obj)
-                    if not status:
-                        print(err)
-                        return Response({'errors':_('Something went wrong')},
-                                        status=HTTP_500_INTERNAL_SERVER_ERROR)
-                else:
-                    utils.upgrade(user_obj, paid_obj)
+                # TODO: Send email to inform user type changed
+                utils.change_to_new_paidtype_limitation(user_obj, paid_obj,
+                                                        to_delete=True)
                 acc_obj.paid_type = paid_obj
                 time_now = datetime.now(timezone.utc)
                 acc_obj.start_date = time_now
+                acc_obj.delete_date = None
                 duration = paid_obj.duration
                 duration = duration.split('_')
                 duration_time = duration[0]
@@ -713,6 +708,8 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
                     else:
                         total_days = int(duration_time)
                     acc_obj.expire_date = time_now + timedelta(days=total_days)
+                else:
+                    acc_obj.expire_date = None
                 acc_obj.save()
                 return Response({'success':_('Update successed')},
                                 status=HTTP_200_OK)
