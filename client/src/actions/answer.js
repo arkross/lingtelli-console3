@@ -23,5 +23,5 @@ export const updateAnswer = (activeBot, payload) => dispatch =>
 export const deleteAnswer = (activeBot, id) => dispatch =>
 	api.delete(activeBot, id).then(() => dispatch(deleted()))
 
-export const createAnswer = (activeBot, id) => dispatch =>
-	api.create(activeBot, id).then(() => dispatch(update()))
+export const createAnswer = (activeBot, id, content='') => dispatch =>
+	api.create(activeBot, id, content).then(() => dispatch(update()))
