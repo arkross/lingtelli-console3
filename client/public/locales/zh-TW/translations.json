@@ -181,8 +181,12 @@
         "title": "刪除問答群組",
         "message": "您確定要刪除此問答群組嗎?"
       },
-      "enable_postback": "已停用相似問題輸出",
-      "disable_postback": "已啟用相似問題輸出"
+      "enable_postback": "啟用相似問題輸出",
+      "answer_choice": {
+        "label": "有多個答案時,使用<0></0>回復",
+        "1": "第一個答案",
+        "2": "隨即答案"
+      }
     },
     "recommendations": {
       "text": "推薦紀錄",
