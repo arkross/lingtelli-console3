@@ -27,7 +27,7 @@ def inform_expire():
         delta_date = (e_date - today_date).days
         if delta_date == 30 or delta_date == 7:
             utils.send_task_downgrade_email(acc.user, acc, trial_obj)
-        if delta_date < 0:
+        if delta_date == 0:
             utils.send_task_downgrade_email(acc.user, acc, trial_obj, True)
             utils.change_to_new_paidtype_limitation(acc.user, trial_obj)
             acc.delete_date = datetime.now(timezone.utc) + timedelta(days=15)
@@ -41,7 +41,7 @@ def delete_over_15days_bots_faqs():
     for acc in accounts:
         d_date = acc.delete_date.date()
         delta_date = (d_date - today_date).days
-        if delta_date <= 0:
+        if delta_date == 15:
             Chatbot.objects.filter(user=acc.user, hide_status=True).delete()
             remain_bots = Chatbot.objects.filter(user=acc.user)
             for bot in remain_bots:
