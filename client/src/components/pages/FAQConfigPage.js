@@ -7,15 +7,17 @@ import questionApis from 'apis/question'
 import _ from 'lodash'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
-import { translate } from 'react-i18next'
+import { translate, Trans } from 'react-i18next'
 import { fetchGroups, fetchGroup, deleteGroup } from 'actions/group'
 import { updateBot } from '../../actions/bot'
+import qs from 'query-string'
 import {
 	Icon,
 	Segment,
 	Pagination,
 	Modal,
-	Button
+	Button,
+	Input
 } from 'semantic-ui-react'
 import toJS from 'components/utils/ToJS'
 
@@ -24,11 +26,13 @@ const PER_PAGE = 10
 class FAQConfigPage extends React.Component {
 	constructor(props) {
 		super(props)
+		const params = qs.parse(props.location.search)
 		this.state = {
 			groups: [],
 			loading: false,
-			activePage: 1,
+			activePage: params.page || 1,
 			keyword: props.answer_content,
+			pageInput: params.page || 1,
 			openDeleteModal: false,
 			deleteGroupId: null
 		}
@@ -43,12 +47,25 @@ class FAQConfigPage extends React.Component {
 	}
 
 	componentDidMount = () => {
-		this._fetchGroups(1, this.props.answer_content);
+		this._fetchGroups(this.state.activePage, this.props.answer_content);
+	}
+
+	onInputPageChanged = (e, { value }) => {
+		this.setState({ pageInput: value })
+	}
+
+	onInputPageSubmitClick = e => {
+		this.onPageChanged(e, {
+			activePage: this.state.pageInput
+		})
 	}
 
 	onPageChanged = (e, { activePage }) => {
-		this.setState({ activePage: activePage });
-		// this._fetchGroups(activePage, this.state.keyword);
+		this.setState({ activePage });
+		this.props.history.push({
+			search: `?page=${activePage}`
+		})
+		this._fetchGroups(activePage, this.state.keyword);
 	}
 
 	onCreateGroup = (e) => {
@@ -97,14 +114,23 @@ class FAQConfigPage extends React.Component {
 
 	render = () => {
 		const { length, loading, activeBot, t } = this.props
-		const { groups, activePage, keyword, openDeleteModal } = this.state
+		const { groups, activePage, keyword, openDeleteModal, pageInput } = this.state
 
 		const totalPages = Math.ceil(length / PER_PAGE)
-		const startNumber = PER_PAGE * (activePage - 1)
-		const displayGroups = _.slice(groups, startNumber, startNumber + PER_PAGE)
+		const displayGroups = groups
+		const pageOptions = []
+		for (let i = 1; i <= totalPages; i++) {
+			pageOptions.push({
+				value: i,
+				key: i,
+				text: i
+			})
+		}
 		return (
 			<div>
 				<ToolComponent onKeywordSubmit={this.handleKeywordSubmit} keyword={keyword} onKeywordChange={this.handleKeywordChange} activeBot={activeBot} onCreateGroup={this.onCreateGroup} />
+				{<Trans i18nKey='chatbot.faq.gotopage'><Input action={<Button icon='play' onClick={this.onInputPageSubmitClick} />} type='number' size={3} step={1} min={1} max={totalPages} defaultValue={pageInput} value={pageInput} onChange={this.onInputPageChanged}></Input></Trans> }
+				
 				<Segment vertical loading={loading}>
 					{
 						totalPages > 0 &&
@@ -169,8 +195,8 @@ class FAQConfigPage extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
 	activeBot: ownProps.match.params.id,
-	groups: state.getIn(['bot', 'bots', ownProps.match.params.id, 'group', 'groups']),
-	length: state.getIn(['bot', 'bots', ownProps.match.params.id, 'group', 'length']),
+	groups: state.getIn(['bot', 'bots', ownProps.match.params.id, 'group', 'results']),
+	length: state.getIn(['bot', 'bots', ownProps.match.params.id, 'group', 'count']) || 0,
 	answer_content: state.getIn(['bot', 'bots', ownProps.match.params.id, 'group', 'answer_content'])
 })
 

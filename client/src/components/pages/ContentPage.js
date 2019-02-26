@@ -201,8 +201,6 @@ class ContentPage extends React.Component {
 				}}>
 					{renderItems}
 				</Responsive>
-				<Responsive as={Dropdown} maxWidth={Responsive.onlyTablet.maxWidth} options={dropdownMenu} value={currentMenu && currentMenu.value} onChange={this.changePath}>
-				</Responsive>
 				{openDemoModal && <DemoModal
 					match={match}
 					open={openDemoModal}

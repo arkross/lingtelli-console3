@@ -8,7 +8,7 @@ import { logout } from 'actions/auth';
 import { fetchDetail, fetchPackages } from 'actions/user'
 import { fetchAllBotDetails, fetchBot, fetchHistory, fetchPlatforms } from 'actions/bot';
 import { hideAllMessages } from 'actions/message'
-import { Dimmer, Loader, Dropdown, Menu, Divider, Container, Message, Icon, Label} from 'semantic-ui-react';
+import { Dimmer, Loader, Dropdown, Menu, Divider, Container, Message, Icon, Label, Responsive} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import LingBreadcrumbs from 'components/utils/LingBreadcrumbs'
 import SideMenuPage from './SideMenuPage';
@@ -111,7 +111,7 @@ class DashBoardPage extends React.Component {
 							<Icon name='bars' link onClick={this.toggleSidebar} />
 						</Menu.Item>
 						<Menu.Item>
-							<LingBreadcrumbs t={t} pathname={location.pathname}/>
+							<Responsive as={LingBreadcrumbs} t={t} pathname={location.pathname} />
 						</Menu.Item>
 						<Menu.Menu position='right'>
 							{user.paid_type &&

@@ -104,12 +104,12 @@ class ToolComponent extends React.Component {
 		const { t, onCreateGroup, keyword, info, bots, user } = this.props
 
 		const currentPaidtype = _.find(user.packages, p => p.name === user.paid_type)
-		const faqCount = _.reduce(bots, (acc, bot) => (acc += (bot && bot.group && bot.group.length) || 0), 0)
+		const faqCount = _.reduce(bots, (acc, bot) => (acc += (bot && bot.group && bot.group.count) || 0), 0)
 		const faqLimit = currentPaidtype ? currentPaidtype.faq_amount : 0
 		const faqLimitText = faqLimit > 0 ? faqLimit : '∞'
 		const answer_choice = [
-			{value: 1, text: t(`chatbot.faq.answer_choice.1`), key: 1},
-			{value: 2, text: t(`chatbot.faq.answer_choice.2`), key: 2}
+			{value: '1', text: t(`chatbot.faq.answer_choice.1`), key: 1},
+			{value: '2', text: t(`chatbot.faq.answer_choice.2`), key: 2}
 		]
 
 		return (<Fragment>

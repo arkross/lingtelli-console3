@@ -187,7 +187,8 @@
         "label": "When there are multiple answers, reply with <0></0>",
         "1": "First Answer",
         "2": "Random Answer"
-      }
+      },
+      "gotopage": "Go to page <0></0>"
     },
     "recommendations": {
       "text": "Recommendations",
