@@ -20,7 +20,7 @@ from rest_framework.status import (
     HTTP_500_INTERNAL_SERVER_ERROR
 )
 
-from chat_console_3 import utils, nlumodel
+from chat_console_3 import utils, nlumodel, pagination
 from .serializers import (FAQGrouptSerializer, AnswerSerializer,
                           QuestionSerializer)
 
@@ -79,6 +79,7 @@ class FAQGrouptViewset(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = FAQGroup.objects.all()
     serializer_class = FAQGrouptSerializer
+    pagination_class = pagination.StandardPagination
 
     def get_queryset(self):
         bot_id = self.kwargs.get('id')
@@ -86,7 +87,7 @@ class FAQGrouptViewset(viewsets.ModelViewSet):
         bot_obj = Chatbot.objects.filter(Q(user=user_obj) |
                                          Q(assign_user=user_obj),
                                          id=bot_id, hide_status=False,).first()
-        return self.queryset.filter(chatbot=bot_obj).order_by('-id')
+        return self.queryset.filter(chatbot=bot_obj).order_by('id')
 
     def create(self, request, id=None):
         '''Create new faq

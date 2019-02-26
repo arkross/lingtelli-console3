@@ -10,8 +10,8 @@ class FAQGrouptSerializer(serializers.Serializer):
     def to_representation(self, instance):
         res = {}
         res['group'] = instance.id
-        ans_qry = Answer.objects.filter(group=instance.id)
-        que_qry = Question.objects.filter(group=instance.id)
+        ans_qry = Answer.objects.filter(group=instance.id).order_by('id')
+        que_qry = Question.objects.filter(group=instance.id).order_by('id')
         ans_list = []
         que_list = []
         if ans_qry:
