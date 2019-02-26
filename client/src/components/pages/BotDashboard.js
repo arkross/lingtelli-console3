@@ -10,14 +10,9 @@ class BotDashboard extends Component {
 	render() {
 		return <Grid className='bot-dashboard' >
 			<Grid.Row>
-				<Grid.Column mobile={16} tablet={16} computer={12}>
+				<Grid.Column>
 					<Segment>
 						<AnalysisWidget {...this.props} />
-					</Segment>
-				</Grid.Column>
-				<Grid.Column computer={4} mobile={16} tablet={16}>
-					<Segment>
-						<BasicSettingsWidget {...this.props} />
 					</Segment>
 				</Grid.Column>
 			</Grid.Row>

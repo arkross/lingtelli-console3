@@ -1,14 +1,14 @@
-import React from "react"
+import React, { Fragment } from "react"
 import Dropzone from "react-dropzone"
 import FileDownload from "react-file-download"
 import groupApis from "apis/group"
 import _ from 'lodash'
 import { compose } from "recompose"
 import { connect } from "react-redux"
-import { translate } from "react-i18next"
+import { translate, Trans } from "react-i18next"
 import { fetchGroups, uploadGroups, trainGroups } from "actions/group"
-import { updateBot } from '../../actions/bot'
-import { Message, Button, Icon, Input, Form } from "semantic-ui-react"
+import { updateBot, fetchBot } from '../../actions/bot'
+import { Message, Button, Icon, Input, Form, Radio, List, Dropdown } from "semantic-ui-react"
 import toJS from './ToJS'
 
 class ToolComponent extends React.Component {
@@ -82,10 +82,20 @@ class ToolComponent extends React.Component {
 
 	handlePostbackToggleClick = e => {
 		e.preventDefault()
-		const { info, updateBot } = this.props
-		updateBot(info.id, Object.assign({}, info, {
+		const { info, updateBot, fetchBot } = this.props
+		return updateBot(info.id, Object.assign({}, info, {
 			postback_activate: !info.postback_activate
 		}))
+		.then(() => fetchBot(info.id))
+	}
+
+	handleChooseAnswerChange = (e, { value }) => {
+		e.preventDefault()
+		const { info, updateBot, fetchBot } = this.props
+		return updateBot(info.id, Object.assign({}, info, {
+			choose_answer: value
+		}))
+		.then(() => fetchBot(info.id))
 	}
 
 	render = () => {
@@ -94,12 +104,16 @@ class ToolComponent extends React.Component {
 		const { t, onCreateGroup, keyword, info, bots, user } = this.props
 
 		const currentPaidtype = _.find(user.packages, p => p.name === user.paid_type)
-		const faqCount = _.reduce(bots, (acc, bot) => (acc += (bot && bot.group && bot.group.length) || 0), 0)
+		const faqCount = _.reduce(bots, (acc, bot) => (acc += (bot && bot.group && bot.group.count) || 0), 0)
 		const faqLimit = currentPaidtype ? currentPaidtype.faq_amount : 0
 		const faqLimitText = faqLimit > 0 ? faqLimit : '∞'
+		const answer_choice = [
+			{value: '1', text: t(`chatbot.faq.answer_choice.1`), key: 1},
+			{value: '2', text: t(`chatbot.faq.answer_choice.2`), key: 2}
+		]
 
-		return (
-			<div style={{ margin: "10px" }}>
+		return (<Fragment>
+			<div>
 				{errors && <Message error={!!errors} header={errors} />}
 				{success && <Message success={!!success} header={success} />}
 				<Button disabled={faqCount >= faqLimit && faqLimit > 0} onClick={onCreateGroup} color='green'>
@@ -134,9 +148,12 @@ class ToolComponent extends React.Component {
 					{t("chatbot.faq.train")}
 				</Button>
 				{/* <Input onKeyDown={this.handleKeyDown} placeholder={t('chatbot.faq.search')} onChange={this.handleChangeKeyword} value={keyword ? keyword : ''}icon={<Icon name='search' circular link onClick={this.handleSubmitKeyword} />} /> */}
-				<Button icon={info.postback_activate ? 'check' : 'remove'} content={info.postback_activate ? t('chatbot.faq.disable_postback') : t('chatbot.faq.enable_postback')} floated='right' color={info.postback_activate ? 'green': 'grey'} onClick={this.handlePostbackToggleClick} />
 			</div>
-		)
+			<List>
+				<List.Item><Radio toggle label={t('chatbot.faq.enable_postback')} onChange={this.handlePostbackToggleClick} checked={info.postback_activate} /></List.Item>
+				<List.Item><Trans i18nKey='chatbot.faq.answer_choice.label'><Dropdown inline options={answer_choice} value={info.choose_answer} defaultValue={1} onChange={this.handleChooseAnswerChange} /></Trans></List.Item>
+			</List>
+		</Fragment>)
 	}
 }
 
@@ -148,6 +165,6 @@ const mapStateToProps = (state, props) => ({
 
 export default compose(
 	translate('translations'),
-	connect(mapStateToProps, { fetchGroups, uploadGroups, trainGroups, updateBot }),
+	connect(mapStateToProps, { fetchGroups, uploadGroups, trainGroups, updateBot, fetchBot }),
 	toJS
 )(ToolComponent)

@@ -55,8 +55,8 @@ class TaskbotDetailPage extends React.Component {
 		})
 	}
 
-	fetchGroups = () => {
-		return this.props.fetchGroups(this.props.bot.id, this.state.activePage, '').then(() => {
+	fetchGroups = (activePage = null) => {
+		return this.props.fetchGroups(this.props.bot.id, activePage || this.state.activePage, '').then(() => {
 			this.setState( { data: this.props.bot, loading: false, faq: this.props.groups })
 		}, err => {
 			this.setState({ data: this.props.bot, loading: false, faq: []})
@@ -157,6 +157,7 @@ class TaskbotDetailPage extends React.Component {
 
 	onPageChanged = (e, { activePage }) => {
 		this.setState({ activePage })
+		this.fetchGroups(activePage)
 	}
 
 	onDeleteGroup = (groupId, e) => {
@@ -273,12 +274,11 @@ class TaskbotDetailPage extends React.Component {
 			importLoading,
 			exportLoading
 		} = this.state
-		const { t, bot } = this.props
+		const { t, bot, group } = this.props
 
 		const perPage = 10
-		const totalPages = Math.ceil(faq.length / perPage)
-		const startNumber = perPage * (activePage - 1)
-		const displayGroups = _.slice(faq, startNumber, startNumber + perPage)
+		const totalPages = Math.ceil((group ? group.count : faq.length) / perPage)
+		const displayGroups = faq
 
 		return <Grid>
 			<Grid.Row columns={1}>
@@ -296,7 +296,7 @@ class TaskbotDetailPage extends React.Component {
 							label='Vendor ID'
 							control={Input}
 							transparent
-							value={data.vendor_id}
+							value={data.vendor_id || '(empty)'}
 							onClick={this.onVendorClick}
 							readOnly />
 						<Form.Field
@@ -461,7 +461,8 @@ class TaskbotDetailPage extends React.Component {
 
 const mapStateToProps = (state, props) => ({
 	bot: state.getIn(['agent', 'bots']).find(el => (el.get('id') + '') === (props.match.params.id + '')) || {},
-	groups: state.getIn(['bot', 'bots', props.match.params.id, 'group', 'groups']),
+	groups: state.getIn(['bot', 'bots', props.match.params.id, 'group', 'results']),
+	group: state.getIn(['bot', 'bots', props.match.params.id, 'group'])
 })
 
 export default compose(

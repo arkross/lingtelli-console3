@@ -138,8 +138,8 @@ class AnalysisWidget extends Component {
 					</Link>
 				</Grid.Column>
 			</Grid.Row>
-			<Grid.Row columns={3} only='computer'>
-				<Grid.Column computer={11} largeScreen={13}>
+			<Grid.Row>
+				<Grid.Column>
 					<div className='analysis-container' >
 						<Chart
 							grid={{
@@ -178,62 +178,10 @@ class AnalysisWidget extends Component {
 						/>
 					</div>
 				</Grid.Column>
-				<Grid.Column computer={5} largeScreen={3}>
-					<Statistic.Group horizontal>
-					{
-						_.map(stats, el => <Statistic
-							label={el.label}
-							key={el.key}
-							value={el.text}
-							/>)
-					}
-					</Statistic.Group>
-				</Grid.Column>
 			</Grid.Row>
-			<Grid.Row columns={1} only='tablet mobile'>
+			<Grid.Row>
 				<Grid.Column>
-					<div className='analysis-container' >
-						<Chart
-							grid={{
-								y: {
-									show: true
-								}
-							}}
-							tooltip={{
-								format: {
-									title: val => moment(val).format('ll')
-								}
-							}}
-							data={{
-								json: chartData,
-								type: 'area-spline',
-								names: {
-									total_chat: t('chatbot.analysis.questions'),
-									unhandled_count: t('chatbot.analysis.unhandled')
-								},
-								xFormat: '%Y/%m/%d',
-								keys: {
-									x: 'date',
-									value: ['total_chat', 'unhandled_count']
-								}
-							}}
-							axis={{
-								x: {
-									type: 'timeseries'
-								},
-								y: {
-									tick: {
-										format: (val => (val % 1 === 0) ? val : '')
-									}
-								}
-							}}
-						/>
-					</div>
-				</Grid.Column>
-			</Grid.Row>
-			<Grid.Row only='tablet mobile'>
-				<Grid.Column>
-					<Statistic.Group widths={stats.length} size='small'>
+					<Statistic.Group widths={3}>
 					{
 						_.map(stats, el => <Statistic
 							label={el.label}
