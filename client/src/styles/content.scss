@@ -101,5 +101,11 @@
 		.ui.grid.bot-dashboard {
 			margin-top: 0;
 		}
+
+		.topmenu {
+			&::-webkit-scrollbar {
+				display: none;
+			}
+		}
 	}
 }

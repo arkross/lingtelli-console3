@@ -181,6 +181,9 @@ class ContentPage extends React.Component {
 				size='tiny'
 				key={ix}
 				id={item.id}
+				style={{
+					flex: '0 0 auto'
+				}}
 			>{item.text}</NavLink>
 		));
 
@@ -188,10 +191,15 @@ class ContentPage extends React.Component {
 
 		return (
 			<div className='bot-page'>
-				<Responsive as={Menu} pointing className='sidemenu' {...Responsive.onlyComputer}>
+				<Responsive as={Menu} pointing className='topmenu' style={{
+					display: 'flex',
+					flexWrap: 'nowrap',
+					overflowX: 'auto',
+					overflowY: 'hidden',
+					WebkitOverflowScrolling: 'touch',
+					msOverflowStyle: '-ms-autohiding-scrollbar'
+				}}>
 					{renderItems}
-				</Responsive>
-				<Responsive as={Dropdown} {...Responsive.onlyTablet} options={dropdownMenu} value={currentMenu && currentMenu.value} onChange={this.changePath}>
 				</Responsive>
 				{openDemoModal && <DemoModal
 					match={match}

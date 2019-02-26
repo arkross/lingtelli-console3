@@ -182,8 +182,13 @@
         "title": "Delete Group",
         "message": "Are you sure you want to delete this group?"
       },
-      "enable_postback": "Postback Disabled",
-      "disable_postback": "Postback Enabled"
+      "enable_postback": "Always reply with similar questions",
+      "answer_choice": {
+        "label": "When there are multiple answers, reply with <0></0>",
+        "1": "First Answer",
+        "2": "Random Answer"
+      },
+      "gotopage": "Go to page <0></0>"
     },
     "recommendations": {
       "text": "Recommendations",

@@ -66,14 +66,14 @@ export default function bot(state = initState, action = {}) {
 			.setIn(['bots', action.id + '', 'reportStat'], fromJS(totalStat)))
 	}
 	case types.FETCH_GROUPS: {
-		return state.setIn(['bots', action.id + '', 'group', 'groups'], fromJS(action.data))
+		return state.setIn(['bots', action.id + '', 'group'], fromJS(action.data))
 	}
 	case types.FETCH_GROUP_LENGTH: {
-		return state.setIn(['bots', action.id + '', 'group', 'length'], action.length)
+		return state.setIn(['bots', action.id + '', 'group', 'count'], action.length)
 	}
 	case types.FETCH_GROUP: {
-		const idx = state.getIn(['bots', action.id + '', 'group', 'groups']).findIndex(el => el.get('group') == action.groupId)
-		return state.setIn(['bots', action.id + '', 'group', 'groups', idx], fromJS(action.data))
+		const idx = state.getIn(['bots', action.id + '', 'group', 'results']).findIndex(el => el.get('group') == action.groupId)
+		return state.setIn(['bots', action.id + '', 'group', 'results', idx], fromJS(action.data))
 	}
 	case types.FETCH_SUPPORT_PLATFORMS:
 		return state.set('supportPlatforms', fromJS(action.platforms))
