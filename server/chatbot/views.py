@@ -76,7 +76,8 @@ class ChatbotViewset(viewsets.ModelViewSet):
         "activate": True,
         "language": "tw",
         "third_party": [2,3],
-        "user": 2
+        "user": 2,
+        "choose_answer": "1"
     }
     '''
     
@@ -178,7 +179,8 @@ class ChatbotViewset(viewsets.ModelViewSet):
                                  status=HTTP_404_NOT_FOUND)
             update_data = json.loads(request.body)
             valid_update_key = ['robot_name', 'greeting_msg', 'failed_msg',
-                                'postback_title', 'postback_activate']
+                                'postback_title', 'postback_activate',
+                                'choose_answer']
             err_msg, key_status = utils.key_validator(valid_update_key,
                                                       update_data)
             if not key_status:
