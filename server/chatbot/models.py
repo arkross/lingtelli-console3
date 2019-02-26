@@ -21,6 +21,11 @@ BOT_TYPE = {
     ('NORMAL', 'NORMAL')
 }
 
+CHOOSE_ANS_TYPE = {
+    ('1', 'FIRST'),
+    ('2', 'RANDOM')
+}
+
 
 class Chatbot(models.Model):
     '''Chatbot object
@@ -76,6 +81,8 @@ class Chatbot(models.Model):
                                     blank=True, null=True,
                                     on_delete=models.CASCADE)
     hide_status = models.BooleanField(default=False)
+    choose_answer = models.CharField(max_length=10, choices=CHOOSE_ANS_TYPE,
+                                     default='1')
 
     class Meta:
         db_table = 'chatbot'
