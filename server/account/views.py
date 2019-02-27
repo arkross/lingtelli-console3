@@ -30,7 +30,7 @@ from rest_framework.status import (
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 
-import chat_console_3.utils as utils
+from chat_console_3 import utils, pagination
 from chat_console_3.settings.common import INIT_PASSWORD
 from .serializers import (
     MemberSerializer,
@@ -654,6 +654,7 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
     permission_classes = (IsAuthenticated, IsAdminUser,)
     queryset = User.objects.filter(is_staff=False)
     serializer_class = AgentMemberSerializer
+    pagination_class = pagination.StandardPagination
 
     def list(self, request):
         res_list = []

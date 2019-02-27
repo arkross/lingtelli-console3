@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.utils.translation import gettext as _
+from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.mixins import (ListModelMixin, RetrieveModelMixin,
                                    UpdateModelMixin)
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -15,28 +15,11 @@ from rest_framework.status import (
 )
 
 from .serializers import HistorySerializer, QuestionMatchHistorySerializer
+from chat_console_3 import pagination
 
 from .models import History, QuestionMatchHistory
 from chatbot.models import Chatbot
 from faq.models import FAQGroup, Question
-
-class StandardDataSetPagination(PageNumberPagination):
-    '''Customize pagination
-    '''
-    page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 1000
-
-    def get_paginated_response(self, data):
-        return Response({
-            'links': {
-               'next': self.get_next_link(),
-               'previous': self.get_previous_link()
-            },
-            'count': self.page.paginator.count,
-            'total_pages': self.page.paginator.num_pages,
-            'results': data
-        })
 
 class HistoryViewset(viewsets.ReadOnlyModelViewSet):
     '''History related features. List and retrieve methods only.
@@ -57,12 +40,14 @@ class HistoryViewset(viewsets.ReadOnlyModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = History.objects.all()
     serializer_class = HistorySerializer
-    pagination_class = StandardDataSetPagination     
+    pagination_class = pagination.StandardPagination     
     
     def list(self, request, id=None):
         user_obj = request.user
         bot_id = id
-        bot_obj = Chatbot.objects.filter(user=user_obj, id=bot_id).first()
+        bot_obj = Chatbot.objects.filter(Q(user=user_obj) | 
+                                         Q(assign_user=user_obj),
+                                         id=bot_id).first()
         if bot_obj:
             history_list = History.objects.filter(chatbot_id=bot_obj)\
                         .order_by('-created_at')
@@ -96,6 +81,7 @@ class QuestionMatchHistoryViewset(ListModelMixin, RetrieveModelMixin,
     permission_classes = (IsAuthenticated,)
     queryset = QuestionMatchHistory.objects.all()
     serializer_class = QuestionMatchHistorySerializer
+    pagination_class = pagination.StandardPagination
 
     def get_queryset(self):
         user_obj = self.request.user
