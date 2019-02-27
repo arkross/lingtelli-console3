@@ -40,7 +40,7 @@ class HistoryViewset(viewsets.ReadOnlyModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = History.objects.all()
     serializer_class = HistorySerializer
-    pagination_class = pagination.StandardPagination     
+    pagination_class = pagination.HistoryPagination
     
     def list(self, request, id=None):
         user_obj = request.user
@@ -51,8 +51,9 @@ class HistoryViewset(viewsets.ReadOnlyModelViewSet):
         if bot_obj:
             history_list = History.objects.filter(chatbot_id=bot_obj)\
                         .order_by('-created_at')
-            serializer = HistorySerializer(history_list, many=True)
-            return Response(serializer.data, status=HTTP_200_OK)
+            page = self.paginate_queryset(history_list)
+            serializer = HistorySerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
         return Response({'errors':_('Not found')},
                         status=HTTP_404_NOT_FOUND)
 
