@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Fragment} from 'react'
 import _ from 'lodash'
 import moment from 'moment'
 import { NavLink } from 'react-router-dom'
@@ -11,14 +11,18 @@ import { fetchTaskbots } from '../../../actions/taskbot'
 import FileDownload from "react-file-download"
 import groupApis from "apis/group"
 import { fetchMembers, updateMember } from '../../../actions/agent'
-import { Table, Button, Icon, Dropdown, Label } from 'semantic-ui-react'
+import { Table, Button, Icon, Dropdown, Label, Pagination, Input } from 'semantic-ui-react'
 import toJS from 'components/utils/ToJS'
+import qs from 'query-string'
 
 class Member extends React.Component {
 	constructor(props) {
 		super(props)
+		const search = qs.parse(props.location.search)
 		this.state = {
 			loading: false,
+			pageInput: search.page || 1,
+			activePage: search.page || 1,
 			paidtypeVals: [],
 			changes: []
 		}
@@ -29,9 +33,9 @@ class Member extends React.Component {
 		this.fetchMembers()
 	}
 
-	fetchMembers = () => {
-		return this.props.fetchMembers().then(() => {
-			const pts = this.props.members.map(el => ({
+	fetchMembers = (activePage) => {
+		return this.props.fetchMembers(activePage || this.state.activePage).then(() => {
+			const pts = this.props.members.results.map(el => ({
 				id: el.id,
 				pid: this.props.paidtypes.find(o => o.name === el.paid_type).id,
 				value: el.paid_type
@@ -50,7 +54,7 @@ class Member extends React.Component {
 		const changed = paidtypeVals.find(el => el.id === id)
 		changed.pid = newValue
 		changed.value = paidtypes.find(el => el.id === newValue).name
-		const changes = members.map(member => {
+		const changes = members.results.map(member => {
 			const curPT = paidtypeVals.find(pt => pt.id === member.id)
 			return {id: member.id, pid: curPT.pid, changed: curPT.value !== member.paid_type, value: curPT.value}
 		}).filter(el => el.changed)
@@ -73,12 +77,28 @@ class Member extends React.Component {
 		})
 	}
 
+	onPageChanged = (e, { activePage }) => {
+		this.setState({ activePage, loading: true })
+		return this.fetchMembers(activePage)
+	}
+
+	onInputPageChanged = (e, { value }) => {
+		this.setState({ pageInput: value })
+	}
+
+	onInputPageSubmitClick = (e) => {
+		this.onPageChanged(e, { activePage: this.state.pageInput })
+	}
+
 	render() {
 		const { members, paidtypes, match } = this.props
-		const { paidtypeVals, changes } = this.state
+		const { paidtypeVals, changes, activePage, pageInput } = this.state
 		const { loading } = this.state
 
-		const combMembers = members.map(member => {
+		const perPage = 10
+		const totalPages = Math.ceil(members.count / perPage)
+
+		const combMembers = members.results.map(member => {
 			const pval = paidtypeVals.find(pt => pt.id === member.id) || {id: null, pid: null, value: null}
 			return Object.assign({paidtype_val: pval}, member)
 		})
@@ -131,12 +151,29 @@ class Member extends React.Component {
 					})}
 				</Table.Body>
 			</Table>
+			{
+				totalPages > 0 &&
+					<Fragment>
+						<Pagination
+							firstItem={{ content: <Icon name='angle double left' />, icon: true }}
+							lastItem={{ content: <Icon name='angle double right' />, icon: true }}
+							prevItem={{ content: <Icon name='angle left' />, icon: true }}
+							nextItem={{ content: <Icon name='angle right' />, icon: true }}
+							ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
+							activePage={activePage}
+							onPageChange={this.onPageChanged}
+							totalPages={totalPages}
+						/>
+						{' '}
+						<Input action={<Button content='Go' onClick={this.onInputPageSubmitClick} />} type='number' size={3} step={1} min={1} max={totalPages} value={pageInput} onChange={this.onInputPageChanged}></Input>
+					</Fragment>
+			}
 		</div>
 	}
 }
 
 const mapStateToProps = (state, props) => ({
-	members: state.getIn(['agent', 'members']) || [],
+	members: state.getIn(['agent', 'members']) || {},
 	paidtypes: state.getIn(['user', 'packages'])
 })
 

@@ -21,5 +21,7 @@ export default {
 
 	readMembers: async () => (await axios.get(`${API_HOST}/agent/member/`)).data,
 
+	readAllMembers: async () => (await axios.get(`${API_HOST}/agent/member/list_all_member/`)).data,
+
 	updateMember: async (id, data) => (await axios.put(`${API_HOST}/agent/member/${id}/`, data)).data
 }

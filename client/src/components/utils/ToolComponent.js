@@ -8,13 +8,14 @@ import { connect } from "react-redux"
 import { translate, Trans } from "react-i18next"
 import { fetchGroups, uploadGroups, trainGroups } from "actions/group"
 import { updateBot, fetchBot } from '../../actions/bot'
-import { Message, Button, Icon, Input, Form, Radio, List, Dropdown } from "semantic-ui-react"
+import { Message, Button, Icon, Input, Form, Radio, List, Dropdown, Modal } from "semantic-ui-react"
 import toJS from './ToJS'
 
 class ToolComponent extends React.Component {
 
 	state = {
-		loading: false
+		loading: false,
+		openSettingModal: false
 	}
 
 	_fetchGroups = (page=1, keyword='') => {
@@ -98,9 +99,17 @@ class ToolComponent extends React.Component {
 		.then(() => fetchBot(info.id))
 	}
 
+	handleOpenSettings = e => {
+		this.setState({openSettingModal: true})
+	}
+
+	handleCloseSettings = e => {
+		this.setState({openSettingModal: false})
+	}
+
 	render = () => {
 
-		const { loading, errors, success } = this.state
+		const { loading, errors, success, openSettingModal } = this.state
 		const { t, onCreateGroup, keyword, info, bots, user } = this.props
 
 		const currentPaidtype = _.find(user.packages, p => p.name === user.paid_type)
@@ -147,12 +156,37 @@ class ToolComponent extends React.Component {
 					<Icon name="flask"/>
 					{t("chatbot.faq.train")}
 				</Button>
+				<Modal
+					trigger={<Button onClick={this.handleOpenSettings} icon='ellipsis horizontal' />}
+					open={openSettingModal}
+					onClose={this.handleCloseSettings}
+					size='tiny'
+				>
+					<Modal.Header>{t('chatbot.faq.settings')}</Modal.Header>
+					<Modal.Content>
+
+						<List divided verticalAlign='middle'>
+							<List.Item>
+								<List.Content floated='left'>
+									{t('chatbot.faq.enable_postback')}
+								</List.Content>
+								<List.Content floated='right'>
+									<Radio toggle onChange={this.handlePostbackToggleClick} checked={info.postback_activate} />
+								</List.Content>
+							</List.Item>
+							<List.Item>
+								<List.Content floated='left'>
+									{t('chatbot.faq.answer_choice.label')}
+								</List.Content>
+								<List.Content floated='right'>
+									<Dropdown selection options={answer_choice} value={info.choose_answer} onChange={this.handleChooseAnswerChange} />
+								</List.Content>
+							</List.Item>
+						</List>
+					</Modal.Content>
+				</Modal>
 				{/* <Input onKeyDown={this.handleKeyDown} placeholder={t('chatbot.faq.search')} onChange={this.handleChangeKeyword} value={keyword ? keyword : ''}icon={<Icon name='search' circular link onClick={this.handleSubmitKeyword} />} /> */}
 			</div>
-			<List>
-				<List.Item><Radio toggle label={t('chatbot.faq.enable_postback')} onChange={this.handlePostbackToggleClick} checked={info.postback_activate} /></List.Item>
-				<List.Item><Trans i18nKey='chatbot.faq.answer_choice.label'><Dropdown inline options={answer_choice} value={info.choose_answer} defaultValue={1} onChange={this.handleChooseAnswerChange} /></Trans></List.Item>
-			</List>
 		</Fragment>)
 	}
 }
