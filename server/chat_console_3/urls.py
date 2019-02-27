@@ -40,6 +40,7 @@ agent_router.register('', acc_view.AgentProfileViewset)
 #XXX /agent/pk/delete_confirm/ for delete confirmation api(detail_route)
 
 # Agent member managment related
+#XXX /agent/member/list_all_member/ for return all member data without pagination
 agent_member_router = routers.DefaultRouter(trailing_slash=True)
 agent_member_router.register('', acc_view.AgentMemberViewset)
 # agent_member_router.register(r'(?P<pk>\d+)/report',) #Not sure what to provide yet

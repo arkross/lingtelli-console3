@@ -654,16 +654,12 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
     permission_classes = (IsAuthenticated, IsAdminUser,)
     queryset = User.objects.filter(is_staff=False)
     serializer_class = AgentMemberSerializer
-    pagination_class = pagination.StandardPagination
+    pagination_class = pagination.AgentMemberPagination
 
     def list(self, request):
-        res_list = []
-        for usr in self.queryset:
-            res_dict = {}
-            res_dict['id'] = usr.id
-            res_dict['username'] = usr.username
-            res_list.append(res_dict)
-        return Response(res_list, status=HTTP_200_OK)
+        page = self.paginate_queryset(self.queryset)
+        serializer = AgentMemberSerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def retrieve(self, request, pk=None):
         user_obj = self.queryset.filter(id=pk).first()
@@ -718,3 +714,10 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
                             status=HTTP_403_FORBIDDEN)
         return Response({'errors':_('No content')},
                         status=HTTP_400_BAD_REQUEST)
+    
+    @action(methods=['get'], detail=False,
+           permission_classes=[IsAuthenticated, IsAdminUser])
+    def list_all_member(self, requset):
+        members = self.queryset
+        serializer = AgentMemberSerializer(members, many=True)
+        return Response(serializer.data, status=HTTP_200_OK)
