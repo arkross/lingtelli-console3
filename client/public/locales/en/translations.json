@@ -184,11 +184,12 @@
       },
       "enable_postback": "Always reply with similar questions",
       "answer_choice": {
-        "label": "When there are multiple answers, reply with <0></0>",
+        "label": "Answer Selection",
         "1": "First Answer",
         "2": "Random Answer"
       },
-      "gotopage": "Go to page <0></0>"
+      "settings": "Settings",
+      "gotopage": "Go"
     },
     "recommendations": {
       "text": "Recommendations",

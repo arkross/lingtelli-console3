@@ -183,11 +183,12 @@
       },
       "enable_postback": "啟用相似問題輸出",
       "answer_choice": {
-        "label": "有多個答案時,使用<0></0>回復",
+        "label": "答案挑選",
         "1": "第一個答案",
-        "2": "隨即答案"
+        "2": "隨機答案"
       },
-      "gotopage": "前往第<0></0>頁"
+      "settings": "設定",
+      "gotopage": "前往"
     },
     "recommendations": {
       "text": "推薦紀錄",

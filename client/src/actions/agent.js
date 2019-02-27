@@ -12,6 +12,11 @@ export const agentLoggedOut = () => ({
 	type: types.AGENT_LOGGED_OUT
 })
 
+export const agentAllMembers = data => ({
+	type: types.FETCH_AGENT_ALL_MEMBERS,
+	data
+})
+
 export const agentMembers = data => ({
 	type: types.FETCH_AGENT_MEMBER,
 	data
@@ -54,11 +59,17 @@ export const logout = () => dispatch => api.logout()
 		dispatch(agentLoggedOut())
 	})
 
+export const fetchAllMembers = () => dispatch =>
+	api.readAllMembers()
+		.then(data => {
+			return dispatch(agentAllMembers(data))
+		})
+
 export const fetchMembers = () => dispatch =>
 	api.readMembers()
 		.then(data => {
 			dispatch(agentMembers(data))
-			const promises = data.map(el => {
+			const promises = data.results.map(el => {
 				return api.readMember(el.id).then(result => {
 					dispatch(agentReadMember(el.id, result))
 				})

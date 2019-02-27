@@ -194,11 +194,12 @@
       },
       "enable_postback": "启用相似问题输出",
       "answer_choice": {
-        "label": "有多个答案时，使用<0></0>回复",
+        "label": "答案挑选",
         "1": "第一个答案",
         "2": "随机答案"
       },
-      "gotopage": "前往第<0></0>页"
+      "settings": "设定",
+      "gotopage": "前往"
     },
     "recommendations": {
       "text": "推荐记录",
