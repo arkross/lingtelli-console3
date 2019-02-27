@@ -67,7 +67,7 @@ class HistoryPage extends React.Component {
 			margin: 'auto'
 		}
 
-		const perPage = 10
+		const perPage = 50
 		const totalPage = Math.ceil(histories.count / perPage)
 		return (
 			<Container fluid textAlign='center' className='history-container'>
