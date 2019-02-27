@@ -15,9 +15,9 @@ export const fetchBotInfo = info => ({
 	info,
 })
 
-export const fetchBotHistory = (histories,id) => ({
+export const fetchBotHistory = (history,id) => ({
 	type: types.FETCH_BOT_HISTORY,
-	histories,
+	history,
 	id
 })
 

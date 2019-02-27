@@ -33,7 +33,7 @@ class HistoryPage extends React.Component {
 
 	createHistoryElements = () => {
 		const { histories } = this.props;
-		const activeHistories = histories || []
+		const activeHistories = histories.results || []
 
 		return _.chain(activeHistories)
 			.map((history, index) => 
@@ -67,13 +67,14 @@ class HistoryPage extends React.Component {
 			margin: 'auto'
 		}
 
-		const totalPage = histories.total_pages
+		const perPage = 10
+		const totalPage = Math.ceil(histories.count / perPage)
 		return (
 			<Container fluid textAlign='center' className='history-container'>
 				<Loader active={loading} />
 				<Dimmer inverted active={loading} />
-				{(!histories || !histories.length) && <Header as='h4'>{t('chatbot.history.empty')}</Header>} 
-				{(!!histories && !!histories.length) &&
+				{(!histories.results || !histories.count) && <Header as='h4'>{t('chatbot.history.empty')}</Header>} 
+				{(!!histories.results && !!histories.count) &&
 						<div>
 							<Table celled>
 								<Table.Header>
@@ -117,7 +118,7 @@ class HistoryPage extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
 	activeBot: ownProps.match.params.id,
-	histories: state.getIn(['bot', 'bots', ownProps.match.params.id, 'histories']) || []
+	histories: state.getIn(['bot', 'bots', ownProps.match.params.id, 'history']) || {}
 });
 
 export default compose(

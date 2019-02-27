@@ -9,7 +9,7 @@ import { Button, Icon, Table, Dropdown, Input } from 'semantic-ui-react'
 import FileDownload from "react-file-download"
 import groupApis from "apis/group"
 import { fetchTaskbots, updateTaskbot } from '../../../actions/taskbot'
-import { fetchMembers } from '../../../actions/agent'
+import { fetchAllMembers } from '../../../actions/agent'
 import toJS from 'components/utils/ToJS'
 import DeletionModal from '../../modals/DeletionModal'
 
@@ -24,7 +24,7 @@ class TaskbotsPage extends React.Component {
 	}
 
 	componentDidMount() {
-		this.props.fetchMembers()
+		this.props.fetchAllMembers()
 		this.fetchTaskbots()
 	}
 
@@ -129,11 +129,13 @@ class TaskbotsPage extends React.Component {
 }
 
 const mapStateToProps = (state, props) => ({
-	members: state.getIn(['agent', 'members']) || [],
-	taskbots: (props.match.params.id ? state.getIn(['agent', 'members', state.getIn(['agent', 'members']).findIndex(m => (m.get('id') + '') === (props.match.params.id + '')) + '', 'bots']) : state.getIn(['agent', 'bots'])) || []
+	members: state.getIn(['agent', 'allMembers']) || [],
+	taskbots: (props.match.params.id ?
+		state.getIn(['agent', 'bots']).filter(bot => bot.get('assign_user') == (props.match.params.id)) : 
+		state.getIn(['agent', 'bots'])) || []
 })
 
 export default compose(
-	connect(mapStateToProps, { fetchGroups, uploadGroups, trainGroups, fetchTaskbots, fetchMembers, updateTaskbot }),
+	connect(mapStateToProps, { fetchGroups, uploadGroups, trainGroups, fetchTaskbots, fetchAllMembers, updateTaskbot }),
 	toJS
 )(TaskbotsPage)

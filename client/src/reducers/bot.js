@@ -39,7 +39,7 @@ export default function bot(state = initState, action = {}) {
 		})
 	}
 	case types.FETCH_BOT_HISTORY:
-		return state.setIn(['bots', action.id + '', 'histories'], fromJS(action.histories))
+		return state.setIn(['bots', action.id + '', 'history'], fromJS(action.history))
 	case types.FETCH_BOT_MATCHING:
 		return state.setIn(['bots', action.id + '', 'recomlog'], fromJS(action.data))
 	case types.FETCH_BOT_REPORT: {

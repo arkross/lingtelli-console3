@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import Group from 'components/utils/Group'
 import ToolComponent from 'components/utils/ToolComponent'
 import groupApis from 'apis/group'
@@ -129,21 +129,24 @@ class FAQConfigPage extends React.Component {
 		return (
 			<div>
 				<ToolComponent onKeywordSubmit={this.handleKeywordSubmit} keyword={keyword} onKeywordChange={this.handleKeywordChange} activeBot={activeBot} onCreateGroup={this.onCreateGroup} />
-				{<Trans i18nKey='chatbot.faq.gotopage'><Input action={<Button icon='play' onClick={this.onInputPageSubmitClick} />} type='number' size={3} step={1} min={1} max={totalPages} defaultValue={pageInput} value={pageInput} onChange={this.onInputPageChanged}></Input></Trans> }
 				
 				<Segment vertical loading={loading}>
 					{
 						totalPages > 0 &&
-							<Pagination
-								firstItem={{ content: <Icon name='angle double left' />, icon: true }}
-								lastItem={{ content: <Icon name='angle double right' />, icon: true }}
-								prevItem={{ content: <Icon name='angle left' />, icon: true }}
-								nextItem={{ content: <Icon name='angle right' />, icon: true }}
-								ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
-								activePage={activePage}
-								onPageChange={this.onPageChanged}
-								totalPages={totalPages}
-							/>
+							<Fragment>
+								<Pagination
+									firstItem={{ content: <Icon name='angle double left' />, icon: true }}
+									lastItem={{ content: <Icon name='angle double right' />, icon: true }}
+									prevItem={{ content: <Icon name='angle left' />, icon: true }}
+									nextItem={{ content: <Icon name='angle right' />, icon: true }}
+									ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
+									activePage={activePage}
+									onPageChange={this.onPageChanged}
+									totalPages={totalPages}
+								/>
+								{' '}
+								<Input action={<Button content={t('chatbot.faq.gotopage')} onClick={this.onInputPageSubmitClick} />} type='number' size={3} step={1} min={1} max={totalPages} defaultValue={pageInput} value={pageInput} onChange={this.onInputPageChanged}></Input>
+							</Fragment>
 					}
 					{ displayGroups &&
 						displayGroups.map((item, ix) =>
@@ -161,16 +164,20 @@ class FAQConfigPage extends React.Component {
 					}
 					{
 						totalPages > 0 &&
-							<Pagination
-								firstItem={{ content: <Icon name='angle double left' />, icon: true }}
-								lastItem={{ content: <Icon name='angle double right' />, icon: true }}
-								prevItem={{ content: <Icon name='angle left' />, icon: true }}
-								nextItem={{ content: <Icon name='angle right' />, icon: true }}
-								ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
-								activePage={activePage}
-								onPageChange={this.onPageChanged}
-								totalPages={totalPages}
-							/>
+							<Fragment>
+								<Pagination
+									firstItem={{ content: <Icon name='angle double left' />, icon: true }}
+									lastItem={{ content: <Icon name='angle double right' />, icon: true }}
+									prevItem={{ content: <Icon name='angle left' />, icon: true }}
+									nextItem={{ content: <Icon name='angle right' />, icon: true }}
+									ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
+									activePage={activePage}
+									onPageChange={this.onPageChanged}
+									totalPages={totalPages}
+								/>
+								{' '}
+								<Input action={<Button content={t('chatbot.faq.gotopage')} onClick={this.onInputPageSubmitClick} />} type='number' size={3} step={1} min={1} max={totalPages} defaultValue={pageInput} value={pageInput} onChange={this.onInputPageChanged}></Input>
+							</Fragment>
 					}
 				</Segment>
 				<Modal
