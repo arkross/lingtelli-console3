@@ -95,7 +95,7 @@ class Member extends React.Component {
 		const { paidtypeVals, changes, activePage, pageInput } = this.state
 		const { loading } = this.state
 
-		const perPage = 50
+		const perPage = 30
 		const totalPages = Math.ceil(members.count / perPage)
 
 		const combMembers = members.results.map(member => {
