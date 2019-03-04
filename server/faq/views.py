@@ -87,7 +87,7 @@ class FAQGrouptViewset(viewsets.ModelViewSet):
         bot_obj = Chatbot.objects.filter(Q(user=user_obj) |
                                          Q(assign_user=user_obj),
                                          id=bot_id, hide_status=False,).first()
-        return self.queryset.filter(chatbot=bot_obj).order_by('id')
+        return self.queryset.filter(chatbot=bot_obj).order_by('-id')
 
     def create(self, request, id=None):
         '''Create new faq
