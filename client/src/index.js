@@ -48,6 +48,12 @@ if (token) {
 }
 
 axios.interceptors.request.use(request => {
+	let accLang = 'en-us'
+	switch (localStorage.i18nextLng) {
+		case 'zh-TW': accLang = 'zh-hant'; break;
+		case 'zh-CN': accLang = 'zh-hans'; break;
+	}
+	request.headers['Accept-Language'] = accLang
 	return Promise.resolve(request)
 }, err => {
 	showNetworkErrorRaw(store.dispatch)
