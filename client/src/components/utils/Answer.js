@@ -15,6 +15,12 @@ class Answer extends React.Component {
     loading: false
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.content !== this.props.content) {
+      this.setState({content: nextProps.content})
+    }
+  }
+
   update = () => {
     const { id, content } = this.state;
     const { updateAnswer, activeBot } = this.props;
