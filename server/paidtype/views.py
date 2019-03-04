@@ -52,6 +52,9 @@ class PaidTypeViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
     queryset = PaidType.objects.all()
     serializer_class = PaidTypeSerializer
 
+    def get_queryset(self):
+        return PaidType.objects.filter(user_type='M')
+
     def update(self, request, pk=None):
         '''Update paidtype data
 
