@@ -68,7 +68,7 @@ def member_login(request):
     for k in required_key:
         if not k in login_data:
             return \
-                Response({'errors': 'Username and password cannot be empty'},
+                Response({'errors': _('Username and password cannot be empty')},
                          status=HTTP_400_BAD_REQUEST)
 
     username = login_data.get('username')
@@ -77,8 +77,8 @@ def member_login(request):
     user = User.objects.filter(username=username).first()
     if not user:
         # logger.warning('=== User ' + username + ' not found ===')
-        return Response({'errors': 'User does not exist.' +\
-                                   'Please register an account first'},
+        return Response({'errors': _('User does not exist.' +\
+                                   'Please register an account first')},
                         status=HTTP_404_NOT_FOUND)
 
     user = authenticate(request, username=username, password=password)
@@ -94,14 +94,14 @@ def member_login(request):
                     Response({'success': new_token.key}, status=HTTP_200_OK)
             else:
                 # logger.error('XXX Service with login error, please check XXX')
-                return Response({'errors': 'Something went wrong'+\
-                    'Please try again'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({'errors': _('Something went wrong. '+\
+                    'Please try again')}, status=HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             # logger.info('=== User ' + user.username + ' logged in with' +\
                         # ' old token ===')
             return Response({'success': old_token_obj.key}, status=HTTP_200_OK)
     else:
-        return Response({'errors': 'Username or password is not correct'},
+        return Response({'errors': _('Username or password is not correct')},
                          status=HTTP_403_FORBIDDEN) 
 
 @csrf_exempt
@@ -112,7 +112,7 @@ def member_logout(request):
     user = request.user
     Token.objects.filter(user=user).delete()
     # logger.info('=== User ' + user.username + ' has logged out ===')
-    return Response({'success': 'You have successfully logged out'},
+    return Response({'success': _('You have successfully logged out')},
                     status=HTTP_200_OK)
 
 @csrf_exempt
@@ -475,12 +475,12 @@ def agent_login(request):
                 return \
                     Response({'success': new_token.key}, status=HTTP_200_OK)
             else:
-                return Response({'errors': 'Something went wrong'+\
-                    'Please try again'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({'errors': _('Something went wrong '+\
+                    'Please try again')}, status=HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response({'success': old_token_obj.key}, status=HTTP_200_OK)
     else:
-        return Response({'errors': 'Username or password is not correct'},
+        return Response({'errors': _('Username or password is not correct')},
                          status=HTTP_403_FORBIDDEN)
 
 @csrf_exempt
@@ -495,7 +495,7 @@ def agent_logout(request):
 
     user = request.user
     Token.objects.filter(user=user).delete()
-    return Response({'success': 'You have successfully logged out'},
+    return Response({'success': _('You have successfully logged out')},
                     status=HTTP_200_OK)
 
 
@@ -652,17 +652,18 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
 
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, IsAdminUser,)
-    queryset = User.objects.filter(is_staff=False)
+    queryset = User.objects.all()
     serializer_class = AgentMemberSerializer
     pagination_class = pagination.AgentMemberPagination
 
     def list(self, request):
-        page = self.paginate_queryset(self.queryset)
+        members = User.objects.filter(is_staff=False)
+        page = self.paginate_queryset(members)
         serializer = AgentMemberSerializer(page, many=True)
         return self.get_paginated_response(serializer.data)
 
     def retrieve(self, request, pk=None):
-        user_obj = self.queryset.filter(id=pk).first()
+        user_obj = User.objects.filter(id=pk, is_staff=False).first()
         if user_obj:
             acc_obj = user_obj.acc_user.filter().first()
             res_dict = {}
@@ -680,7 +681,7 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
             update_data = json.loads(request.body)
             paid_type_id = update_data.get('paid_type', None)
             if paid_type_id:
-                user_obj = self.queryset.filter(id=pk).first()
+                user_obj = User.objects.filter(id=pk, is_staff=False).first()
                 acc_obj = user_obj.acc_user.filter().first()
                 old_paid_type = acc_obj.paid_type
                 paid_obj = PaidType.objects.filter(id=paid_type_id).first()
@@ -718,6 +719,6 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
     @action(methods=['get'], detail=False,
            permission_classes=[IsAuthenticated, IsAdminUser])
     def list_all_member(self, requset):
-        members = self.queryset
+        members = User.objects.filter(is_staff=False)
         serializer = AgentMemberSerializer(members, many=True)
         return Response(serializer.data, status=HTTP_200_OK)
