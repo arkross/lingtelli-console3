@@ -1,0 +1,322 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-02-27 16:52+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: server/account/views.py:71
+msgid "Username and password cannot be empty"
+msgstr "旧密码不能为空"
+
+#: server/account/views.py:80
+msgid "User does not exist.Please register an account first"
+msgstr "帐号不存在，请先注册帐号"
+
+#: server/account/views.py:97
+msgid "Something went wrong. Please try again"
+msgstr "错误，请再尝试一次"
+
+#: server/account/views.py:104 server/account/views.py:483
+msgid "Username or password is not correct"
+msgstr "帐号或密码不正确"
+
+#: server/account/views.py:115 server/account/views.py:498
+msgid "You have successfully logged out"
+msgstr "已成功登出"
+
+#: server/account/views.py:146 server/account/views.py:335
+msgid "Invalid email address"
+msgstr "信箱格式不正確"
+
+#: server/account/views.py:169
+msgid ""
+"User has successfully created. Please check email for account validation"
+msgstr "已经成功建立使用者，请进行信箱验证"
+
+#: server/account/views.py:173
+msgid ""
+"User has successfully created. Email sent failed. Please resend the email to "
+"validate the account"
+msgstr "已经成功建立使用者，信箱传送失败，请再次传送验证信"
+
+#: server/account/views.py:176
+msgid "User name has existed"
+msgstr "使用者名称已存在"
+
+#: server/account/views.py:194
+msgid "Please register an account first"
+msgstr "请先注册帐号"
+
+#: server/account/views.py:197 server/account/views.py:259
+msgid "Account has been confirmed. No need to get confirmation email again"
+msgstr "帐号已验证，不需再次传送验证信"
+
+#: server/account/views.py:209
+msgid "Please wait for a while to resend the code"
+msgstr "请稍候再尝试"
+
+#: server/account/views.py:227
+msgid "Confirmation email has been sent"
+msgstr "已寄送验证信"
+
+#: server/account/views.py:229
+msgid "Failed to send email"
+msgstr "传送信件失败"
+
+#: server/account/views.py:253
+msgid "Invalid code"
+msgstr "认证失败"
+
+#: server/account/views.py:266
+msgid "User name has been changed"
+msgstr "帐号已更改"
+
+#: server/account/views.py:270
+msgid "Account has been validated"
+msgstr "帐号已验证"
+
+#: server/account/views.py:273
+msgid "Account validation failed"
+msgstr "帐号验证失败"
+
+#: server/account/views.py:324 server/account/views.py:398
+#: server/account/views.py:426 server/account/views.py:543
+#: server/account/views.py:588 server/account/views.py:626
+#: server/account/views.py:674 server/chatbot/views.py:178
+#: server/chatbot/views.py:206 server/chatbot/views.py:236
+#: server/chatbot/views.py:287 server/chatbot/views.py:300
+#: server/chatbot/views.py:319 server/chatbot/views.py:329
+#: server/chatbot/views.py:376 server/chatbot/views.py:389
+#: server/chatbot/views.py:408 server/chatbot/views.py:418
+#: server/faq/views.py:107 server/faq/views.py:179 server/faq/views.py:191
+#: server/faq/views.py:213 server/faq/views.py:223 server/faq/views.py:284
+#: server/faq/views.py:296 server/faq/views.py:319 server/faq/views.py:329
+#: server/faq/views.py:459 server/history/views.py:57
+#: server/paidtype/views.py:67 server/report/views.py:85
+#: server/taskbot/views.py:88 server/taskbot/views.py:123
+#: server/taskbot/views.py:153
+msgid "Not found"
+msgstr "资料不存在"
+
+#: server/account/views.py:339
+msgid "Username has existed.Please use other one"
+msgstr "帐号名称已存在，请输入其他名称"
+
+#: server/account/views.py:347
+msgid "Sending confirmation email failed"
+msgstr "寄送认证信失败"
+
+#: server/account/views.py:355
+msgid "Confirmation email has sent.Please check your mailbox and login again"
+msgstr "认证信已寄送，请至信箱进行认证后登入"
+
+#: server/account/views.py:363
+msgid "Old password cannot be empty"
+msgstr "旧密码不能为空"
+
+#: server/account/views.py:368 server/account/views.py:556
+msgid "Old password is not correct"
+msgstr "旧密码不正确"
+
+#: server/account/views.py:373 server/account/views.py:554
+msgid "Password has updated.Please login again"
+msgstr "密码已更新，请重新登入"
+
+#: server/account/views.py:387
+msgid "Please select one language"
+msgstr "请选择语言"
+
+#: server/account/views.py:390 server/account/views.py:580
+#: server/chatbot/views.py:192 server/chatbot/views.py:335
+#: server/chatbot/views.py:424 server/faq/views.py:227 server/faq/views.py:333
+#: server/paidtype/views.py:77 server/taskbot/views.py:110
+msgid "Update succeeded"
+msgstr "更新成功"
+
+#: server/account/views.py:393 server/account/views.py:442
+#: server/account/views.py:536 server/account/views.py:642
+#: server/account/views.py:715 server/chatbot/views.py:167
+#: server/chatbot/views.py:194 server/chatbot/views.py:249
+#: server/chatbot/views.py:337 server/chatbot/views.py:426
+#: server/faq/views.py:204 server/faq/views.py:229 server/faq/views.py:309
+#: server/faq/views.py:335 server/faq/views.py:404 server/paidtype/views.py:79
+#: server/taskbot/views.py:79 server/taskbot/views.py:112
+#: server/taskbot/views.py:166
+msgid "No content"
+msgstr "无内容"
+
+#: server/account/views.py:403 server/account/views.py:593
+#: server/chatbot/views.py:209 server/taskbot/views.py:126
+msgid "Please confirm the deletion first"
+msgstr "请先确认是否删除"
+
+#: server/account/views.py:410 server/account/views.py:600
+msgid "Deleting account failed"
+msgstr "删除帐号失败"
+
+#: server/account/views.py:432 server/account/views.py:632
+#: server/chatbot/views.py:240 server/taskbot/views.py:157
+msgid "Please enter the password"
+msgstr "请输入密码"
+
+#: server/account/views.py:438 server/account/views.py:638
+#: server/chatbot/views.py:245 server/taskbot/views.py:162
+msgid "Delete confirmed"
+msgstr "确认删除"
+
+#: server/account/views.py:440 server/account/views.py:640
+#: server/chatbot/views.py:247 server/taskbot/views.py:164
+msgid "Password is not correct"
+msgstr "密码不正确"
+
+#: server/account/views.py:461
+msgid "User does not exist. Please contact admin."
+msgstr "帐号不存在，请联系客服人员"
+
+#: server/account/views.py:465
+msgid "Only staff can login this page"
+msgstr "必须为管理员帐号"
+
+#: server/account/views.py:478
+msgid "Something went wrong Please try again"
+msgstr ""
+
+#: server/account/views.py:532
+msgid "Create new agent succeeded"
+msgstr "创建管理员帐号成功"
+
+#: server/account/views.py:534 server/faq/views.py:202 server/faq/views.py:307
+#: server/history/views.py:128
+msgid "Create failed"
+msgstr "创建失败"
+
+#: server/account/views.py:564
+msgid "User name existed"
+msgstr "使用者名称已存在"
+
+#: server/account/views.py:574
+msgid "Do not support this language"
+msgstr "不支援此语言"
+
+#: server/account/views.py:585 server/account/views.py:622
+msgid "Superuser cannot be deleted"
+msgstr "不能删除超级管理员帐号"
+
+#: server/account/views.py:688
+msgid "Invalid type"
+msgstr "方案不正确"
+
+#: server/account/views.py:711
+msgid "Update successed"
+msgstr "更新成功"
+
+#: server/account/views.py:713
+msgid "paid_type cannot be empty"
+msgstr "方案不能为空"
+
+#: server/chat_console_3/settings/common.py:165
+msgid "English"
+msgstr "英文"
+
+#: server/chat_console_3/settings/common.py:166
+msgid "Simplify Chineses"
+msgstr "简体中文"
+
+#: server/chat_console_3/settings/common.py:167
+msgid "Traditional Chineses"
+msgstr "繁体中文"
+
+#: server/chatbot/views.py:115
+msgid "Reach bot create limitation"
+msgstr "已到建立机器人数量上限"
+
+#: server/chatbot/views.py:127
+msgid "Reach faq create limitation"
+msgstr "已到问答数量上限"
+
+#: server/chatbot/views.py:158 server/taskbot/views.py:70
+msgid "Create bot failed. Cause by NLU error."
+msgstr "建立机器人失败"
+
+#: server/chatbot/views.py:165 server/taskbot/views.py:77
+msgid "Create bot failed"
+msgstr "建立机器人失败"
+
+#: server/chatbot/views.py:217 server/taskbot/views.py:134
+msgid "Deleting bot failed"
+msgstr "删除机器人失败"
+
+#: server/chatbot/views.py:291 server/chatbot/views.py:304
+#: server/chatbot/views.py:323
+msgid "Not allowed to get user line data"
+msgstr "不允许此操作"
+
+#: server/chatbot/views.py:380 server/chatbot/views.py:393
+#: server/chatbot/views.py:412
+msgid "Not allowed to get user fb data"
+msgstr "不允许此操作"
+
+#: server/faq/views.py:117
+msgid "Faq group exceeded upper limit"
+msgstr "问答组已到数量上限"
+
+#: server/faq/views.py:126
+msgid "Create faq group failed"
+msgstr "创建问答组失败"
+
+#: server/faq/views.py:363
+msgid "File type is not correct. Should be type utf8 or big5."
+msgstr "格式不正确，需为utf8或big5"
+
+#: server/faq/views.py:391
+msgid "Group over limitation"
+msgstr "问答组超过上限"
+
+#: server/faq/views.py:399
+msgid "Upload succeeded"
+msgstr "上传成功"
+
+#: server/faq/views.py:402 server/faq/views.py:445
+msgid "Bot not found"
+msgstr "机器人不存在"
+
+#: server/faq/views.py:465
+msgid "Training bot succeeded"
+msgstr "成功训练机器人"
+
+#: server/history/views.py:100
+msgid "Chatbot not found"
+msgstr "机器人不存在"
+
+#: server/history/views.py:107
+msgid "Matching result not found"
+msgstr "推荐纪录不存在"
+
+#: server/history/views.py:114
+msgid "FAQ group does not exisit"
+msgstr "问答组不存在"
+
+#: server/history/views.py:125
+msgid "Create new question successed"
+msgstr "成功建立新问题"
+
+#: server/paidtype/views.py:62
+msgid "Not allowed"
+msgstr "不允许此操作"
+
+#: server/taskbot/views.py:97
+msgid "Key missing or empty: robot_name"
+msgstr "缺少robot_name"
