@@ -4,6 +4,7 @@ import { Dimmer, Loader } from 'semantic-ui-react';
 import { logout, logoutDirectly } from 'actions/auth';
 import { logout as agentLogout } from 'actions/agent'
 import { connect } from 'react-redux';
+import { hideAllMessages} from './actions/message'
 import PropTypes from 'prop-types';
 import LoginPage from 'components/pages/LoginPage';
 import RegisterPage from 'components/pages/RegisterPage';
@@ -27,6 +28,12 @@ import 'moment/locale/zh-tw'
 class App extends React.Component {
   state = {
     loading: false
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.location !== this.props.location) {
+      this.props.hideAllMessages()
+    }
   }
 
   componentWillMount = () => {
@@ -106,4 +113,4 @@ App.propTypes = {
   }).isRequired
 }
 
-export default connect(null, { logout, logoutDirectly, agentLogout })(App)
+export default connect(null, { logout, logoutDirectly, agentLogout, hideAllMessages })(App)

@@ -14,6 +14,7 @@ class TestBotPage extends Component {
 		loading: false,
 		currentMessage: '',
 		mode: 'text', // 'text' or 'postback'
+		onComposition: false,
 		currentPostback: {}
 	}
 
@@ -102,9 +103,18 @@ class TestBotPage extends Component {
 		this.submitMessage(this.state.currentMessage, this.state.mode)
 	}
 	onKeyUp = e => {
-		if (e.keyCode === 13) {
+		if (!this.state.onComposition && e.keyCode === 13) {
 			// Submit message
 			this.sendMessage(this.state.currentMessage)
+		}
+	}
+	handleComposition = e => {
+		if (e.type === 'compositionend') {
+			setTimeout(() => {
+				this.setState({ onComposition: false })
+			}, 50)
+		} else {
+			this.setState({ onComposition: true })
 		}
 	}
 	onClickSend = e => {
@@ -172,7 +182,7 @@ class TestBotPage extends Component {
 			</div>
 			<div className='chat-input-container'>
 				<Input icon placeholder={t('demo.input')}>
-					<input type='text' ref={el => {this.messageField = el}} onChange={this.onTextboxChange} onKeyUp={this.onKeyUp} autoFocus={ ! cancelAutoFocus} value={currentMessage} />
+					<input type='text' ref={el => {this.messageField = el}} onChange={this.onTextboxChange} onKeyUp={this.onKeyUp} autoFocus={ ! cancelAutoFocus} value={currentMessage} onCompositionStart={this.handleComposition} onCompositionUpdate={this.handleComposition} onCompositionEnd={this.handleComposition} />
 					<Icon name='send' link={!!currentMessage} onClick={this.onClickSend} />
 				</Input>
 			</div>

@@ -10,7 +10,6 @@ import { compose } from 'recompose'
 import { translate, Trans } from 'react-i18next'
 import { fetchGroups, fetchGroup, deleteGroup } from 'actions/group'
 import { updateBot } from '../../actions/bot'
-import qs from 'query-string'
 import {
 	Icon,
 	Segment,
@@ -19,6 +18,7 @@ import {
 	Button,
 	Input
 } from 'semantic-ui-react'
+import LingPagination from '../utils/LingPagination'
 import toJS from 'components/utils/ToJS'
 
 const PER_PAGE = 10
@@ -26,13 +26,11 @@ const PER_PAGE = 10
 class FAQConfigPage extends React.Component {
 	constructor(props) {
 		super(props)
-		const params = qs.parse(props.location.search)
 		this.state = {
 			groups: [],
 			loading: false,
-			activePage: params.page || 1,
+			activePage: null,
 			keyword: props.answer_content,
-			pageInput: params.page || 1,
 			openDeleteModal: false,
 			deleteGroupId: null
 		}
@@ -129,24 +127,15 @@ class FAQConfigPage extends React.Component {
 		return (
 			<div>
 				<ToolComponent onKeywordSubmit={this.handleKeywordSubmit} keyword={keyword} onKeywordChange={this.handleKeywordChange} activeBot={activeBot} onCreateGroup={this.onCreateGroup} />
-				
 				<Segment vertical loading={loading}>
 					{
 						totalPages > 0 &&
-							<Fragment>
-								<Pagination
-									firstItem={{ content: <Icon name='angle double left' />, icon: true }}
-									lastItem={{ content: <Icon name='angle double right' />, icon: true }}
-									prevItem={{ content: <Icon name='angle left' />, icon: true }}
-									nextItem={{ content: <Icon name='angle right' />, icon: true }}
-									ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
-									activePage={activePage}
-									onPageChange={this.onPageChanged}
-									totalPages={totalPages}
-								/>
-								{' '}
-								<Input action={<Button content={t('chatbot.faq.gotopage')} onClick={this.onInputPageSubmitClick} />} type='number' size={3} step={1} min={1} max={totalPages} defaultValue={pageInput} value={pageInput} onChange={this.onInputPageChanged}></Input>
-							</Fragment>
+							<LingPagination
+								location={this.props.location}
+								activePage={activePage}
+								onPageChange={this.onPageChanged}
+								totalPages={totalPages}
+							/>	
 					}
 					{ displayGroups &&
 						displayGroups.map((item, ix) =>
@@ -164,20 +153,12 @@ class FAQConfigPage extends React.Component {
 					}
 					{
 						totalPages > 0 &&
-							<Fragment>
-								<Pagination
-									firstItem={{ content: <Icon name='angle double left' />, icon: true }}
-									lastItem={{ content: <Icon name='angle double right' />, icon: true }}
-									prevItem={{ content: <Icon name='angle left' />, icon: true }}
-									nextItem={{ content: <Icon name='angle right' />, icon: true }}
-									ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
-									activePage={activePage}
-									onPageChange={this.onPageChanged}
-									totalPages={totalPages}
-								/>
-								{' '}
-								<Input action={<Button content={t('chatbot.faq.gotopage')} onClick={this.onInputPageSubmitClick} />} type='number' size={3} step={1} min={1} max={totalPages} defaultValue={pageInput} value={pageInput} onChange={this.onInputPageChanged}></Input>
-							</Fragment>
+							<LingPagination
+								location={this.props.location}
+								activePage={activePage}
+								onPageChange={this.onPageChanged}
+								totalPages={totalPages}
+							/>
 					}
 				</Segment>
 				<Modal

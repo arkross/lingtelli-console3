@@ -63,8 +63,8 @@ class ToolComponent extends React.Component {
 		this.setState({ loading: { train: true } });
 
 		trainGroups(activeBot)
-			.then(() => this.setState({ loading: {}, success: t("success.faq.train") }))
-			.catch(() => this.setState({ loading: {}, errors: t("errors.faq.train") }));
+			.then(() => this.setState({ loading: {}, success: t("success.faq.train"), errors: null }))
+			.catch(() => this.setState({ loading: {}, errors: t("errors.faq.train"), success: null }));
 	}
 
 	handleKeyDown = (e) => {
