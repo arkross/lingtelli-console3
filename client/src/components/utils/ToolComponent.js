@@ -8,6 +8,7 @@ import { connect } from "react-redux"
 import { translate, Trans } from "react-i18next"
 import { fetchGroups, uploadGroups, trainGroups } from "actions/group"
 import { updateBot, fetchBot } from '../../actions/bot'
+import { hideAllMessages } from '../../actions/message'
 import { Message, Button, Icon, Input, Form, Radio, List, Dropdown, Modal } from "semantic-ui-react"
 import toJS from './ToJS'
 
@@ -53,7 +54,10 @@ class ToolComponent extends React.Component {
 				})
 				.catch( res =>
 					this.setState({ loading: {} , success: null, errors: t("errors.faq.upload") })
-				);
+				)
+				.finally( () => {
+					this.props.hideAllMessages()
+				});
 		}
 	}
 
@@ -199,6 +203,6 @@ const mapStateToProps = (state, props) => ({
 
 export default compose(
 	translate('translations'),
-	connect(mapStateToProps, { fetchGroups, uploadGroups, trainGroups, updateBot, fetchBot }),
+	connect(mapStateToProps, { fetchGroups, uploadGroups, trainGroups, updateBot, fetchBot, hideAllMessages }),
 	toJS
 )(ToolComponent)

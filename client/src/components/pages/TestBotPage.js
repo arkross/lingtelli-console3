@@ -112,7 +112,7 @@ class TestBotPage extends Component {
 		if (e.type === 'compositionend') {
 			setTimeout(() => {
 				this.setState({ onComposition: false })
-			}, 50)
+			}, 100)
 		} else {
 			this.setState({ onComposition: true })
 		}
