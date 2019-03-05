@@ -1,9 +1,10 @@
 import React from 'react'
+import { NavLink } from 'react-router-dom'
 import { compose } from 'recompose'
 import { connect } from 'react-redux'
 import { translate } from 'react-i18next'
 import _ from 'lodash'
-import { Form, Table, Button, Label, Dropdown, Input } from 'semantic-ui-react'
+import { Form, Table, Button, Label, Dropdown, Input, Icon } from 'semantic-ui-react'
 import { fetchPackages, updatePackage } from '../../../actions/user'
 import { fetchPlatforms } from '../../../actions/bot'
 import toJS from 'components/utils/ToJS'
@@ -38,8 +39,11 @@ class Plan extends React.Component {
 		const { paidtypes } = this.state
 		const ptClone = _.cloneDeep(this.state.paidtypes)
 		const index = _.findIndex(ptClone, pt => pt.id === id)
-		if (name !== 'durNumber' && name !== 'durUnit') {
+		if (name !== 'durNumber' && name !== 'durUnit' && name !== 'third_party') {
 			_.set(ptClone, [index, name], value)
+		} else if (name === 'third_party') {
+			const newTPs = this.props.platforms.filter(el => value.indexOf(el.id) >= 0)
+			_.set(ptClone, [index, name], newTPs)
 		} else {
 			const durElements = _.get(ptClone, [index, 'duration'], '0_0').split('_')
 			if (name === 'durNumber') {
@@ -57,7 +61,6 @@ class Plan extends React.Component {
 			name: pt.name,
 			bot_amount: pt.bot_amount,
 			faq_amount: pt.faq_amount,
-			user_type: pt.user_type,
 			duration: pt.duration
 		}))
 		this.setState({loading: true})
@@ -79,6 +82,7 @@ class Plan extends React.Component {
 			{key: 'y', text: 'Year(s)', value: 'y'}
 		]
 		return <div>
+			<NavLink to='/agent/plan/create' className='ui button green'><Icon name='plus' /> Create</NavLink>
 			<Button content='Save Changes' color='blue' icon='save' floated='right' onClick={this.onSaveButtonClick} loading={loading} disabled={changes.length === 0} />
 			<br /><br />
 			<Table size='small'>
@@ -105,7 +109,7 @@ class Plan extends React.Component {
 							<Table.Cell><Input fluid name='bot_amount' min='0' step='1' value={pt.bot_amount} type='number' onChange={this.onFormChange.bind(null, pt.id)}><input style={{ minWidth: '50px'}} /></Input></Table.Cell>
 							<Table.Cell><Input fluid name='faq_amount' min='0' step='1' value={pt.faq_amount} type='number' onChange={this.onFormChange.bind(null, pt.id)}><input minLength={5} style={{minWidth: '50px'}} /></Input></Table.Cell>
 							<Table.Cell>{durDropdowns}</Table.Cell>
-							<Table.Cell><Dropdown fluid multiple selection options={ddOptions} onChange={this.onFormChange.bind(null, pt.id)} value={pt.third_party.map(tp => tp.id)} /></Table.Cell>
+							<Table.Cell><Dropdown fluid multiple selection options={ddOptions} name='third_party' onChange={this.onFormChange.bind(null, pt.id)} value={pt.third_party.map(tp => tp.id)} /></Table.Cell>
 						</Table.Row>
 					})}
 				</Table.Body>

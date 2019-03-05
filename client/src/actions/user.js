@@ -56,3 +56,6 @@ export const fetchPackages = () => dispatch =>
 
 export const updatePackage = (id, data) => dispatch =>
 	api.updatePackage(id, data).then(result => result)
+
+export const createPackage = data => dispatch =>
+	api.createPackage(data).then(result => result)
