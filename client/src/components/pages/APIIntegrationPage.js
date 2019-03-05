@@ -94,7 +94,7 @@ class APIIntegration extends Component {
 	render() {
 		const { supportPlatforms, t, info, user, user: {packages} } = this.props
 		const { info: {third_party, vendor_id}} = this.state
-		const currentPlatforms = _.filter(supportPlatforms, plat => _.find(third_party, p => p === plat.id))
+		const currentPlatforms = _.filter(supportPlatforms, plat => third_party.indexOf(plat.id) >= 0)
 
 		const webActive = !!_.find(currentPlatforms, plat => plat.name == 'Api')
 		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)
@@ -107,7 +107,7 @@ class APIIntegration extends Component {
 			<Grid.Row>
 				<Grid.Column width={12}><Header>API</Header></Grid.Column>
 				<Grid.Column floated='right' width={3}>
-				{isActivable ? 
+				{webActive ? 
 					<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>
 				: <Label basic color='grey' style={{ float: 'right'}}><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label>}
 				</Grid.Column>

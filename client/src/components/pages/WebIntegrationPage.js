@@ -169,7 +169,7 @@ ${str}</script>
 	render() {
 		const { supportPlatforms, t, user, user: {packages} } = this.props
 		const { info, info: {third_party}, copied, loading, show, robotIcon, chatIcon, headerTextColor, headerBackgroundColor, chatLabel} = this.state
-		const currentPlatforms = _.filter(supportPlatforms, plat => _.find(third_party, p => p == plat.id))
+		const currentPlatforms = _.filter(supportPlatforms, plat => third_party.indexOf(plat.id) >= 0)
 
 		const webScript = this.generateScript()
  
@@ -183,7 +183,7 @@ ${str}</script>
 			<Grid.Row>
 				<Grid.Column width={12}><Header>Web</Header></Grid.Column>
 				<Grid.Column floated='right' width={3}>
-				{isActivable ? 
+				{webActive ? 
 					<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>
 				: <Label color='grey' style={{ float: 'right'}} basic><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label>}
 				</Grid.Column>
