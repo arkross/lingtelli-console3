@@ -18,6 +18,7 @@ class PaidType(models.Model):
         bot_amount: Can be used bot amount
         faq_amount: Can be used faq amount
         third_party: Can be used third parties
+        user_type: The user type for this paidtype
     '''
     name = models.CharField(max_length=100, blank=False, null=False)
     duration = models.CharField(max_length=100, blank=False, null=False)
