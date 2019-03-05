@@ -11,6 +11,7 @@ from django.http import Http404
 from rest_framework import exceptions
 from rest_framework.views import exception_handler
 from rest_framework.authtoken.models import Token
+from account.models import AccountInfo
 from faq.models import FAQGroup, Question, Answer
 from chatbot.models import Chatbot, Line, Facebook, BotThirdPartyGroup
 
@@ -313,7 +314,7 @@ def set_bot_faq_to_hidden(user):
         FAQGroup.objects.filter(chatbot=bot).update(hide_status=True)
         bot.save()
 
-def setup_all_bots_thirdparty(user, new_paid_type):
+def setup_all_bots_thirdparty_user(user, new_paid_type):
     '''Setup the new thirdparty for all existing bots
     '''
 
@@ -324,6 +325,13 @@ def setup_all_bots_thirdparty(user, new_paid_type):
         for party in allow_third_party:
             BotThirdPartyGroup.objects.create(chatbot=bot, third_party=party)
 
+def reset_all_bots_thirdparty(updated_paidtype):
+    '''Update all bots' thirdparty when paidtype thirdparty has been updated
+    '''
+
+    accs = AccountInfo.objects.filter(paid_type=updated_paidtype)
+    for acc in accs:
+        setup_all_bots_thirdparty_user(acc.user, updated_paidtype)
 
 def change_to_new_paidtype_limitation(user, new_paid_type, to_delete=False):
     '''Update the bots and faqs based on paidtype
@@ -371,7 +379,7 @@ def change_to_new_paidtype_limitation(user, new_paid_type, to_delete=False):
             if to_delete:
                 faqs.filter(hide_status=True).delete()
     # Setup thirdparty for the remaining bots
-    setup_all_bots_thirdparty(user, new_paid_type)
+    setup_all_bots_thirdparty_user(user, new_paid_type)
 
 def send_task_downgrade_email(user, acc, new_paidtype, to_send_file=False):
     '''Send email to inform user's paidtype is going to change
