@@ -131,7 +131,7 @@ class FBIntegration extends Component {
 	render() {
 		const { supportPlatforms, t, match, user, user: {packages} } = this.props
 		const { info, info: {third_party}, copied, loading, show} = this.state
-		const currentPlatforms = _.filter(supportPlatforms, plat => _.find(third_party, p => p == plat.id))
+		const currentPlatforms = _.filter(supportPlatforms, plat => third_party.indexOf(plat.id) >= 0)
 
 		const facebookWebhook = `https://${process.env.REACT_APP_WEBHOOK_HOST}/facebook/${info.vendor_id}`
 		const facebookActive = !!_.find(currentPlatforms, plat => plat.name === 'Facebook')
@@ -143,7 +143,7 @@ class FBIntegration extends Component {
 			<Grid.Row>
 			<Grid.Column><Header>Facebook</Header></Grid.Column>
 			<Grid.Column floated='right' width={3}>
-			{isActivable ? 
+			{facebookActive ? 
 				<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>
 			: <Label color='grey' basic style={{ float: 'right'}}><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label>}
 			</Grid.Column>
