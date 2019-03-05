@@ -51,6 +51,7 @@ class Chatbot(models.Model):
                      user type is staff. For assigning the task bot created by
                      the staff to client to use.
         hide_status: Hiding the bot when user paid type downgraded
+        choose_answer: The way of choosing answer to reply.
     '''
 
     robot_name = models.CharField(max_length=100, blank=False, null=False)
