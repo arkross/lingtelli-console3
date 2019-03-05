@@ -117,6 +117,7 @@ class PaidTypeViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
                     continue
                 setattr(paidtype_obj, k, paidtype_data.get(k))
             paidtype_obj.save()
+            utils.reset_all_bots_thirdparty(paidtype_obj)
             return Response({'success':_('Update succeeded')},
                             status=HTTP_200_OK)
         return Response({'errors':_('No content')},
