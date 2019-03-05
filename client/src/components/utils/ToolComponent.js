@@ -34,7 +34,8 @@ class ToolComponent extends React.Component {
 
 		groupApis.export(activeBot)
 			.then(data => FileDownload(data, "export.csv"))
-			.catch(() => this.setState({ errors: t("errors.faq.export") }));
+			.catch(() => this.setState({ errors: t("errors.faq.export") }))
+			.finally(() => this.props.hideAllMessages())
 	}
 
 	onDrop = (acceptedFiles, rejectedFiles) => {
@@ -68,7 +69,8 @@ class ToolComponent extends React.Component {
 
 		trainGroups(activeBot)
 			.then(() => this.setState({ loading: {}, success: t("success.faq.train"), errors: null }))
-			.catch(() => this.setState({ loading: {}, errors: t("errors.faq.train"), success: null }));
+			.catch(() => this.setState({ loading: {}, errors: t("errors.faq.train"), success: null }))
+			.finally(() => this.props.hideAllMessages());
 	}
 
 	handleKeyDown = (e) => {
