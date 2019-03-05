@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import { connect } from 'react-redux'
-import { Input, Container, Header, List, Icon} from 'semantic-ui-react'
+import { Input, Container, Header, List, Icon, Form} from 'semantic-ui-react'
 import { compose } from 'recompose';
 import { translate } from 'react-i18next'
 import api from 'apis/demo'
@@ -14,7 +14,6 @@ class TestBotPage extends Component {
 		loading: false,
 		currentMessage: '',
 		mode: 'text', // 'text' or 'postback'
-		onComposition: false,
 		currentPostback: {}
 	}
 
@@ -102,21 +101,12 @@ class TestBotPage extends Component {
 		})
 		this.submitMessage(this.state.currentMessage, this.state.mode)
 	}
-	onKeyUp = e => {
-		if (!this.state.onComposition && e.keyCode === 13) {
-			// Submit message
-			this.sendMessage(this.state.currentMessage)
-		}
+	onFormSubmit = e => {
+		e.preventDefault()
+		this.sendMessage(this.state.currentMessage)
+		return false
 	}
-	handleComposition = e => {
-		if (e.type === 'compositionend') {
-			setTimeout(() => {
-				this.setState({ onComposition: false })
-			}, 50)
-		} else {
-			this.setState({ onComposition: true })
-		}
-	}
+	
 	onClickSend = e => {
 		if ( ! this.validate(this.state.currentMessage) ) {
 			this.messageField.focus()
@@ -180,12 +170,13 @@ class TestBotPage extends Component {
 					})
 				}
 			</div>
-			<div className='chat-input-container'>
+			<form onSubmit={this.onFormSubmit} className='chat-input-container'>
 				<Input icon placeholder={t('demo.input')}>
-					<input type='text' ref={el => {this.messageField = el}} onChange={this.onTextboxChange} onKeyUp={this.onKeyUp} autoFocus={ ! cancelAutoFocus} value={currentMessage} onCompositionStart={this.handleComposition} onCompositionUpdate={this.handleComposition} onCompositionEnd={this.handleComposition} />
+					<input type='text' ref={el => {this.messageField = el}} onChange={this.onTextboxChange} autoFocus={ ! cancelAutoFocus} value={currentMessage} />
 					<Icon name='send' link={!!currentMessage} onClick={this.onClickSend} />
 				</Input>
-			</div>
+				<button type="submit" style={{'display': 'none'}}/>
+			</form>
 		</Container>
 	}
 }

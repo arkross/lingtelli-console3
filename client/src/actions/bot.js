@@ -173,8 +173,8 @@ export const deleteBot = botId => dispatch =>
 
 export const facebookRead = botId => dispatch =>
 	api.facebook.read(botId)
-		.then(data => dispatch(fetchFacebook(botId, data[0])))
+		.then(data => dispatch(fetchFacebook(botId, data)))
 
 export const lineRead = botId => dispatch =>
 	api.line.read(botId)
-		.then(data => dispatch(fetchLine(botId, data[0])))
+		.then(data => dispatch(fetchLine(botId, data)))

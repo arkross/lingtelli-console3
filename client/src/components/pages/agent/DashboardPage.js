@@ -18,6 +18,7 @@ import ProfilePage from './ProfilePage'
 import MemberPage from './MemberPage'
 import LoginPage from './LoginPage'
 import PlanPage from './PlanPage'
+import CreatePlanPage from './CreatePlanPage'
 import TaskbotsPage from './TaskbotsPage'
 import CreateTaskbotPage from './CreateTaskbotPage'
 import TaskbotDetailPage from './TaskbotDetailPage'
@@ -157,7 +158,8 @@ class Dashboard extends React.Component {
 				<Route location={location} path={`${match.path}/profile`} component={ProfilePage} />
 				<Route location={location} path={`${match.path}/member`} exact component={MemberPage} />
 				<Route location={location} path={`${match.path}/login`} component={LoginPage} />
-				<Route location={location} path={`${match.path}/plan`} component={PlanPage} />
+				<Route location={location} path={`${match.path}/plan`} exact component={PlanPage} />
+				<Route location={location} path={`${match.path}/plan/create`} component={CreatePlanPage} />
 				<Route location={location} path={`${match.path}/member/:id`} exact component={TaskbotsPage} />
 				<Route location={location} path={`${match.path}/taskbots`} exact component={TaskbotsPage} />
 				<Route location={location} path={`${match.path}/taskbots/create`} exact component={CreateTaskbotPage} />
