@@ -65,9 +65,11 @@ class Question extends React.Component {
 	}
 
 	onDelete = (e, ix) => {
+		e.preventDefault()
 		this.setState({loading: true})
 		this.props.onDelete(e, ix)
 			.catch(err => this.setState({loading: false}))
+		return false
 	}
 
 
