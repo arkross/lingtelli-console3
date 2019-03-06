@@ -150,6 +150,7 @@ class ContentPage extends React.Component {
 		const { loading, scale, openDemoModal } = this.state;
 
 		const isHidden = user.paid_type === 'Staff' && !!info.assign_user
+		const isTask = info.bot_type === 'TASK'
 
 		const subMenus = [
 			{ text: t('chatbot.setting.text') , id: 'setting'},
@@ -160,7 +161,7 @@ class ContentPage extends React.Component {
 			{ text: t('chatbot.analysis.text'), id: 'analysis' },
 			{ text: t('chatbot.history.text'), id: 'history'},
 			{ text: t('chatbot.recommendations.text'), id: 'recommendations'},
-			{ text: t('chatbot.faq.text'), id: 'faq' },
+			{ text: t('chatbot.faq.text'), id: 'faq', hide: isTask },
 			{ text: t('chatbot.test.text'), id: 'test'}
 		]
 		.filter(el => !el.hide)

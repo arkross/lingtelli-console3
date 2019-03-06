@@ -18,7 +18,8 @@
     "create": "新增",
     "facebook": "Facebook",
     "line": "LINE",
-    "web": "網站"
+    "web": "網站",
+    "task": "任務"
   },
   "chatbot": {
     "name": "機器人名稱",

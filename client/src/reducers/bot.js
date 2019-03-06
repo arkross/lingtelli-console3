@@ -14,7 +14,7 @@ const initState = fromJS({
 
 export default function bot(state = initState, action = {}) {
 	switch (action.type) {
-	case types.FETCH_ALL_BOTS: {
+	case types.FETCH_ALL_BOTS:
 		return state.withMutations(s => {
 			const existingPK = s.get('bots').map(el => el.get('id'))
 			const toDelete = existingPK.filterNot(el => _.find(action.bots, bot => bot.id === el))
@@ -28,8 +28,7 @@ export default function bot(state = initState, action = {}) {
 			})
 			return s
 		})
-	}
-	case types.FETCH_BOT_INFO: {
+	case types.FETCH_BOT_INFO:
 		return state.withMutations(s => {
 			s.set('info', fromJS(action.info))
 			_.forEach(action.info, (o, k) => {
@@ -37,12 +36,11 @@ export default function bot(state = initState, action = {}) {
 			})
 			return s
 		})
-	}
 	case types.FETCH_BOT_HISTORY:
 		return state.setIn(['bots', action.id + '', 'history'], fromJS(action.history))
 	case types.FETCH_BOT_MATCHING:
 		return state.setIn(['bots', action.id + '', 'recomlog'], fromJS(action.data))
-	case types.FETCH_BOT_REPORT: {
+	case types.FETCH_BOT_REPORT:
 		const newData = _.chain(action.report)
 			.filter(el => el.date)
 			.sortBy(el => moment(el.date, 'YYYY/MM/DD').valueOf())
@@ -64,17 +62,13 @@ export default function bot(state = initState, action = {}) {
 		return state.withMutations(s => s
 			.setIn(['bots', action.id + '', 'report'], fromJS(newData))
 			.setIn(['bots', action.id + '', 'reportStat'], fromJS(totalStat)))
-	}
-	case types.FETCH_GROUPS: {
+	case types.FETCH_GROUPS:
 		return state.setIn(['bots', action.id + '', 'group'], fromJS(action.data))
-	}
-	case types.FETCH_GROUP_LENGTH: {
+	case types.FETCH_GROUP_LENGTH:
 		return state.setIn(['bots', action.id + '', 'group', 'count'], action.length)
-	}
-	case types.FETCH_GROUP: {
+	case types.FETCH_GROUP:
 		const idx = state.getIn(['bots', action.id + '', 'group', 'results']).findIndex(el => el.get('group') == action.groupId)
 		return state.setIn(['bots', action.id + '', 'group', 'results', idx], fromJS(action.data))
-	}
 	case types.FETCH_SUPPORT_PLATFORMS:
 		return state.set('supportPlatforms', fromJS(action.platforms))
 	case types.CREATE_BOT:

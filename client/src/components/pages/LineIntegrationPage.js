@@ -122,7 +122,7 @@ class LineIntegration extends Component {
 	render() {
 		const { supportPlatforms, t, match, user, user: {packages} } = this.props
 		const { info, info: {third_party}, loading, show} = this.state
-		const currentPlatforms = _.filter(supportPlatforms, plat => _.find(third_party, p => p == plat.id))
+		const currentPlatforms = _.filter(supportPlatforms, plat => third_party.indexOf(plat.id) >= 0)
 		
 		const lineWebhook = `${process.env.REACT_APP_WEBHOOK_HOST}/line/${info.vendor_id}`
 		const lineActive = !!_.find(currentPlatforms, plat => plat.name == 'Line')
@@ -133,7 +133,7 @@ class LineIntegration extends Component {
 		return <Grid className='integration-page'><Grid.Row>
 			<Grid.Column width={12}><Header>LINE</Header></Grid.Column>
 			<Grid.Column floated='right' width={3}>
-				{!isActivable ?
+				{!lineActive ?
 				<Label basic color='grey' style={{ float: 'right' }}><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label> :
 				<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>}
 			</Grid.Column>
