@@ -68,7 +68,9 @@ class TilePage extends Component {
 
 				<Card.Content>
 					<Card.Header>
+						{el.bot_type === 'TASK' ? <Label content={t('menu.task')} ribbon /> : ''}
 						{el.robot_name}
+						
 					</Card.Header>
 					<Card.Meta>
 						<Icon name='globe' />

@@ -8,7 +8,7 @@ import { connect } from "react-redux"
 import { translate, Trans } from "react-i18next"
 import { fetchGroups, uploadGroups, trainGroups } from "actions/group"
 import { updateBot, fetchBot } from '../../actions/bot'
-import { hideAllMessages } from '../../actions/message'
+import { hideAllMessages, showSuccess } from '../../actions/message'
 import { Message, Button, Icon, Input, Form, Radio, List, Dropdown, Modal } from "semantic-ui-react"
 import toJS from './ToJS'
 
@@ -35,7 +35,6 @@ class ToolComponent extends React.Component {
 		groupApis.export(activeBot)
 			.then(data => FileDownload(data, "export.csv"))
 			.catch(() => this.setState({ errors: t("errors.faq.export") }))
-			.finally(() => this.props.hideAllMessages())
 	}
 
 	onDrop = (acceptedFiles, rejectedFiles) => {
@@ -49,16 +48,14 @@ class ToolComponent extends React.Component {
 			this.setState({ loading: { upload: true } });
 
 			uploadGroups(activeBot, files)
-				.then(() => {
+				.then(data => {
+					this.props.showSuccess(data.success)	
 					this._fetchGroups(activePage, keyword);
 					this.setState({ success: t("success.faq.upload"), errors: null });
 				})
 				.catch( res =>
 					this.setState({ loading: {} , success: null, errors: t("errors.faq.upload") })
 				)
-				.finally( () => {
-					this.props.hideAllMessages()
-				});
 		}
 	}
 
@@ -68,9 +65,11 @@ class ToolComponent extends React.Component {
 		this.setState({ loading: { train: true } });
 
 		trainGroups(activeBot)
-			.then(() => this.setState({ loading: {}, success: t("success.faq.train"), errors: null }))
+			.then(data => {
+				this.props.showSuccess(data.success)
+				this.setState({ loading: {}, success: t("success.faq.train"), errors: null })
+			})
 			.catch(() => this.setState({ loading: {}, errors: t("errors.faq.train"), success: null }))
-			.finally(() => this.props.hideAllMessages());
 	}
 
 	handleKeyDown = (e) => {
@@ -205,6 +204,6 @@ const mapStateToProps = (state, props) => ({
 
 export default compose(
 	translate('translations'),
-	connect(mapStateToProps, { fetchGroups, uploadGroups, trainGroups, updateBot, fetchBot, hideAllMessages }),
+	connect(mapStateToProps, { fetchGroups, uploadGroups, trainGroups, updateBot, fetchBot, hideAllMessages, showSuccess }),
 	toJS
 )(ToolComponent)

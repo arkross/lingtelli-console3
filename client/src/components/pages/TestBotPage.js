@@ -152,8 +152,11 @@ class TestBotPage extends Component {
 		return true
 	}
 	render() {
-		const { info, t, cancelAutoFocus } = this.props
+		const { info, t, cancelAutoFocus, info: {third_party}, supportPlatforms } = this.props
 		const { messages, currentMessage } = this.state
+		const currentPlatforms = _.filter(supportPlatforms, plat => third_party.indexOf(plat.id) >= 0)
+		const demoActive = !!_.find(currentPlatforms, plat => plat.name == 'Demo')
+
 		moment.locale(localStorage.i18nextLng.toLowerCase())
 		let keyCounter = 0
 		return <Container text className='chat-container'>
@@ -182,7 +185,9 @@ class TestBotPage extends Component {
 }
 
 const mapStateToProps = (state, props) => ({
-	info: props.info ? props.info : (state.getIn(['bot', 'bots', props.match.params.id]) || {})
+	info: props.info ? props.info : (state.getIn(['bot', 'bots', props.match.params.id]) || {}),
+	supportPlatforms: state.getIn(['bot', 'supportPlatforms']) || [],
+	user: state.get('user')
 })
 
 export default compose(
