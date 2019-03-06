@@ -29,7 +29,8 @@
     "create": "创建",
     "facebook": "Facebook",
     "line": "LINE",
-    "web": "网站"
+    "web": "网站",
+    "task": "任务"
   },
   "chatbot": {
     "name": "机器人称呼",

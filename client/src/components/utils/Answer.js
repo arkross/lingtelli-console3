@@ -48,8 +48,14 @@ class Answer extends React.Component {
       this.update();
   }
 
+  onSubmit = e => {
+    e.preventDefault()
+    this.update()
+    return false
+  }
+
   onBlur = (e) => {
-    this.update();
+    this.onSubmit(e)
   }
 
   onChange = (e) => {
@@ -65,7 +71,9 @@ class Answer extends React.Component {
     const { t, ix } = this.props;
 
     return (
-      <div
+      <form
+        ref={el => (this.formEl = el)}
+        onSubmit={this.onSubmit}
         onClick={ e => this.onClick(10, e)}
         className="answer"
       >
@@ -75,13 +83,13 @@ class Answer extends React.Component {
           ref={ input => this.input = input }
           value={content}
           onBlur={this.onBlur}
-          onKeyDown={this.onKeyPress}
           onChange={this.onChange}
         >
           <input disabled={!editable} />
+          <button type='submit' style={{display: 'none'}} />
 					<Button icon='trash alternate outline' loading={loading} color='red' className='question-delete' onClick={ e => this.onDelete(e, ix) } />
         </Input>
-      </div>
+      </form>
     )
   }
 }

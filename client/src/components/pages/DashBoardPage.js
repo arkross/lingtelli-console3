@@ -131,6 +131,7 @@ class DashBoardPage extends React.Component {
 					{messages.showing && <Message 
 						error={messages.showing === 'error'}
 						info={messages.showing === 'info'}
+						success={messages.showing === 'success'}
 						size='small'
 						className='global-message'
 						floating

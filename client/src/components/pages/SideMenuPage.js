@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
 import { NavLink, Link } from 'react-router-dom'
 import { fetchAllBotDetails, fetchPlatforms } from 'actions/bot';
-import { Icon, Menu, Image } from 'semantic-ui-react';
+import { Icon, Menu, Image, Label } from 'semantic-ui-react';
 import logo from 'styles/img/logo.png'
 
 import toJS from 'components/utils/ToJS';
@@ -55,15 +55,15 @@ class SideMenuPage extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { bots, match } = nextProps;
+		const { bots, match, t } = nextProps;
 		if (bots) {
 			this.items = _.map(bots, (item) => (
 				<div onClick={this.onBotItemClick} key={`bot${item.id}`} className=''>
-				<NavLink to={`${match.url}/bot/${item.id}`} className='item' key={`bot${item.id}`}>
-					{item.robot_name}
-				</NavLink>
+					<NavLink to={`${match.url}/bot/${item.id}`} className='item' key={`bot${item.id}`}>
+						{item.robot_name} {item.bot_type === 'TASK' ? <Label content={t('menu.task')} /> : ''}
+					</NavLink>
 				</div>
-			));
+			))
 		}
 	}
 

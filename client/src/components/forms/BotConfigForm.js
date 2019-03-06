@@ -242,13 +242,15 @@ class BotConfigForm extends React.Component {
 								<Icon name='save' />
 								{t('chatbot.update')}
 							</Button>
+							{info.bot_type === 'TASK' ? '' :
 							<Button size='small' onClick={this.onOpenDeleteModal} negative floated='right'>
 								<Icon name='trash alternate outline' />
 								{t('chatbot.delete.button')}
-							</Button>
+							</Button>}
 						</Grid.Column>
 					</Grid.Row>
 				</Grid>
+				{ info.bot_type === 'TASK' ? '' :
 				<DeletionModal
 					title={t('chatbot.delete.title')}
 					open={openDeleteModal}
@@ -257,7 +259,7 @@ class BotConfigForm extends React.Component {
 					message={<Trans i18nKey='chatbot.delete.warning'><strong>{info.robot_name}</strong></Trans>}
 					buttonText={t('chatbot.delete.title')}
 					botId={info.id}
-				/>
+				/>}
 			</Form>
 		)
 	}

@@ -13,7 +13,8 @@
     "facebook": "Facebook",
     "line": "LINE",
     "web": "Web",
-    "api": "API"
+    "api": "API",
+    "task": "TASK"
   },
   "demo": {
     "button": "Test Bot",

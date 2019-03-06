@@ -13,6 +13,12 @@ export const setGlobalError = message => ({
 	message
 })
 
+export const setGlobalSuccess = message => ({
+	type: types.SET_GLOBAL_MESSAGE,
+	message_type: 'success',
+	message
+})
+
 export const hideMessage = () => ({
 	type: types.SET_GLOBAL_MESSAGE,
 	message_type: null
@@ -25,6 +31,8 @@ export const showBotError = () => dispatch =>
 	dispatch(setGlobalError(i18n.t('errors.global.bot_not_found')))
 
 export const showInfo = message => dispatch => dispatch(setGlobalInfo(message))
+
+export const showSuccess = message => dispatch => dispatch(setGlobalSuccess(message))
 
 export const showError = message => dispatch => dispatch(setGlobalError(message))
 
@@ -40,3 +48,6 @@ export const showBotErrorRaw = dispatch =>
 
 export const showErrorRaw = (message, dispatch) =>
 	dispatch(setGlobalError(message))
+
+export const showSuccessRaw = (message, dispatch) =>
+	dispatch(setGlobalSuccess(message))

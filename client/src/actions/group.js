@@ -1,5 +1,6 @@
 import * as types from '../types'
 import api from '../apis/group'
+import { showSuccessRaw } from './message'
 
 export const upload = () => ({
 	type: types.UPLOAD_GROUPS,
@@ -35,7 +36,10 @@ export const training = () => ({
 })
 
 export const uploadGroups = (activeBot, file) => dispatch =>
-	api.upload(activeBot, file).then(() => dispatch(upload()))
+	api.upload(activeBot, file).then(data => {
+		showSuccessRaw(data.success, dispatch)
+		return dispatch(upload())
+	})
 
 export const fetchGroups = (activeBot, page, answer_content='') => dispatch =>
 	api.fetch(activeBot, page, answer_content).then(data => dispatch(fetch(data, activeBot, page, answer_content)))
@@ -44,10 +48,13 @@ export const fetchGroupLength = (activeBot, page, answer_content='') => dispatch
 	api.fetch(activeBot, page, answer_content).then(data => dispatch(fetchLength(data.count, activeBot)))
 
 export const deleteGroup = (activeBot, id) => dispatch =>
-	api.delete(activeBot, id).then(() => dispatch(deleted()))
+	api.delete(activeBot, id).then(data => dispatch(deleted()))
 
 export const trainGroups = activeBot => dispatch =>
-	api.train(activeBot).then(() => dispatch(training()))
+	api.train(activeBot).then(data => {
+		showSuccessRaw(data.success, dispatch)
+		return dispatch(training())
+	})
 
 export const fetchGroup = (activeBot, groupId) => dispatch =>
 	api.fetchGroup(activeBot, groupId).then(data => dispatch(fetchFaqGroup(data, activeBot, groupId)))
