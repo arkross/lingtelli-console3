@@ -1,13 +1,15 @@
 from django.contrib import admin
 
 from django.contrib.auth.models import User
+from chatbot.models import Chatbot
 from .models import History, QuestionMatchHistory
 
 class HistoryAdmin(admin.ModelAdmin):
-    list_display = ('chatbot', 'sender', 'content', 'username')
+    list_display = ('chatbot', 'sender', 'content', 'the_username')
 
-    def username(self, obj):
-        return User.objects.filter(id=obj.user_id).first().username
+    def the_username(self, obj):
+        bot = Chatbot.objects.filter(id=obj.chatbot_id).first()
+        return User.objects.filter(id=bot.user_id).first().username
 
 admin.site.register(History, HistoryAdmin)
 admin.site.register(QuestionMatchHistory)

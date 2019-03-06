@@ -5,6 +5,7 @@ class HistorySerializer(serializers.Serializer):
     sender = serializers.CharField(max_length=10, read_only=True)
     created_at = serializers.DateTimeField(read_only=True)
     content = serializers.CharField(read_only=True)
+    qa_pair = serializers.CharField(read_only=True)
 
     def to_representation(self, obj):
         obj.created_at = obj.created_at.strftime('%Y/%m/%d %H:%M:%S')
