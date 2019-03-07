@@ -97,13 +97,19 @@ def send_confirmation_email(user, update_user):
 
     acc_info = user.acc_user.first()
     subject = 'Lingtelli Account Confirmation Email'
+    the_email = 'email.html'
+    if acc_info.language == 'tw':
+        subject = '語智網帳號驗證'
+        the_email = 'email_tw.html'
+    elif acc_info.language == 'cn':
+        subject = '语智网帐号验证'
+        the_email = 'email_cn.html'
     member_name = user.first_name if user.first_name else user.username
     confirm_email = CONFIRM_DOMAIN + \
         urllib.parse.quote_plus(str(acc_info.confirmation_code))+ '/'
     from_mail = EMAIL_HOST_USER
-    html_email = render_to_string('email.html', 
-                                  {'name': member_name, 
-                                   'confirm_email': confirm_email})
+    html_email = render_to_string(the_email, {'name': member_name,
+                                              'confirm_email': confirm_email})
     txt_email = strip_tags(html_email)
     if update_user:
         to_mail = user.email
@@ -315,7 +321,7 @@ def set_bot_faq_to_hidden(user):
         bot.save()
 
 def setup_all_bots_thirdparty_user(user, new_paid_type):
-    '''Setup the new thirdparty for all existing bots
+    '''Setup the new thirdparty for all existing bots under one user
     '''
 
     bots = Chatbot.objects.filter(user=user)
@@ -326,7 +332,7 @@ def setup_all_bots_thirdparty_user(user, new_paid_type):
             BotThirdPartyGroup.objects.create(chatbot=bot, third_party=party)
 
 def reset_all_bots_thirdparty(updated_paidtype):
-    '''Update all bots' thirdparty when paidtype thirdparty has been updated
+    '''Update all bots' thirdparty under user has the updated paidtype
     '''
 
     accs = AccountInfo.objects.filter(paid_type=updated_paidtype)
@@ -390,37 +396,56 @@ def send_task_downgrade_email(user, acc, new_paidtype, to_send_file=False):
     if acc.expire_date:
         to_mail = user.username
         from_mail = EMAIL_HOST_USER
-        subject = 'Account Type Changed Inform Email'
-        member_name = user.first_name if user.first_name else user.username
-        delta_days = (acc.expire_date.date() - date.today()).days
-        html_email = render_to_string('change_type_inform.html',
-                                        {'name': member_name,
-                                        'acc_type': acc.paid_type.name,
-                                        'new_acc_type': new_paidtype.name,
-                                        'bot_amount': new_paidtype.bot_amount,
-                                        'faq_total': new_paidtype.faq_amount,
-                                        'remain_days': delta_days,
-                                        'expire_date': acc.expire_date.date()})
-        txt_email = strip_tags(html_email)
         if not to_send_file:
+            subject = 'Account Type Changed Inform Email'
+            the_email = 'change_type_inform.html'
+            if acc.language == 'tw':
+                subject = '方案即將過期通知'
+                the_email = 'change_type_inform_tw.html'
+            elif acc.language == 'cn':
+                subject = '方案即将过期通知'
+                the_email = 'change_type_inform_cn.html'
+            member_name = user.first_name if user.first_name else user.username
+            delta_days = (acc.expire_date.date() - date.today()).days
+            html_email = \
+                render_to_string(the_email,
+                                 {'name': member_name,
+                                  'acc_type': acc.paid_type.name,
+                                  'new_acc_type': new_paidtype.name,
+                                  'bot_amount': new_paidtype.bot_amount,
+                                  'faq_total': new_paidtype.faq_amount,
+                                  'remain_days': delta_days,
+                                  'expire_date': acc.expire_date.date()})
+            txt_email = strip_tags(html_email)
             try:
                 send_mail(subject, txt_email, from_mail, [to_mail],
                         fail_silently=False, html_message=html_email)
             except Exception as e:
                 print('Sending inform email failed: ' + str(e))
         else:
+            today_date = str(date.today())
+            subject = 'Account Expired Inform Email'
+            the_email = 'expired_inform.html'
+            zip_name = 'FAQ Files Backup-' + today_date + '.zip'
+            if acc.language == 'tw':
+                subject = '方案過期通知'
+                the_email = 'expired_inform_tw.html'
+                zip_name = '問題集備份-' + today_date + '.zip'
+            elif acc.language == 'cn':
+                subject = '方案过期通知'
+                the_email = 'expired_inform_cn.html'
+                zip_name = '问题集备份-' + today_date + '.zip'
             expire_email = \
-                    render_to_string('expired_inform.html',
+                    render_to_string(the_email,
                                      {'name': member_name,
                                      'acc_type': acc.paid_type.name,
                                      'bot_amount': new_paidtype.bot_amount,
                                      'faq_total': new_paidtype.faq_amount})
             txt_email = strip_tags(expire_email)
-            msg = EmailMultiAlternatives(subject, txt_email, from_mail, [to_mail])
+            msg = EmailMultiAlternatives(subject, txt_email, from_mail,
+                                         [to_mail])
             msg.attach_alternative(expire_email, 'text/html')
             compress_file = get_all_bots_faqs(user)
-            today_date = str(date.today())
-            zip_name = '問題集備份-' + today_date + '.zip'
             msg.attach(zip_name, compress_file.getvalue(), 'application/zip')
             try:
                 msg.send()

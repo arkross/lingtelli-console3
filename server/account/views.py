@@ -133,7 +133,7 @@ def member_register(request):
     }
     '''
 
-    required_key = ['username', 'password', 'first_name']
+    required_key = ['username', 'password', 'first_name', 'language']
     register_data = json.loads(request.body)
     err_msg, valid = utils.key_validator(required_key, register_data)
     if valid != True:
@@ -159,6 +159,7 @@ def member_register(request):
         trail_obj = PaidType.objects.get(name='Trial')
         acc_create_obj['user'] = user
         acc_create_obj['paid_type'] = trail_obj
+        acc_create_obj['language'] = register_data.get('language')
         acc_create_obj['confirmation_code'] = \
             utils.generate_confirmation_code(user)
         acc_create_obj['code_reset_time'] = \
