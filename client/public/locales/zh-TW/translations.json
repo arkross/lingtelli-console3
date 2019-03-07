@@ -165,7 +165,8 @@
       "bot": "機器人",
       "content": "對話內容",
       "datetime": "對話時間",
-      "empty": "無資料"
+      "empty": "無資料",
+      "toggle": "切換模式"
     },
     "faq": {
       "text": "問答設定",

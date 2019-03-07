@@ -128,8 +128,8 @@ class ToolComponent extends React.Component {
 
 		return (<Fragment>
 			<div>
-				{errors && <Message error={!!errors} header={errors} />}
-				{success && <Message success={!!success} header={success} />}
+				{/* errors && <Message error={!!errors} header={errors} /> */}
+				{/* success && <Message success={!!success} header={success} /> */}
 				<Button disabled={faqCount >= faqLimit && faqLimit > 0} onClick={onCreateGroup} color='green'>
 					<Icon name="pencil" />
 					<span>{t("chatbot.faq.add")}&nbsp;

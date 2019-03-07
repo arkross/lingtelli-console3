@@ -52,9 +52,7 @@ class Group extends React.Component {
 		const id = questions[ix].id;
 
 		return deleteQuestion(activeBot, id)
-			.then(() => this.refresh(), (err) => {
-				console.log('Failed to delete question', err)
-			})
+			.then(() => this.refresh(), err => console.log('Failed to delete question', err))
 	}
 
 	onDeleteAnswer = (e, ix) => {

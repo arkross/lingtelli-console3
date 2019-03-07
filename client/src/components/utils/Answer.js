@@ -21,6 +21,14 @@ class Answer extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    this.cleanLoading = () => {}
+  }
+
+  cleanLoading = () => {
+    this.setState({ loading: false })
+  }
+
   update = () => {
     const { id, content } = this.state;
     const { updateAnswer, activeBot } = this.props;
@@ -36,13 +44,14 @@ class Answer extends React.Component {
   onDelete = (e, ix) => {
     e.preventDefault()
 		this.setState({loading: true})
-		this.props.onDelete(e, ix)
+    this.props.onDelete(e, ix)
       .catch(err => this.setState({loading: false}))
+      .finally(() => this.cleanLoading())
     return false
 	}
 
   onClick = (id, e) => {
-    this.setState({editable: true});
+    this.setState({editable: true})
   }
 
   onKeyPress = (e) => {

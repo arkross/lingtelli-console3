@@ -8,7 +8,8 @@ import {
 	Table,
 	Container,
 	Dimmer,
-	Loader
+	Loader,
+	Button
 } from 'semantic-ui-react';
 import toJS from 'components/utils/ToJS'
 import qs from 'query-string'
@@ -20,7 +21,8 @@ class HistoryPage extends React.Component {
 		super(props)
 		const params = props.location ? qs.parse(props.location.search) : {page: 1}
 		this.state = {
-			activePage: params.page || 1
+			activePage: params.page || 1,
+			columnReversed: false
 		}
 	}
 
@@ -34,7 +36,8 @@ class HistoryPage extends React.Component {
 	}
 
 	createHistoryElements = () => {
-		const { histories } = this.props;
+		const { histories } = this.props
+		const { columnReversed } = this.state
 		return histories.results ?
 		_.chain(histories.results)
 			.groupBy('qa_pair')
@@ -56,10 +59,10 @@ class HistoryPage extends React.Component {
 			.map((history, index) => 
 				<Table.Row active={history.sender==='USER'} key={index}>
 					<Table.Cell>
-						{history.user}
+						{columnReversed ? history.bot : history.user}
 					</Table.Cell>
 					<Table.Cell>
-						{history.bot}
+						{columnReversed ? history.user : history.bot}
 					</Table.Cell>
 					<Table.Cell>
 						{history.created_at}
@@ -70,10 +73,14 @@ class HistoryPage extends React.Component {
 		: []
 	}
 
+	onSwitchClick = e => {
+		e.preventDefault()
+		this.setState({ columnReversed: !this.state.columnReversed })
+	}
 
 	render = () => {
-		const { activePage } = this.state;
-		const { histories, t, loading, location } = this.props;
+		const { activePage, columnReversed } = this.state
+		const { histories, t, loading, location } = this.props
 
 		const centerStyle = {
 			width: '35%',
@@ -88,33 +95,34 @@ class HistoryPage extends React.Component {
 				<Dimmer inverted active={loading} />
 				{(!histories.results || !histories.count) && <Header as='h4'>{t('chatbot.history.empty')}</Header>} 
 				{(!!histories.results && !!histories.count) &&
-						<div>
-							<Table celled>
-								<Table.Header>
-									<Table.Row>
-										<Table.HeaderCell style={{width: '40%'}}>{t('chatbot.history.user')}</Table.HeaderCell>
-										<Table.HeaderCell style={{width: '40%'}}>{t('chatbot.history.bot')}</Table.HeaderCell>
-										<Table.HeaderCell style={{width: '20%'}}>{t('chatbot.history.datetime')}</Table.HeaderCell>
-									</Table.Row>
-								</Table.Header>
-								<Table.Body>
-									{this.createHistoryElements()}
-								</Table.Body>
-							</Table>
-							{
-								totalPage > 0 &&
-									<div className='pagination-container' style={centerStyle}>
-										<LingPagination
-											history={this.props.history}
-											location={location}
-											activePage={activePage}
-											onPageChange={this.onPageChanged}
-											totalPages={totalPage}
-										/>
-									</div>
-							}
-						</div>
-				}
+				<div>
+					<Button icon='exchange' primary floated='right' content={t('chatbot.history.toggle')} onClick={this.onSwitchClick} />
+					<br /><br />
+					<Table celled>
+						<Table.Header>
+							<Table.Row>
+								<Table.HeaderCell style={{width: '40%'}}>{columnReversed ? t('chatbot.history.bot') : t('chatbot.history.user')}</Table.HeaderCell>
+								<Table.HeaderCell style={{width: '40%'}}>{columnReversed ? t('chatbot.history.user') : t('chatbot.history.bot')}</Table.HeaderCell>
+								<Table.HeaderCell style={{width: '20%'}}>{t('chatbot.history.datetime')}</Table.HeaderCell>
+							</Table.Row>
+						</Table.Header>
+						<Table.Body>
+							{this.createHistoryElements()}
+						</Table.Body>
+					</Table>
+					{
+						totalPage > 0 &&
+							<div className='pagination-container' style={centerStyle}>
+								<LingPagination
+									history={this.props.history}
+									location={location}
+									activePage={activePage}
+									onPageChange={this.onPageChanged}
+									totalPages={totalPage}
+								/>
+							</div>
+					}
+				</div>}
 			</Container>
 		);
 	};

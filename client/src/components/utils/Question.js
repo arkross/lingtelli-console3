@@ -64,11 +64,20 @@ class Question extends React.Component {
 		if (this.state.editable) this.input.focus();
 	}
 
+	componentWillUnmount = () => {
+		this.cleanLoading = () => {}
+	}
+
+	cleanLoading = () => {
+		this.setState({ loading: false })
+	}
+
 	onDelete = (e, ix) => {
 		e.preventDefault()
 		this.setState({loading: true})
 		this.props.onDelete(e, ix)
 			.catch(err => this.setState({loading: false}))
+			.finally(() => this.cleanLoading())
 		return false
 	}
 
