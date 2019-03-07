@@ -13,16 +13,42 @@ class LingPagination extends React.Component {
 		}
 	}
 
+	componentDidUpdate(prevProps) {
+		if (prevProps.location) {
+			if (prevProps.location.search !== this.props.location.search) {
+				const params = qs.parse(this.props.location.search) || { page: 1 }
+				this.setState({ pageInput: params.page })
+			}
+		}
+	}
+
 	onInputPageChanged = (e, { value }) => {
-		this.setState({ pageInput: value })
+		if (value > this.props.totalPages) {
+			this.setState({ pageInput: this.props.totalPages })
+		} else if (value < 1) {
+			this.setState({ pageInput: 1})
+		} else {
+			this.setState({ pageInput: value })
+		}
 	}
 
 	onInputPageSubmitClick = e => {
-		this.props.onPageChange(e, {activePage: this.state.pageInput})
+		e.preventDefault()
+		if (parseInt(this.props.activePage) !== parseInt(this.state.pageInput)) {
+			this.onPageChange(e, {activePage: this.state.pageInput})
+		}
+		return false
 	}
 
 	onPageChange = (e, data) => {
 		this.setState({ pageInput: data.activePage })
+		if (this.props.history) {
+			const params = this.props.location ? qs.parse(this.props.location.search) : {page: data.activePage}
+			params.page = data.activePage
+			this.props.history.push({
+				search: `?${qs.stringify(params)}`
+			})
+		}
 		this.props.onPageChange(e, data)
 	}
 
@@ -30,7 +56,7 @@ class LingPagination extends React.Component {
 		const {totalPages, t} = this.props
 		const {pageInput, activePage} = this.state
 		const params = this.props.location ? qs.parse(this.props.location.search) : {page: 1}
-		return <Fragment>
+		return <form onSubmit={this.onInputPageSubmitClick}>
 			<Pagination
 				firstItem={{ content: <Icon name='angle double left' />, icon: true }}
 				lastItem={{ content: <Icon name='angle double right' />, icon: true }}
@@ -43,10 +69,10 @@ class LingPagination extends React.Component {
 			/>
 			{' '}
 			<Input action type='number' step={1} min={1} max={totalPages} value={pageInput} onChange={this.onInputPageChanged}>
-				<input size={3} />
+				<input style={{width: '6em'}} />
 				<Button content={t('chatbot.faq.gotopage')} onClick={this.onInputPageSubmitClick} />
 			</Input>
-		</Fragment>
+		</form>
 	}
 }
 

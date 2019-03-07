@@ -101,13 +101,13 @@ class Plan extends React.Component {
 						const durElements = pt.duration.split('_')
 						const durDropdowns =
 							<Input name='durNumber' value={durElements[0]} type='number' onChange={this.onFormChange.bind(null, pt.id)} action>
-								<input style={{width: '50px'}} />
+								<input style={{width: '6em'}} />
 								<Dropdown selection options={timeUnitOptions} name='durUnit' onChange={this.onFormChange.bind(null, pt.id)} value={durElements[1]} />
 							</Input>
 						return <Table.Row key={pt.id} warning={isChanged}>
 							<Table.Cell><Input name='name' value={pt.name} type='text' onChange={this.onFormChange.bind(null, pt.id)} /></Table.Cell>
-							<Table.Cell><Input fluid name='bot_amount' min='0' step='1' value={pt.bot_amount} type='number' onChange={this.onFormChange.bind(null, pt.id)}><input style={{ minWidth: '50px'}} /></Input></Table.Cell>
-							<Table.Cell><Input fluid name='faq_amount' min='0' step='1' value={pt.faq_amount} type='number' onChange={this.onFormChange.bind(null, pt.id)}><input minLength={5} style={{minWidth: '50px'}} /></Input></Table.Cell>
+							<Table.Cell><Input fluid name='bot_amount' min='0' step='1' value={pt.bot_amount} type='number' onChange={this.onFormChange.bind(null, pt.id)}><input style={{ minWidth: '5em'}} /></Input></Table.Cell>
+							<Table.Cell><Input fluid name='faq_amount' min='0' step='1' value={pt.faq_amount} type='number' onChange={this.onFormChange.bind(null, pt.id)}><input minLength={5} style={{minWidth: '5em'}} /></Input></Table.Cell>
 							<Table.Cell>{durDropdowns}</Table.Cell>
 							<Table.Cell><Dropdown fluid multiple selection options={ddOptions} name='third_party' onChange={this.onFormChange.bind(null, pt.id)} value={pt.third_party.map(tp => tp.id)} /></Table.Cell>
 						</Table.Row>

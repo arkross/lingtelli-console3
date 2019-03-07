@@ -4,13 +4,19 @@ import { compose } from 'recompose'
 import { translate } from 'react-i18next'
 import toJS from 'components/utils/ToJS'
 import { fetchMatching } from 'actions/bot'
-import { Header, Table, Container, Dimmer, Loader, Pagination, Icon } from 'semantic-ui-react'
+import { Header, Table, Container, Dimmer, Loader, Icon } from 'semantic-ui-react'
+import LingPagination from '../utils/LingPagination'
+import qs from 'query-string'
 import _ from 'lodash'
 
 class RecomLogPage extends Component {
-	state = {
-		activePage: 1,
-		loading: true
+	constructor(props) {
+		super(props)
+		const params = props.location ? qs.parse(props.location.search) : {page: 1}
+		this.state = {
+			activePage: params.page || 1,
+			loading: true
+		}
 	}
 
 	handleAfterFetch = () => {
@@ -40,7 +46,7 @@ class RecomLogPage extends Component {
 	}
 	
 	render() {
-		const { t, data } = this.props
+		const { t, data, location, history } = this.props
 		const { loading, activePage } = this.state
 
 		const perPage = 10
@@ -72,12 +78,9 @@ class RecomLogPage extends Component {
 				</Table>
 				{
 					totalPages > 0 &&
-						<Pagination
-							firstItem={{ content: <Icon name='angle double left' />, icon: true }}
-							lastItem={{ content: <Icon name='angle double right' />, icon: true }}
-							prevItem={{ content: <Icon name='angle left' />, icon: true }}
-							nextItem={{ content: <Icon name='angle right' />, icon: true }}
-							ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
+						<LingPagination
+							history={history}
+							location={location}
 							activePage={activePage}
 							onPageChange={this.onPageChanged}
 							totalPages={totalPages}
