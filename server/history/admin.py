@@ -5,9 +5,9 @@ from chatbot.models import Chatbot
 from .models import History, QuestionMatchHistory
 
 class HistoryAdmin(admin.ModelAdmin):
-    list_display = ('chatbot', 'sender', 'content', 'the_username')
+    list_display = ('chatbot', 'sender', 'content', 'username')
 
-    def the_username(self, obj):
+    def username(self, obj):
         bot = Chatbot.objects.filter(id=obj.chatbot_id).first()
         return User.objects.filter(id=bot.user_id).first().username
 
