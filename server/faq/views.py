@@ -363,9 +363,18 @@ def upload_faq_csv(request, pk=None):
                 return Response({'errors': _('File type is not correct. ' +
                                 'Should be type utf8 or big5.')},
                                 status=HTTP_400_BAD_REQUEST)
-            buff = StringIO(str(f_s_result))
-            data = csv.reader(buff, delimiter=',', quotechar='"')
-            next(data) # Skip header
+            try:
+                buff = StringIO(str(f_s_result))
+                data = csv.reader(buff, delimiter=',', quotechar='"')
+                count_col = len(next(data)) # Skip header
+                if count_col != 3:
+                    return Response({'errors': _('CSV column is not correct')},
+                                    status=HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                print('Upload error: ', e)
+                return Response({'errors': _('File type is not correct. ' +
+                                'Should be type utf8 or big5.')},
+                                status=HTTP_400_BAD_REQUEST)
             acc_obj = AccountInfo.objects.filter(user=request.user).first()
             faq_limit = acc_obj.paid_type.faq_amount
 
