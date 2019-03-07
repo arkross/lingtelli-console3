@@ -15,9 +15,6 @@ import {
 	Grid
 } from 'semantic-ui-react';
 import { withRouter, NavLink } from 'react-router-dom'
-import WebSettingModal from 'components/modals/WebSettingModal';
-import FBSettingModal from 'components/modals/FBSettingModal';
-import LineSettingModal from 'components/modals/LineSettingModal';
 import toJS from 'components/utils/ToJS'
 import DeletionModal from '../modals/DeletionModal'
 

@@ -150,6 +150,8 @@
     "history": {
       "text": "History",
       "sender": "Sender",
+      "user": "User",
+      "bot": "Bot",
       "content": "Content",
       "datetime": "Date/Time",
       "empty": "No Data"

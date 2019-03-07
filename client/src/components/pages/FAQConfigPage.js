@@ -19,6 +19,7 @@ import {
 	Input
 } from 'semantic-ui-react'
 import LingPagination from '../utils/LingPagination'
+import qs from 'query-string'
 import toJS from 'components/utils/ToJS'
 
 const PER_PAGE = 10
@@ -26,10 +27,11 @@ const PER_PAGE = 10
 class FAQConfigPage extends React.Component {
 	constructor(props) {
 		super(props)
+		const params = props.location ? qs.parse(props.location.search) : {page: 1}
 		this.state = {
 			groups: [],
 			loading: false,
-			activePage: null,
+			activePage: params.page,
 			keyword: props.answer_content,
 			openDeleteModal: false,
 			deleteGroupId: null
@@ -48,22 +50,9 @@ class FAQConfigPage extends React.Component {
 		this._fetchGroups(this.state.activePage, this.props.answer_content);
 	}
 
-	onInputPageChanged = (e, { value }) => {
-		this.setState({ pageInput: value })
-	}
-
-	onInputPageSubmitClick = e => {
-		this.onPageChanged(e, {
-			activePage: this.state.pageInput
-		})
-	}
-
 	onPageChanged = (e, { activePage }) => {
-		this.setState({ activePage });
-		this.props.history.push({
-			search: `?page=${activePage}`
-		})
-		this._fetchGroups(activePage, this.state.keyword);
+		this.setState({ activePage })
+		this._fetchGroups(activePage, this.state.keyword)
 	}
 
 	onCreateGroup = (e) => {
@@ -111,7 +100,7 @@ class FAQConfigPage extends React.Component {
 	}
 
 	render = () => {
-		const { length, loading, activeBot, t } = this.props
+		const { length, loading, activeBot, t, history, location } = this.props
 		const { groups, activePage, keyword, openDeleteModal, pageInput } = this.state
 
 		const totalPages = Math.ceil(length / PER_PAGE)
@@ -131,7 +120,8 @@ class FAQConfigPage extends React.Component {
 					{
 						totalPages > 0 &&
 							<LingPagination
-								location={this.props.location}
+								history={history}
+								location={location}
 								activePage={activePage}
 								onPageChange={this.onPageChanged}
 								totalPages={totalPages}
@@ -154,7 +144,8 @@ class FAQConfigPage extends React.Component {
 					{
 						totalPages > 0 &&
 							<LingPagination
-								location={this.props.location}
+								history={history}
+								location={location}
 								activePage={activePage}
 								onPageChange={this.onPageChanged}
 								totalPages={totalPages}

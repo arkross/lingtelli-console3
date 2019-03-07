@@ -4,22 +4,23 @@ import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
 import {
-	Pagination,
 	Header,
-	Icon,
 	Table,
 	Container,
 	Dimmer,
 	Loader
 } from 'semantic-ui-react';
-import toJS from 'components/utils/ToJS';
+import toJS from 'components/utils/ToJS'
+import qs from 'query-string'
+import LingPagination from '../utils/LingPagination'
 import { fetchHistory } from 'actions/bot'
 
 class HistoryPage extends React.Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props)
+		const params = props.location ? qs.parse(props.location.search) : {page: 1}
 		this.state = {
-			activePage: 1
+			activePage: params.page || 1
 		}
 	}
 
@@ -28,12 +29,13 @@ class HistoryPage extends React.Component {
 	}
 
 	onPageChanged = (e, { activePage }) => {
+		this.setState({ activePage })
 		this.props.fetchData(activePage)
 	}
 
 	createHistoryElements = () => {
 		const { histories } = this.props;
-		const activeHistories = histories.results ?
+		return histories.results ?
 		_.chain(histories.results)
 			.groupBy('qa_pair')
 			.map(pair => {
@@ -51,12 +53,6 @@ class HistoryPage extends React.Component {
 					created_at: pair[0].created_at
 				}
 			})
-			.value()
-		: []
-
-
-
-		return _.chain(activeHistories)
 			.map((history, index) => 
 				<Table.Row active={history.sender==='USER'} key={index}>
 					<Table.Cell>
@@ -71,12 +67,13 @@ class HistoryPage extends React.Component {
 				</Table.Row>
 			)
 			.value()
+		: []
 	}
 
 
 	render = () => {
 		const { activePage } = this.state;
-		const { histories, t, loading } = this.props;
+		const { histories, t, loading, location } = this.props;
 
 		const centerStyle = {
 			width: '35%',
@@ -95,8 +92,8 @@ class HistoryPage extends React.Component {
 							<Table celled>
 								<Table.Header>
 									<Table.Row>
-										<Table.HeaderCell style={{width: '40%'}}>User</Table.HeaderCell>
-										<Table.HeaderCell style={{width: '40%'}}>Bot</Table.HeaderCell>
+										<Table.HeaderCell style={{width: '40%'}}>{t('chatbot.history.user')}</Table.HeaderCell>
+										<Table.HeaderCell style={{width: '40%'}}>{t('chatbot.history.bot')}</Table.HeaderCell>
 										<Table.HeaderCell style={{width: '20%'}}>{t('chatbot.history.datetime')}</Table.HeaderCell>
 									</Table.Row>
 								</Table.Header>
@@ -107,20 +104,11 @@ class HistoryPage extends React.Component {
 							{
 								totalPage > 0 &&
 									<div className='pagination-container' style={centerStyle}>
-										<Pagination
-											defaultActivePage={1}
+										<LingPagination
+											history={this.props.history}
+											location={location}
+											activePage={activePage}
 											onPageChange={this.onPageChanged}
-											ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
-											prevItem={
-												activePage !== 1 ?
-													{ content: <Icon name='angle left' />, icon: true } : null
-											}
-											nextItem={
-												activePage !== totalPage ?
-													{ content: <Icon name='angle right' />, icon: true } : null
-											}
-											firstItem={null}
-											lastItem={null}
 											totalPages={totalPage}
 										/>
 									</div>

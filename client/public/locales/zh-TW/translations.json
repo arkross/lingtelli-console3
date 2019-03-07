@@ -161,6 +161,8 @@
     "history": {
       "text": "對話紀錄",
       "sender": "對話角色",
+      "user": "使用者",
+      "bot": "機器人",
       "content": "對話內容",
       "datetime": "對話時間",
       "empty": "無資料"
