@@ -33,21 +33,37 @@ class HistoryPage extends React.Component {
 
 	createHistoryElements = () => {
 		const { histories } = this.props;
-		const activeHistories = histories.results || []
+		const activeHistories = histories.results ?
+		_.chain(histories.results)
+			.groupBy('qa_pair')
+			.map(pair => {
+				const userContent = _.chain(pair)
+					.filter(rec => rec.sender === 'USER')
+					.map(rec => rec.content)
+					.value()
+				const botContent = _.chain(pair)
+					.filter(rec => rec.sender === 'BOT')
+					.map(rec => rec.content)
+					.value()
+				return {
+					user: userContent.join(' | '),
+					bot: botContent.join(' | '),
+					created_at: pair[0].created_at
+				}
+			})
+			.value()
+		: []
+
+
 
 		return _.chain(activeHistories)
 			.map((history, index) => 
 				<Table.Row active={history.sender==='USER'} key={index}>
 					<Table.Cell>
-						<Header>
-							{history.sender==='USER' ? <Icon name='user' /> : <Icon name='spy' />}
-							<Header.Content>
-								{history.sender==='USER' ? 'User' : 'Bot'}
-							</Header.Content>
-						</Header>
+						{history.user}
 					</Table.Cell>
 					<Table.Cell>
-						{history.content}
+						{history.bot}
 					</Table.Cell>
 					<Table.Cell>
 						{history.created_at}
@@ -79,9 +95,9 @@ class HistoryPage extends React.Component {
 							<Table celled>
 								<Table.Header>
 									<Table.Row>
-										<Table.HeaderCell>{t('chatbot.history.sender')}</Table.HeaderCell>
-										<Table.HeaderCell>{t('chatbot.history.content')}</Table.HeaderCell>
-										<Table.HeaderCell>{t('chatbot.history.datetime')}</Table.HeaderCell>
+										<Table.HeaderCell style={{width: '40%'}}>User</Table.HeaderCell>
+										<Table.HeaderCell style={{width: '40%'}}>Bot</Table.HeaderCell>
+										<Table.HeaderCell style={{width: '20%'}}>{t('chatbot.history.datetime')}</Table.HeaderCell>
 									</Table.Row>
 								</Table.Header>
 								<Table.Body>

@@ -34,9 +34,11 @@ class Answer extends React.Component {
   }
 
   onDelete = (e, ix) => {
+    e.preventDefault()
 		this.setState({loading: true})
 		this.props.onDelete(e, ix)
-			.catch(err => this.setState({loading: false}))
+      .catch(err => this.setState({loading: false}))
+    return false
 	}
 
   onClick = (id, e) => {
