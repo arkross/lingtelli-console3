@@ -164,7 +164,8 @@
       "bot": "机器人",
       "content": "对话内容",
       "datetime": "对话时间",
-      "empty": "无资料"
+      "empty": "无资料",
+      "toggle": "切换模式"
     },
     "analysis": {
       "text": "统计分析",

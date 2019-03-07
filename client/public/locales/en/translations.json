@@ -154,7 +154,8 @@
       "bot": "Bot",
       "content": "Content",
       "datetime": "Date/Time",
-      "empty": "No Data"
+      "empty": "No Data",
+      "toggle": "Toggle View"
     },
     "analysis": {
       "text": "Analysis",
