@@ -476,7 +476,7 @@ def agent_login(request):
                 return \
                     Response({'success': new_token.key}, status=HTTP_200_OK)
             else:
-                return Response({'errors': _('Something went wrong '+\
+                return Response({'errors': _('Something went wrong. '+\
                     'Please try again')}, status=HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response({'success': old_token_obj.key}, status=HTTP_200_OK)

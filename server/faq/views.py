@@ -87,7 +87,7 @@ class FAQGrouptViewset(viewsets.ModelViewSet):
         bot_obj = Chatbot.objects.filter(Q(user=user_obj) |
                                          Q(assign_user=user_obj),
                                          id=bot_id, hide_status=False,).first()
-        return self.queryset.filter(chatbot=bot_obj).order_by('-id')
+        return FAQGroup.objects.filter(chatbot=bot_obj).order_by('-id')
 
     def create(self, request, id=None):
         '''Create new faq
@@ -166,9 +166,9 @@ class AnswerViewset(viewsets.ModelViewSet):
         user_obj = self.request.user
         bot_id = self.kwargs.get('id')
         bot_obj = Chatbot.objects.filter(Q(user=user_obj) |
-                                         Q(assign_user=user_obj,
-                                         id=bot_id, hide_status=False)).first()
-        return self.queryset.filter(chatbot=bot_obj)
+                                         Q(assign_user=user_obj),
+                                         id=bot_id, hide_status=False).first()
+        return Answer.objects.filter(chatbot=bot_obj)
 
     def create(self, request, id=None):
         if request.body:
@@ -272,7 +272,7 @@ class QuestionViewset(viewsets.ModelViewSet):
         bot_obj = Chatbot.objects.filter(Q(user=user_obj) |
                                          Q(assign_user=user_obj),
                                          id=bot_id, hide_status=False).first()
-        return self.queryset.filter(chatbot=bot_obj)
+        return Question.objects.filter(chatbot=bot_obj)
 
     def create(self, request, id=None):
         if request.body:
@@ -363,9 +363,18 @@ def upload_faq_csv(request, pk=None):
                 return Response({'errors': _('File type is not correct. ' +
                                 'Should be type utf8 or big5.')},
                                 status=HTTP_400_BAD_REQUEST)
-            buff = StringIO(str(f_s_result))
-            data = csv.reader(buff, delimiter=',', quotechar='"')
-            next(data) # Skip header
+            try:
+                buff = StringIO(str(f_s_result))
+                data = csv.reader(buff, delimiter=',', quotechar='"')
+                count_col = len(next(data)) # Skip header
+                if count_col != 3:
+                    return Response({'errors': _('CSV column is not correct')},
+                                    status=HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                print('Upload error: ', e)
+                return Response({'errors': _('File type is not correct. ' +
+                                'Should be type utf8 or big5.')},
+                                status=HTTP_400_BAD_REQUEST)
             acc_obj = AccountInfo.objects.filter(user=request.user).first()
             faq_limit = acc_obj.paid_type.faq_amount
 
