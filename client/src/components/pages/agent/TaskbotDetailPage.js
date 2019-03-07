@@ -14,12 +14,15 @@ import { updateAnswer, createAnswer } from '../../../actions/answer'
 import toJS from 'components/utils/ToJS'
 import { translate, Trans } from 'react-i18next'
 import DeletionModal from '../../modals/TaskbotDeletionModal'
+import LingPagination from '../../utils/LingPagination'
+import qs from 'query-string'
 import TestBotPage from '../TestBotPage'
 
 class TaskbotDetailPage extends React.Component {
 
 	constructor(props) {
 		super(props)
+		const params = props.location ? qs.parse(props.location.search) : {page: 1}
 		this.state = {
 			loading: true,
 			errors: '',
@@ -37,7 +40,7 @@ class TaskbotDetailPage extends React.Component {
 				postback_title: ''
 			},
 			faq: [],
-			activePage: 1
+			activePage: params.page
 		}
 	}
 
@@ -274,7 +277,7 @@ class TaskbotDetailPage extends React.Component {
 			importLoading,
 			exportLoading
 		} = this.state
-		const { t, bot, group } = this.props
+		const { t, bot, group, location, history } = this.props
 
 		const perPage = 10
 		const totalPages = Math.ceil((group ? group.count : faq.length) / perPage)
@@ -356,12 +359,9 @@ class TaskbotDetailPage extends React.Component {
 					<Button icon='plus' content='Add Group' onClick={this.onAddGroupClick} color='green' loading={addGroupLoading} />
 				</Grid.Column>
 				<Grid.Column>
-					{totalPages > 0 && <Pagination
-						firstItem={{ content: <Icon name='angle double left' />, icon: true }}
-						lastItem={{ content: <Icon name='angle double right' />, icon: true }}
-						prevItem={{ content: <Icon name='angle left' />, icon: true }}
-						nextItem={{ content: <Icon name='angle right' />, icon: true }}
-						ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
+					{totalPages > 0 && <LingPagination
+						history={history}
+						location={location}
 						activePage={activePage}
 						onPageChange={this.onPageChanged}
 						totalPages={totalPages}
@@ -437,12 +437,9 @@ class TaskbotDetailPage extends React.Component {
 			<Grid.Row columns={2}>
 				<Grid.Column></Grid.Column>
 				<Grid.Column>
-					{totalPages > 0 && <Pagination
-						firstItem={{ content: <Icon name='angle double left' />, icon: true }}
-						lastItem={{ content: <Icon name='angle double right' />, icon: true }}
-						prevItem={{ content: <Icon name='angle left' />, icon: true }}
-						nextItem={{ content: <Icon name='angle right' />, icon: true }}
-						ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
+					{totalPages > 0 && <LingPagination
+						history={history}
+						location={location}
 						activePage={activePage}
 						onPageChange={this.onPageChanged}
 						totalPages={totalPages}

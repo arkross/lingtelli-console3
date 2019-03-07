@@ -49,6 +49,7 @@ export default {
 		username: credentials.data.email,
 		password: credentials.data.password,
 		first_name: credentials.data.nickname,
+		language: credentials.data.language
 	})).data,
 
 	resend: async username => (await axios.get(`${API_HOST}/member/resend/`, {

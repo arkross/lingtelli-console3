@@ -20,12 +20,20 @@ class RegisterForm extends React.Component {
   constructor(props) {
     super(props)
     const browserLang = (window.navigator.language || window.navigator.userLanguage || 'zh-TW')
-    let defLanguage = 'zh-TW'
-    if (browserLang.toLowerCase().indexOf('cn') > 0) {
-      defLanguage = 'zh-CN'
-    } else if (browserLang.toLowerCase().indexOf('en') > 0) {
-      defLanguage = 'en-US'
+    let defLanguage = 'tw'
+    if (browserLang.toLowerCase().indexOf('cn') >= 0) {
+      defLanguage = 'cn'
+    } else if (browserLang.toLowerCase().indexOf('en') >= 0) {
+      defLanguage = 'en'
     }
+    let i18Val = 'zh-TW'
+    if (defLanguage.toLowerCase().indexOf('cn') >= 0) {
+      i18Val = 'zh-CN'
+    } else if (defLanguage.toLowerCase().indexOf('en') >= 0) {
+      i18Val = 'en'
+    }
+    localStorage.setItem('i18nextLng', i18Val)
+    props.i18n.changeLanguage(i18Val)
     this.state = {
       data: {
         nickname: '',
@@ -41,8 +49,14 @@ class RegisterForm extends React.Component {
 
   onChange = (e, { name, value }) => {
     if (name === 'language') {
-      localStorage.setItem('i18nextLng', name)
-      this.props.i18n.changeLanguage(value)
+      let i18Val = 'zh-TW'
+      if (value.toLowerCase().indexOf('cn') >= 0) {
+        i18Val = 'zh-CN'
+      } else if (value.toLowerCase().indexOf('en') >= 0) {
+        i18Val = 'en'
+      }
+      localStorage.setItem('i18nextLng', i18Val)
+      this.props.i18n.changeLanguage(i18Val)
     }
     this.setState({
       data: {...this.state.data, [name]: value }
@@ -104,9 +118,9 @@ class RegisterForm extends React.Component {
     const { t } = this.props
     const { errors, loading, data } = this.state
     const languages = [
-      {value: 'zh-TW', label: '繁體中文'},
-      {value: 'zh-CN', label: '简体中文'},
-      {value: 'en-US', label: 'English'}
+      {value: 'tw', label: '繁體中文'},
+      {value: 'cn', label: '简体中文'},
+      {value: 'en', label: 'English'}
     ]
 
     return (

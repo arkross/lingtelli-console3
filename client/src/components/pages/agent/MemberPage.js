@@ -12,6 +12,7 @@ import FileDownload from "react-file-download"
 import groupApis from "apis/group"
 import { fetchMembers, updateMember } from '../../../actions/agent'
 import { Table, Button, Icon, Dropdown, Label, Pagination, Input } from 'semantic-ui-react'
+import LingPagination from '../../utils/LingPagination'
 import toJS from 'components/utils/ToJS'
 import qs from 'query-string'
 
@@ -82,16 +83,8 @@ class Member extends React.Component {
 		return this.fetchMembers(activePage)
 	}
 
-	onInputPageChanged = (e, { value }) => {
-		this.setState({ pageInput: value })
-	}
-
-	onInputPageSubmitClick = (e) => {
-		this.onPageChanged(e, { activePage: this.state.pageInput })
-	}
-
 	render() {
-		const { members, paidtypes, match } = this.props
+		const { members, paidtypes, match, location, history } = this.props
 		const { paidtypeVals, changes, activePage, pageInput } = this.state
 		const { loading } = this.state
 
@@ -153,20 +146,13 @@ class Member extends React.Component {
 			</Table>
 			{
 				totalPages > 0 &&
-					<Fragment>
-						<Pagination
-							firstItem={{ content: <Icon name='angle double left' />, icon: true }}
-							lastItem={{ content: <Icon name='angle double right' />, icon: true }}
-							prevItem={{ content: <Icon name='angle left' />, icon: true }}
-							nextItem={{ content: <Icon name='angle right' />, icon: true }}
-							ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
-							activePage={activePage}
-							onPageChange={this.onPageChanged}
-							totalPages={totalPages}
-						/>
-						{' '}
-						<Input action={<Button content='Go' onClick={this.onInputPageSubmitClick} />} type='number' size={3} step={1} min={1} max={totalPages} value={pageInput} onChange={this.onInputPageChanged}></Input>
-					</Fragment>
+					<LingPagination
+						history={history}
+						location={location}
+						activePage={activePage}
+						onPageChange={this.onPageChanged}
+						totalPages={totalPages}
+					/>
 			}
 		</div>
 	}
