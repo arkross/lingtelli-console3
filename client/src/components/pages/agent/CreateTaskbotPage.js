@@ -8,6 +8,7 @@ import { Button, Icon, Form, Input } from 'semantic-ui-react'
 import FileDownload from "react-file-download"
 import groupApis from "apis/group"
 import { createTaskbot } from '../../../actions/taskbot'
+import { translate } from 'react-i18next'
 import toJS from 'components/utils/ToJS'
 
 class CreateTaskbotPage extends React.Component {
@@ -40,7 +41,9 @@ class CreateTaskbotPage extends React.Component {
 	}
 
 	render() {
+		const { t } = this.props
 		const { data } = this.state
+		const allowedLanguages = ['tw', 'cn']
 		return <Form>
 			<Form.Field
 				id='robot_name'
@@ -70,6 +73,21 @@ class CreateTaskbotPage extends React.Component {
 				control={Input}
 				value={data.postback_title}
 				onChange={this.onFormChange} />
+			<Form.Field>
+				<Form.Group inline>
+					<label>Language</label>
+					{
+					allowedLanguages.map(el => <Form.Radio
+						name='language'
+						key={`chatbot.language.${el}`}
+						label={t(`chatbot.language.${el}`)}
+						value={el}
+						checked={data.language === el}
+						onChange={this.onFormChange.bind(this, null, {name: 'language', value: el})}
+					/>)
+					}
+				</Form.Group>
+			</Form.Field>
 			<Button onClick={this.onSubmit} content='Create Taskbot' icon={'plus'} color='green' />
 		</Form>
 	}
@@ -81,5 +99,6 @@ const mapStateToProps = (state, props) => ({
 
 export default compose(
 	connect(mapStateToProps, { createTaskbot }),
+	translate(),
 	toJS
 )(CreateTaskbotPage)

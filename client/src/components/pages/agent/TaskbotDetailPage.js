@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import _ from 'lodash'
 import Dropzone from "react-dropzone"
 import { fetchGroups, uploadGroups, trainGroups } from "../../../actions/group"
-import { Button, Icon, Form, Input, Grid, Message, Header, Pagination, Table, Divider } from 'semantic-ui-react'
+import { Button, Icon, Form, Input, Grid, Message, Header, Pagination, Table, Divider, Label } from 'semantic-ui-react'
 import FileDownload from "react-file-download"
 import groupApis from "apis/group"
 import { deleteGroup } from '../../../actions/group'
@@ -307,29 +307,30 @@ class TaskbotDetailPage extends React.Component {
 							name='robot_name'
 							label='Bot Name'
 							control={Input}
-							value={data.robot_name}
+							value={data.robot_name || ''}
 							onChange={this.onFormChange} />
 						<Form.Field
 							id='greeting_msg'
 							name='greeting_msg'
 							label='Greeting Message'
 							control={Input}
-							value={data.greeting_msg}
+							value={data.greeting_msg || ''}
 							onChange={this.onFormChange} />
 						<Form.Field
 							id='failed_msg'
 							name='failed_msg'
 							label='Failed Message'
 							control={Input}
-							value={data.failed_msg}
+							value={data.failed_msg || ''}
 							onChange={this.onFormChange} />
 						<Form.Field
 							id='postback_title'
 							name='postback_title'
 							label='Postback Title'
 							control={Input}
-							value={data.postback_title}
+							value={data.postback_title || ''}
 							onChange={this.onFormChange} />
+						<Label><Icon name='globe' />{t(`chatbot.language.${data.language}`)}</Label><br /><br/>
 						<Button onClick={this.onSubmit} content='Update' icon={'save'} primary />
 						<Button onClick={this.onOpenDeleteModal} negative icon='trash' content='Delete' />
 						<DeletionModal
