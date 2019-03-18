@@ -330,7 +330,7 @@ class TaskbotDetailPage extends React.Component {
 							control={Input}
 							value={data.postback_title || ''}
 							onChange={this.onFormChange} />
-						<Label><Icon name='globe' />{t(`chatbot.language.${data.language}`)}</Label><br /><br/>
+						<Label><Icon name='language' size='large' />{t(`chatbot.language.${data.language}`)}</Label><br /><br/>
 						<Button onClick={this.onSubmit} content='Update' icon={'save'} primary />
 						<Button onClick={this.onOpenDeleteModal} negative icon='trash' content='Delete' />
 						<DeletionModal

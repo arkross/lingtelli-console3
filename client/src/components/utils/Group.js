@@ -7,7 +7,7 @@ import { v4 } from "uuid";
 import { compose } from "recompose";
 import { connect } from "react-redux";
 import { translate } from "react-i18next";
-import { Icon, Button, Container } from "semantic-ui-react";
+import { Icon, Button, Container, Grid } from "semantic-ui-react";
 import { createQuestion, deleteQuestion } from "actions/question";
 import { createAnswer, deleteAnswer } from 'actions/answer'
 import toJS from './ToJS'
@@ -73,46 +73,44 @@ class Group extends React.Component {
 					onClick={(e) => onDelete(e, ix) }
 					className='delete-group-icon pull-right clickable'
 				/>
-				<Container fluid>
-					<Button floated='left' color='blue' onClick={this.onCreate} className="block create-question">
-						<Icon name="add" />
-						<span>{t("chatbot.faq.question")}</span>
-					</Button>
-					<Button floated='right' color='blue' onClick={this.onCreateAnswer} className="block create-question">
-						<Icon name="add" />
-						<span>{t("chatbot.faq.answer")}</span>
-					</Button>
-				</Container>
-				<div style={{clear: 'both'}} />
-				<div className="questions-group inline-block">
-					{
-						questions && _.map(questions, (item, ix) =>
-							<Question
-								key={item.id}
-								id={item.id}
-								ix={ix}
-								content={item.content}
-								onDelete={this.onDelete}
-								onChange={this.onQuestionChanged}
-								activeBot={activeBot}
-							/>
-						)
-					}
-				</div>
-				<div className="answer-group inline-block">
-					{
-						answers && _.map(answers, (item, ix) =>
-							<Answer
-								key={item.id}
-								id={item.id}
-								ix={ix}
-								content={item.content}
-								onDelete={this.onDeleteAnswer}
-								activeBot={activeBot}
-							/>
-						)
-					}
-				</div>
+				<Grid stackable doubling>
+					<Grid.Row columns='equal'>
+						<Grid.Column>
+							<Button floated='left' color='blue' icon='add' content={t('chatbot.faq.question')} onClick={this.onCreate} className="block create-question" />
+							<div style={{clear: 'both'}} />
+							{
+								questions && _.map(questions, (item, ix) =>
+									<Question
+										key={item.id}
+										id={item.id}
+										ix={ix}
+										content={item.content}
+										onDelete={this.onDelete}
+										onChange={this.onQuestionChanged}
+										activeBot={activeBot}
+									/>
+								)
+							}
+						</Grid.Column>
+						<Grid.Column>
+							<Button floated='right' color='blue' icon='add' content={t('chatbot.faq.answer')} onClick={this.onCreateAnswer} className="block create-question" />
+							<div style={{clear: 'both'}} />
+							{
+								answers && _.map(answers, (item, ix) =>
+									<Answer
+										key={item.id}
+										id={item.id}
+										ix={ix}
+										content={item.content}
+										onDelete={this.onDeleteAnswer}
+										activeBot={activeBot}
+									/>
+								)
+							}
+						</Grid.Column>
+					</Grid.Row>
+				</Grid>
+				
 			</div>
 		);
 	}

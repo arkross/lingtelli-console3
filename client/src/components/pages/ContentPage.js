@@ -7,7 +7,9 @@ import {
 	Menu,
 	Responsive,
 	Dropdown,
-	Segment
+	Segment,
+	Label,
+	Grid,
 } from 'semantic-ui-react';
 import { Route, NavLink, withRouter, matchPath, Switch, Redirect} from 'react-router-dom'
 import { fetchBot, fetchHistory, fetchReport, fetchMatching } from 'actions/bot'
@@ -171,7 +173,8 @@ class ContentPage extends React.Component {
 			text: t('chatbot.top_page.text'),
 			id: '',
 			key: '',
-			value: match.url
+			value: match.url,
+			exact: true
 		}, ...subMenus]
 		const currentMenu = _.findLast(dropdownMenu, el => matchPath(location.pathname, {path: `${match.url}/${el.id}`}))
 		const renderItems = subMenus.map( (item, ix) => (
@@ -186,13 +189,13 @@ class ContentPage extends React.Component {
 					flex: '0 0 auto'
 				}}
 			>{item.text}</NavLink>
-		));
+		))
 
 		// renderItems.push(<Menu.Menu key='testbot' position='right'><Menu.Item><Button onClick={this.onOpenDemoModal} color='green'><Icon name='play'></Icon> {t('demo.button')}</Button></Menu.Item></Menu.Menu>)
 
 		return (
 			<div className='bot-page'>
-				<Responsive as={Menu} pointing className='topmenu' style={{
+				<Responsive minWidth={Responsive.onlyComputer.minWidth} as={Menu} pointing className='topmenu' style={{
 					display: 'flex',
 					flexWrap: 'nowrap',
 					overflowX: 'auto',
@@ -201,6 +204,26 @@ class ContentPage extends React.Component {
 					msOverflowStyle: '-ms-autohiding-scrollbar'
 				}}>
 					{renderItems}
+				</Responsive>
+				<Responsive maxWidth={Responsive.onlyTablet.maxWidth} as={Grid}>
+					<Grid.Row columns={2}>
+						<Grid.Column>
+							<Label content={info.robot_name} />
+						</Grid.Column>
+						<Grid.Column>
+							<Dropdown text={currentMenu.text} fluid>
+								<Dropdown.Menu>
+									{dropdownMenu.map(el => <NavLink
+										exact={el.exact}
+										className='item'
+										to={`${match.url.replace(/\/+$/, '')}/${el.id}`}
+										key={el.key}
+										id={el.id}
+										>{el.text}</NavLink>)}
+								</Dropdown.Menu>
+							</Dropdown>
+						</Grid.Column>
+					</Grid.Row>
 				</Responsive>
 				{openDemoModal && <DemoModal
 					match={match}

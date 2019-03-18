@@ -12,7 +12,9 @@ import {
 	Icon,
 	Segment,
 	Modal,
-	Container
+	Container,
+	Responsive,
+	Grid
 } from 'semantic-ui-react';
 import _ from 'lodash'
 import toJS from 'components/utils/ToJS'
@@ -180,7 +182,7 @@ class CreateBotPage extends React.Component {
 						{errors.postbackMsg && <Label color='red' pointing>{errors.postbackMsg}</Label>}
 					</Form.Field>
 					<Form.Field>
-						<Form.Group inline>
+						<Form.Group grouped>
 							<label>{t('chatbot.selectLanguage')}</label>
 							{
 							allowedLanguages.map(el => <Form.Radio
@@ -197,20 +199,46 @@ class CreateBotPage extends React.Component {
 						</Form.Group>
 					</Form.Field>
 				</Form>
-				<div>
-					<Label color={botCount < bot_limit ? 'green' : 'red'} size='large' basic>
-						{t('chatbot.create.bot_count')} : {botCount} / {botLimitText}
-					</Label>
-					<Button
-						disabled={botCount >= bot_limit}
-						floated='right'
-						primary
-						loading={loading}
-						onClick={onCreate}>
-						<Icon name='checkmark' />
-						{t('chatbot.create.btns.create')}
-					</Button>
-				</div>
+				<Responsive as={Grid} minWidth={Responsive.onlyTablet.minWidth}>
+					<Grid.Row columns='equal'>
+						<Grid.Column>
+							<Label color={botCount < bot_limit ? 'green' : 'red'} size='large' basic>
+								{t('chatbot.create.bot_count')} : {botCount} / {botLimitText}
+							</Label>
+						</Grid.Column>
+						<Grid.Column>
+							<Button
+								disabled={botCount >= bot_limit}
+								floated='right'
+								primary
+								loading={loading}
+								onClick={onCreate}>
+								<Icon name='checkmark' />
+								{t('chatbot.create.btns.create')}
+							</Button>
+						</Grid.Column>
+					</Grid.Row>
+				</Responsive>
+				<Responsive as={Grid} maxWidth={Responsive.onlyMobile.maxWidth}>
+					<Grid.Row>
+						<Grid.Column>
+							<Label color={botCount < bot_limit ? 'green' : 'red'} size='large' basic>
+								{t('chatbot.create.bot_count')} : {botCount} / {botLimitText}
+							</Label>
+							<br /><br />
+							<Button
+								disabled={botCount >= bot_limit}
+								floated='right'
+								primary
+								fluid
+								loading={loading}
+								onClick={onCreate}>
+								<Icon name='checkmark' />
+								{t('chatbot.create.btns.create')}
+							</Button>
+						</Grid.Column>
+					</Grid.Row>
+				</Responsive>
 				<div style={{ clear: 'both'}}></div>
 				<Modal open={openModal} size='tiny' onClose={onClose}>
 					<Modal.Content>

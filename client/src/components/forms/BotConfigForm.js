@@ -12,7 +12,8 @@ import {
 	Divider,
 	Message,
 	Modal,
-	Grid
+	Grid,
+	Responsive
 } from 'semantic-ui-react';
 import { withRouter, NavLink } from 'react-router-dom'
 import toJS from 'components/utils/ToJS'
@@ -223,30 +224,37 @@ class BotConfigForm extends React.Component {
 						value={info.postback_title || ''}>
 					</Form.Input>
 				</Form.Field>
-				<Label><Icon name='globe' />{t(`chatbot.language.${info.language}`)}</Label>
+				<Label><Icon name='language' size='large' />{t(`chatbot.language.${info.language}`)}</Label>
 				<Divider />
-				<Grid>
-					<Grid.Row>
+				<Responsive as={Grid} stackable minWidth={Responsive.onlyTablet.minWidth}>
+					<Grid.Row columns='equal'>
 						<Grid.Column>
-							{!(info.assign_user && user.paid_type === 'Staff') && <NavLink className='ui button facebook large' to={`/dashboard/bot/${match.params.id}/integration/facebook`}><Icon name='facebook' /> {t('chatbot.integration.facebook')}</NavLink>}
-							{!(info.assign_user && user.paid_type === 'Staff') && <NavLink className='ui button green large' to={`/dashboard/bot/${match.params.id}/integration/line`}><Icon name='chat' /> {t('chatbot.integration.line')}</NavLink>}
-							<NavLink className='ui button teal large' to={`/dashboard/bot/${match.params.id}/integration/web`}><Icon name='globe' /> {t('chatbot.integration.web')}</NavLink>
+							{!(info.assign_user && user.paid_type === 'Staff') && <NavLink className='ui button facebook' to={`/dashboard/bot/${match.params.id}/integration/facebook`}><Icon name='facebook' /> {t('chatbot.integration.facebook')}</NavLink>}
+							{!(info.assign_user && user.paid_type === 'Staff') && <NavLink className='ui button green' to={`/dashboard/bot/${match.params.id}/integration/line`}><Icon name='linechat' /> {t('chatbot.integration.line')}</NavLink>}
+							<NavLink className='ui button teal' to={`/dashboard/bot/${match.params.id}/integration/web`}><Icon name='globe' /> {t('chatbot.integration.web')}</NavLink>
 						</Grid.Column>
-					</Grid.Row>
-					<Grid.Row columns={2}>
-						<Grid.Column floated='right'>
+						<Grid.Column>
 							<Button floated='right' primary onClick={this.onUpdate}>
 								<Icon name='save' />
 								{t('chatbot.update')}
 							</Button>
 							{info.bot_type === 'TASK' ? '' :
-							<Button size='small' onClick={this.onOpenDeleteModal} negative floated='right'>
+							<Button basic size='small' onClick={this.onOpenDeleteModal} negative floated='right'>
 								<Icon name='trash alternate outline' />
 								{t('chatbot.delete.button')}
 							</Button>}
 						</Grid.Column>
 					</Grid.Row>
-				</Grid>
+				</Responsive>
+				<Responsive as={Grid} maxWidth={Responsive.onlyMobile.maxWidth}>
+					<Grid.Row>
+						<Grid.Column>
+							<Button fluid primary onClick={this.onUpdate} icon='save' content={t('chatbot.update')} />
+							<br />
+							<Button fluid negative basic onClick={this.onOpenDeleteModal} icon='trash alternate outline' content={t('chatbot.delete.button')} />
+						</Grid.Column>
+					</Grid.Row>
+				</Responsive>
 				{ info.bot_type === 'TASK' ? '' :
 				<DeletionModal
 					title={t('chatbot.delete.title')}

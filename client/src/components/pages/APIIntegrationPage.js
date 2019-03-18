@@ -104,9 +104,9 @@ class APIIntegration extends Component {
 		const webhookUrl = process.env.REACT_APP_WEBHOOK_HOST + '/' + vendor_id
 
 		return <Grid className='integration-page'>
-			<Grid.Row>
-				<Grid.Column width={12}><Header>API</Header></Grid.Column>
-				<Grid.Column floated='right' width={3}>
+			<Grid.Row columns='equal'>
+				<Grid.Column><Header>API</Header></Grid.Column>
+				<Grid.Column floated='right'>
 				{webActive ? 
 					<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>
 				: <Label basic color='grey' style={{ float: 'right'}}><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label>}

@@ -179,10 +179,10 @@ ${str}</script>
 		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)
 		const isActivable = currentPaidtype && currentPaidtype.third_party.find(el => el.name === 'Web')
 
-		return <Grid className='integration-page'>
-			<Grid.Row>
-				<Grid.Column width={12}><Header>Web</Header></Grid.Column>
-				<Grid.Column floated='right' width={3}>
+		return <Fragment><Grid className='integration-page'>
+			<Grid.Row columns='equal'>
+				<Grid.Column><Header>Web</Header></Grid.Column>
+				<Grid.Column floated='right'>
 				{webActive ? 
 					<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>
 				: <Label color='grey' style={{ float: 'right'}} basic><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label>}
@@ -209,6 +209,8 @@ ${str}</script>
 					<Message warning header={t('chatbot.setting.web.custHeader')} content={t('chatbot.setting.web.custDescription')} />
 				</Grid.Column>
 			</Grid.Row>
+		</Grid>
+		<Grid stackable>
 			<Grid.Row columns={2}>
 				<Grid.Column>
 					<Form>
@@ -221,7 +223,7 @@ ${str}</script>
 					</Form>
 				</Grid.Column>
 				<Grid.Column>
-					<iframe srcDoc={srcDoc} width='350' height='450'></iframe>
+					<iframe srcDoc={srcDoc} width='330' height='450'></iframe>
 				</Grid.Column>
 			</Grid.Row>
 			<Grid.Row>
@@ -233,7 +235,7 @@ ${str}</script>
 					{ show.web && this.getWebTutorial()}
 				</Grid.Column>
 			</Grid.Row>
-		</Grid>
+		</Grid></Fragment>
 	}
 }
 

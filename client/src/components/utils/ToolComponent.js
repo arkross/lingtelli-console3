@@ -131,7 +131,7 @@ class ToolComponent extends React.Component {
 				{/* errors && <Message error={!!errors} header={errors} /> */}
 				{/* success && <Message success={!!success} header={success} /> */}
 				<Button disabled={faqCount >= faqLimit && faqLimit > 0} onClick={onCreateGroup} color='green'>
-					<Icon name="pencil" />
+					<Icon name="plus" />
 					<span>{t("chatbot.faq.add")}&nbsp;
 					{'(' + faqCount + ' / ' + faqLimitText + ')'}</span>
 				</Button>

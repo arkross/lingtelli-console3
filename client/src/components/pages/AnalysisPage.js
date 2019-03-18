@@ -15,7 +15,9 @@ import {
 	Dimmer,
 	Loader,
 	Grid,
-	Statistic
+	Statistic,
+	Dropdown,
+	Responsive
 } from 'semantic-ui-react';
 import toJS from 'components/utils/ToJS'
 
@@ -75,6 +77,7 @@ class Analysis extends React.Component {
 	}
 
 	onChange = (e, { value }) => {
+		console.log(e.target)
 		this.props.onChangeScale(value)
 	}
 
@@ -123,6 +126,8 @@ class Analysis extends React.Component {
 			}
 		]
 
+		
+
 		return (
 			<div className='analysis-container'>
 				<Dimmer inverted active={loading} />
@@ -130,7 +135,7 @@ class Analysis extends React.Component {
 				<Grid>
 					<Grid.Row>
 						<Grid.Column>
-							<Button.Group className='scale-button-group'>
+							<Responsive as={Button.Group} minWidth={Responsive.onlyTablet.minWidth} className='scale-button-group'>
 								{_.map(dateOptions, el =>
 									<Button
 										color='blue'
@@ -138,10 +143,11 @@ class Analysis extends React.Component {
 										key={el.key}
 										active={scale === el.value}
 										onClick={this.onChange.bind(this, this, {value: el.value})}>
-											{el.text}
+										{el.text}
 									</Button>)
 								}
-							</Button.Group>
+							</Responsive>
+							<Responsive as={Dropdown} maxWidth={Responsive.onlyMobile.maxWidth} options={dateOptions} onChange={this.onChange} value={scale} selection></Responsive>
 						</Grid.Column>
 					</Grid.Row>
 					<Grid.Row columns={2}>
