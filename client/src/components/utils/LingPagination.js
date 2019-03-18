@@ -1,7 +1,7 @@
 import React, {Fragment} from 'react'
 import { translate } from 'react-i18next'
 import { compose } from 'recompose'
-import { Pagination, Icon, Button, Input } from 'semantic-ui-react'
+import { Pagination, Icon, Button, Input, Responsive } from 'semantic-ui-react'
 import qs from 'query-string'
 
 class LingPagination extends React.Component {
@@ -57,7 +57,7 @@ class LingPagination extends React.Component {
 		const {pageInput, activePage} = this.state
 		const params = this.props.location ? qs.parse(this.props.location.search) : {page: 1}
 		return <form onSubmit={this.onInputPageSubmitClick}>
-			<Pagination
+			<Responsive minWidth={Responsive.onlyComputer.minWidth} as={Pagination}
 				firstItem={{ content: <Icon name='angle double left' />, icon: true }}
 				lastItem={{ content: <Icon name='angle double right' />, icon: true }}
 				prevItem={{ content: <Icon name='angle left' />, icon: true }}

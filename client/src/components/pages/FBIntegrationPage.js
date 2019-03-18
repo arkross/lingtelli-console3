@@ -140,9 +140,9 @@ class FBIntegration extends Component {
 		const isActivable = (currentPaidtype && currentPaidtype.third_party.find(el => el.name === 'Facebook'))
 
 		return <Grid className='integration-page'>
-			<Grid.Row>
+		<Grid.Row columns='equal'>
 			<Grid.Column><Header>Facebook</Header></Grid.Column>
-			<Grid.Column floated='right' width={3}>
+			<Grid.Column floated='right'>
 			{facebookActive ? 
 				<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>
 			: <Label color='grey' basic style={{ float: 'right'}}><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label>}

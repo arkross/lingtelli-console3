@@ -3,7 +3,7 @@ import React from "react";
 import { compose } from "recompose";
 import { connect } from "react-redux";
 import { translate } from "react-i18next";
-import { Button, Input, Icon } from "semantic-ui-react";
+import { Button, Input, Icon, Form } from "semantic-ui-react";
 import { updateQuestion } from "actions/question";
 import toJS from './ToJS'
 
@@ -13,6 +13,8 @@ class Question extends React.Component {
 		this.state = {
 			id: props.id,
 			content: props.content || '',
+			showCheck: false,
+			updateLoading: false,
 			editable: false,
 			loading: false
 		}
@@ -34,10 +36,14 @@ class Question extends React.Component {
 		const { updateQuestion, activeBot } = this.props;
 
 		updateQuestion(activeBot, { id, content })
-			.then(() => this.setState({ editable: false }))
+			.then(() => {
+				this.setState({ editable: false, showCheck: true, updateLoading: false })
+				setTimeout(() => {
+				this.setState({ showCheck: false })
+				}, 2000)
+			})
 			.catch(() => {
-				console.log('Failed to update question');
-				this.setState({ editable: false });
+				this.setState({ editable: false, updateLoading: false });
 			});
 	}
 
@@ -83,28 +89,29 @@ class Question extends React.Component {
 
 
 	render = () => {
-		const { id, content, editable, loading } = this.state;
+		const { id, content, editable, loading, showCheck, updateLoading } = this.state;
 		const { t, ix, onDelete } = this.props;
 
 		return (
-			<form
+			<Form
+				ref={el => (this.formEl = el)}
 				onSubmit={this.onSubmit}
-				onClick={ (e) => this.onClick(id, e) }
+				onClick={ e => this.onClick(10, e)}
 				className="question"
 			>
-				<Input
+				<Form.Input
+					action
 					placeholder={t("chatbot.faq.form.question")}
-					ref={ input => this.input = input }
 					value={content}
 					onBlur={this.onBlur}
 					onChange={this.onChange}
-					action
+					fluid
 				>
-					<input disabled={!editable} />
-					<button type='submit' style={{display: 'none'}} />
+					<input ref={ input => this.input = input } />
+					<Button icon={showCheck ? 'check' : 'save'} loading={updateLoading} color='green' />
 					<Button icon='trash alternate outline' loading={loading} color='red' className='question-delete' onClick={ e => this.onDelete(e, ix) } />
-				</Input>
-			</form>
+				</Form.Input>
+			</Form>
 		)
 	}
 }

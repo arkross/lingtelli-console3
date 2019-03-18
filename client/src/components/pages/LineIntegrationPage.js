@@ -130,9 +130,10 @@ class LineIntegration extends Component {
 		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)
 		const isActivable = currentPaidtype && currentPaidtype.third_party.find(el => el.name === 'Line')
 
-		return <Grid className='integration-page'><Grid.Row>
-			<Grid.Column width={12}><Header>LINE</Header></Grid.Column>
-			<Grid.Column floated='right' width={3}>
+		return <Grid className='integration-page'>
+		<Grid.Row columns='equal'>
+			<Grid.Column><Header>LINE</Header></Grid.Column>
+			<Grid.Column floated='right'>
 				{!lineActive ?
 				<Label basic color='grey' style={{ float: 'right' }}><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label> :
 				<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>}

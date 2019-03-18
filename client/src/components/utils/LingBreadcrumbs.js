@@ -1,5 +1,5 @@
 import React from 'react'
-import {Breadcrumb} from 'semantic-ui-react'
+import {Breadcrumb, Responsive} from 'semantic-ui-react'
 import {Link} from 'react-router-dom'
 import {connect} from 'react-redux'
 import _ from 'lodash'
@@ -54,7 +54,7 @@ class LingBreadcrumbs extends React.Component {
 				link: (key < arr.length - 1)
 			}
 		})
-		return <Breadcrumb icon='chevron right' sections={paths} />
+		return <Responsive as={Breadcrumb} minWidth={Responsive.onlyTablet.minWidth} icon='chevron right' sections={paths} />
 	}
 }
 
