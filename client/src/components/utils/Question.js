@@ -12,6 +12,7 @@ class Question extends React.Component {
 		super(props)
 		this.state = {
 			id: props.id,
+			originalContent: props.content || '',
 			content: props.content || '',
 			showCheck: false,
 			updateLoading: false,
@@ -22,7 +23,10 @@ class Question extends React.Component {
 
 	componentWillReceiveProps(nextProps) {
 		if (this.props.content !== nextProps.content) {
-			this.setState({'content': nextProps.content})
+			this.setState({
+				content: nextProps.content,
+				originalContent: nextProps.content
+			})
 		}
 	}
 
@@ -32,19 +36,21 @@ class Question extends React.Component {
 	}
 
 	update = () => {
-		const { id, content } = this.state;
+		const { id, content, originalContent } = this.state;
 		const { updateQuestion, activeBot } = this.props;
 
-		updateQuestion(activeBot, { id, content })
-			.then(() => {
-				this.setState({ editable: false, showCheck: true, updateLoading: false })
-				setTimeout(() => {
-				this.setState({ showCheck: false })
-				}, 2000)
-			})
-			.catch(() => {
-				this.setState({ editable: false, updateLoading: false });
-			});
+		if (originalContent !== content) {
+			updateQuestion(activeBot, { id, content })
+				.then(() => {
+					this.setState({ editable: false, showCheck: true, updateLoading: false, originalContent: content })
+					setTimeout(() => {
+						this.setState({ showCheck: false })
+					}, 2000)
+				})
+				.catch(() => {
+					this.setState({ editable: false, updateLoading: false });
+				});
+		}
 	}
 
 	onKeyPress = (e) => {
@@ -66,10 +72,6 @@ class Question extends React.Component {
 		this.setState({ content: e.target.value });
 	}
 
-	componentDidUpdate = () => {
-		if (this.state.editable) this.input.focus();
-	}
-
 	componentWillUnmount = () => {
 		this.cleanLoading = () => {}
 	}
@@ -89,7 +91,7 @@ class Question extends React.Component {
 
 
 	render = () => {
-		const { id, content, editable, loading, showCheck, updateLoading } = this.state;
+		const { id, content, originalContent, editable, loading, showCheck, updateLoading } = this.state;
 		const { t, ix, onDelete } = this.props;
 
 		return (
@@ -108,7 +110,7 @@ class Question extends React.Component {
 					fluid
 				>
 					<input ref={ input => this.input = input } />
-					<Button icon={showCheck ? 'check' : 'save'} loading={updateLoading} color='green' />
+					<Button icon={showCheck ? 'check' : 'save'} loading={updateLoading} color='green' disabled={originalContent === content} />
 					<Button icon='trash alternate outline' loading={loading} color='red' className='question-delete' onClick={ e => this.onDelete(e, ix) } />
 				</Form.Input>
 			</Form>

@@ -10,6 +10,7 @@ import toJS from './ToJS'
 class Answer extends React.Component {
   state = {
     id: this.props.id,
+    originalContent: this.props.content || '',
     content: this.props.content || '',
     showCheck: false,
     editable: false,
@@ -19,7 +20,7 @@ class Answer extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.content !== this.props.content) {
-      this.setState({content: nextProps.content})
+      this.setState({content: nextProps.content, originalContent: nextProps.content})
     }
   }
 
@@ -32,20 +33,22 @@ class Answer extends React.Component {
   }
 
   update = () => {
-    const { id, content } = this.state;
+    const { id, content, originalContent } = this.state;
     const { updateAnswer, activeBot } = this.props;
-    this.setState({ updateLoading: true })
-
-    updateAnswer(activeBot, { id, content })
-      .then(() => {
-        this.setState({ editable: false, showCheck: true, updateLoading: false })
-        setTimeout(() => {
-          this.setState({ showCheck: false })
-        }, 2000)
-      })
-      .catch(() => {
-        this.setState({ editable: false, updateLoading: false });
-      });
+    
+    if (originalContent !== content) {
+      this.setState({ updateLoading: true })
+      updateAnswer(activeBot, { id, content })
+        .then(() => {
+          this.setState({ editable: false, showCheck: true, updateLoading: false, originalContent: content })
+          setTimeout(() => {
+            this.setState({ showCheck: false })
+          }, 2000)
+        })
+        .catch(() => {
+          this.setState({ editable: false, updateLoading: false });
+        });
+    }
   }
 
   onDelete = (e, ix) => {
@@ -80,12 +83,8 @@ class Answer extends React.Component {
     this.setState({ content: e.target.value });
   }
 
-  componentDidUpdate = () => {
-    if (this.state.editable) this.input.focus();
-  }
-
   render = () => {
-    const { content, editable, loading, updateLoading, showCheck } = this.state;
+    const { content, editable, originalContent, loading, updateLoading, showCheck } = this.state;
     const { t, ix } = this.props;
 
     return (
@@ -104,7 +103,7 @@ class Answer extends React.Component {
           fluid
         >
           <input ref={ input => this.input = input } />
-          <Button icon={showCheck ? 'check' : 'save'} loading={updateLoading} color='green' />
+          <Button icon={showCheck ? 'check' : 'save'} loading={updateLoading} disabled={originalContent === content} color='green' />
           <Button icon='trash alternate outline' loading={loading} color='red' className='question-delete' onClick={ e => this.onDelete(e, ix) } />
         </Form.Input>
       </Form>
