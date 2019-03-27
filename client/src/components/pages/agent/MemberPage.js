@@ -11,7 +11,7 @@ import { fetchTaskbots } from '../../../actions/taskbot'
 import FileDownload from "react-file-download"
 import groupApis from "apis/group"
 import { fetchMembers, updateMember } from '../../../actions/agent'
-import { Table, Button, Icon, Dropdown, Label, Pagination, Input } from 'semantic-ui-react'
+import { Table, Button, Icon, Dropdown, Label, Pagination, Input, Segment} from 'semantic-ui-react'
 import LingPagination from '../../utils/LingPagination'
 import toJS from 'components/utils/ToJS'
 import qs from 'query-string'
@@ -35,6 +35,7 @@ class Member extends React.Component {
 	}
 
 	fetchMembers = (activePage) => {
+		this.setState({ loading: true })
 		return this.props.fetchMembers(activePage || this.state.activePage).then(() => {
 			const pts = this.props.members.results.map(el => ({
 				id: el.id,
@@ -105,6 +106,7 @@ class Member extends React.Component {
 		return <div>
 			<Button content='Save Changes' color='blue' icon='save' floated='right' disabled={changes.length === 0} onClick={this.onSaveButtonClick} loading={loading} />
 			<br /><br />
+			<Segment basic loading={loading}>
 			<Table size='small'>
 				<Table.Header>
 					<Table.Row>
@@ -144,6 +146,7 @@ class Member extends React.Component {
 					})}
 				</Table.Body>
 			</Table>
+			</Segment>
 			{
 				totalPages > 0 &&
 					<LingPagination
