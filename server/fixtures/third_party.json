@@ -1,0 +1,37 @@
+[
+    {
+        "model": "thirdparty.thirdparty",
+        "pk": 1,
+        "fields": {
+            "name": "Facebook"
+        }   
+    },
+    {
+        "model": "thirdparty.thirdparty",
+        "pk": 2,
+        "fields": {
+            "name": "Line"
+        }    
+    },
+    {
+        "model": "thirdparty.thirdparty",
+        "pk": 3,
+        "fields": {
+            "name": "Web"
+        }
+    },
+    {
+        "model": "thirdparty.thirdparty",
+        "pk": 4,
+        "fields":{
+            "name": "Demo"
+        }
+    },
+    {
+        "model": "thirdparty.thirdparty",
+        "pk": 5,
+        "fields":{
+            "name": "Api"
+        }
+    }
+]
