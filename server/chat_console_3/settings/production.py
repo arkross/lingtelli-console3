@@ -32,3 +32,20 @@ NLU_HOST = os.environ.get('NLU')
 
 # Initial staff's password
 INIT_PASSWORD = os.environ.get('INIT_PASS')
+
+CELERY_BROKER_URL = os.environ.get('BROKER')
+
+CELERY_BEAT_SCHEDULE = {
+    'check_token_expired_every_minutes': {
+        'task': 'delete_token',
+        'schedule': crontab()
+    },
+    'send_email_when_expire': {
+        'task': 'send_email_inform_expired',
+        'schedule': crontab(minute=0, hour=0)
+    },
+    'delete_over_15days_hidden_data': {
+        'task': 'delete_over_15days',
+        'schedule': crontab(minute=0, hour=0)
+    }
+}

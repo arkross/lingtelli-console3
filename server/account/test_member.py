@@ -19,7 +19,7 @@ class MemberRegisterTest(TestCase):
         # Initial paid type an third party
         trial_data = {
             'pk': 1,
-            'name': 'Trail',
+            'name': 'Trial',
             'duration': '0_0',
             'bot_amount': '1',
             'faq_amount': '50',
@@ -40,6 +40,7 @@ class MemberRegisterTest(TestCase):
                           json.dumps({'username':'test@gmail.com',
                                       'password':'thisispassword',
                                       'first_name':'nickname',
+                                      'language': 'en',
                                       'other':'other'}),
                           content_type='application/json')
         self.assertEqual(response.status_code, 400)
@@ -66,6 +67,7 @@ class MemberRegisterTest(TestCase):
         response = c.post('/member/register/',
                           json.dumps({'username':'test@gmail.com',
                                       'password':'thisispassword',
+                                      'first_name': 'test',
                                       'other':'other'}),
                           content_type='application/json')
         self.assertEqual(response.status_code, 400)
@@ -77,7 +79,8 @@ class MemberRegisterTest(TestCase):
         response = c.post('/member/register/',
                           json.dumps({'username':'thisisemail123',
                                       'password':'thisispassword',
-                                      'first_name':'nickname'}),
+                                      'first_name':'nickname',
+                                      'language': 'en'}),
                           content_type='application/json')
         self.assertEqual(response.status_code, 400)
         res_data = json.loads(response.content)
@@ -94,7 +97,8 @@ class MemberRegisterTest(TestCase):
         response = c.post('/member/register/',
                           json.dumps({'username':'cosmo.hu@lingtelli.com',
                                       'password':'anotherpassword',
-                                      'first_name':'cosmoother'}),
+                                      'first_name':'cosmoother',
+                                      'language': 'en'}),
                           content_type='application/json')
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
@@ -105,7 +109,8 @@ class MemberRegisterTest(TestCase):
         response = c.post('/member/register/',
                           json.dumps({'username':'cosmo.hu@lingtelli.com',
                                       'password':'thisispassword',
-                                      'first_name':'cosmo'}),
+                                      'first_name':'cosmo',
+                                      'language': 'en'}),
                           content_type='application/json')
         self.assertEqual(response.status_code, 201)
         res_data = json.loads(response.content)
@@ -123,7 +128,7 @@ class ResendEmail(TestCase):
         # Initial paid type an third party
         trial_data = {
             'pk': 1,
-            'name': 'Trail',
+            'name': 'Trial',
             'duration': '0_0',
             'bot_amount': '1',
             'faq_amount': '50',
@@ -155,7 +160,8 @@ class ResendEmail(TestCase):
         c.post('/member/register/', 
                json.dumps({'username': 'cosmo.hu@lingtelli.com',
                            'password': 'thistispassword',
-                           'first_name': 'cosmo'}),
+                           'first_name': 'cosmo',
+                           'language': 'en'}),
                content_type='application/json')
 
         # Set user is_active to true
@@ -176,7 +182,8 @@ class ResendEmail(TestCase):
         c.post('/member/register/', 
                json.dumps({'username': 'cosmo.hu@lingtelli.com',
                            'password': 'thistispassword',
-                           'first_name': 'cosmo'}),
+                           'first_name': 'cosmo',
+                           'language': 'en'}),
                content_type='application/json')
         response = {}
         for i in range(0,4):
@@ -197,7 +204,7 @@ class ConfirmEmail(TestCase):
         # Initial paid type an third party
         trial_data = {
             'pk': 1,
-            'name': 'Trail',
+            'name': 'Trial',
             'duration': '0_0',
             'bot_amount': '1',
             'faq_amount': '50',
@@ -220,7 +227,8 @@ class ConfirmEmail(TestCase):
         c.post('/member/register/', 
                json.dumps({'username': 'cosmo.hu@lingtelli.com',
                            'password': 'thistispassword',
-                           'first_name': 'cosmo'}),
+                           'first_name': 'cosmo',
+                           'language': 'en'}),
                content_type='application/json')
         user = User.objects.get(username='cosmo.hu@lingtelli.com')
         code = AccountInfo.objects.get(user=user).confirmation_code
@@ -266,7 +274,8 @@ class ConfirmEmail(TestCase):
         c.post('/member/register/', 
                json.dumps({'username': 'cosmo.hu@lingtelli.com',
                            'password': 'thistispassword',
-                           'first_name': 'cosmo'}),
+                           'first_name': 'cosmo',
+                           'language': 'en'}),
                content_type='application/json')
         user = User.objects.get(username='cosmo.hu@lingtelli.com')
         code = AccountInfo.objects.get(user=user).confirmation_code
@@ -289,7 +298,8 @@ class ConfirmEmail(TestCase):
         c.post('/member/register/', 
                json.dumps({'username': 'cosmo.hu@lingtelli.com',
                            'password': 'thistispassword',
-                           'first_name': 'cosmo'}),
+                           'first_name': 'cosmo',
+                           'language': 'en'}),
                content_type='application/json')
         user = User.objects.get(username='cosmo.hu@lingtelli.com')
         acc_info = AccountInfo.objects.get(user=user)
@@ -324,7 +334,7 @@ class MemberAccessTest(TestCase):
         # Initial paid type an third party
         trial_data = {
             'pk': 1,
-            'name': 'Trail',
+            'name': 'Trial',
             'duration': '0_0',
             'bot_amount': '1',
             'faq_amount': '50',
@@ -453,7 +463,7 @@ class MemberProfileTest(TestCase):
         # Initial paid type an third party
         trial_data = {
             'pk': 1,
-            'name': 'Trail',
+            'name': 'Trial',
             'duration': '0_0',
             'bot_amount': '1',
             'faq_amount': '50',
@@ -679,7 +689,7 @@ class DeleteAccountConfirmTest(TestCase):
         # Initial thirdparty and paidtype
         trial_data = {
             'pk': 1,
-            'name': 'Trail',
+            'name': 'Trial',
             'duration': '0_0',
             'bot_amount': '1',
             'faq_amount': '50',
