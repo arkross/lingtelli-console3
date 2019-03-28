@@ -145,6 +145,9 @@ class PaidTypeTest(TestCase):
         c = Client()
         the_paidtype = self.paidtype_uri + '1/'
         response = c.put(the_paidtype, json.dumps({'name': 'NewName',
+                                                   'duration': '0_0',
+                                                   'bot_amount': '1',
+                                                   'faq_amount': '50',
                                                    'thrid_party': [1,2,3,4]}),
                          content_type='application/json', **self.agent_header)
         self.assertEqual(response.status_code, 200)

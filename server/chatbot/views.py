@@ -286,7 +286,7 @@ class LineViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         if not bot:
             return Response({'errors': _('Not found')},
                             status=HTTP_404_NOT_FOUND)
-        if request.user.is_staff == True and bot.bot_type == 'Task'\
+        if request.user.is_staff == True and bot.bot_type == 'TASK'\
             and bot.assign_user != None:
             return Response({'errors': _('Not allowed to get user line data')},
                             status=HTTP_403_FORBIDDEN)
@@ -299,7 +299,7 @@ class LineViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         if not bot:
             return Response({'errors': _('Not found')},
                             status=HTTP_404_NOT_FOUND)
-        if request.user.is_staff == True and bot.bot_type == 'Task'\
+        if request.user.is_staff == True and bot.bot_type == 'TASK'\
             and bot.assign_user != None:
             return Response({'errors': _('Not allowed to get user line data')},
                             status=HTTP_403_FORBIDDEN)
@@ -318,7 +318,7 @@ class LineViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         if not bot:
             return Response({'errors': _('Not found')},
                             status=HTTP_404_NOT_FOUND)
-        if request.user.is_staff == True and bot.bot_type == 'Task'\
+        if request.user.is_staff == True and bot.bot_type == 'TASK'\
             and bot.assign_user != None:
             return Response({'errors': _('Not allowed to get user line data')},
                             status=HTTP_403_FORBIDDEN)
@@ -375,7 +375,7 @@ class FacebookViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         if not bot:
             return Response({'errors': _('Not found')},
                             status=HTTP_404_NOT_FOUND)
-        if request.user.is_staff == True and bot.bot_type == 'Task'\
+        if request.user.is_staff == True and bot.bot_type == 'TASK'\
             and bot.assign_user != None:
             return Response({'errors': _('Not allowed to get user fb data')},
                             status=HTTP_403_FORBIDDEN)
@@ -388,7 +388,7 @@ class FacebookViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         if not bot:
             return Response({'errors': _('Not found')},
                             status=HTTP_404_NOT_FOUND)
-        if request.user.is_staff == True and bot.bot_type == 'Task'\
+        if request.user.is_staff == True and bot.bot_type == 'TASK'\
             and bot.assign_user != None:
             return Response({'errors': _('Not allowed to get user fb data')},
                             status=HTTP_403_FORBIDDEN)
@@ -407,7 +407,7 @@ class FacebookViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         if not bot:
             return Response({'errors': _('Not found')},
                             status=HTTP_404_NOT_FOUND)
-        if request.user.is_staff == True and bot.bot_type == 'Task'\
+        if request.user.is_staff == True and bot.bot_type == 'TASK'\
             and bot.assign_user != None:
             return Response({'errors': _('Not allowed to get user fb data')},
                             status=HTTP_403_FORBIDDEN)
