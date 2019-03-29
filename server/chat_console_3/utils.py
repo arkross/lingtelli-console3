@@ -352,7 +352,7 @@ def change_to_new_paidtype_limitation(user, new_paid_type, to_delete=False):
         bots = Chatbot.objects.filter(user=user).update(hide_status=False)
     # Unlimited faqs
     if faq_limit == 0:
-        bots = Chatbot.objects.fliter(user=user, hide_status=False)
+        bots = Chatbot.objects.filter(user=user, hide_status=False)
         for bot in bots:
             FAQGroup.objects.filter(chatbot=bot).update(hide_status=False)
     if bot_limit != 0:
