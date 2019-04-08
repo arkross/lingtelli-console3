@@ -114,7 +114,7 @@ class TaskbotsPage extends React.Component {
 							<Table.Cell>
 								<div onClick={this.onVendorClick}>{bot.vendor_id}</div>
 							</Table.Cell>
-							<Table.Cell><Dropdown name='assign_user' options={memberOptions} onChange={this.onFormChange.bind(null, bot.id)} selection value={bot.assign_user} placeholder={'Select User'} /></Table.Cell>
+							<Table.Cell><Dropdown name='assign_user' options={memberOptions} onChange={this.onFormChange.bind(null, bot.id)} selection value={bot.assign_user} placeholder={'Select User'} search /></Table.Cell>
 							<Table.Cell>
 								<Button.Group>
 									<NavLink className='ui button' to={`/agent/taskbots/${bot.id}`}><Icon name='file alternate' />Details</NavLink>

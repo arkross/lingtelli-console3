@@ -10,8 +10,8 @@ import { fetchGroups, uploadGroups, trainGroups } from "actions/group"
 import { fetchTaskbots } from '../../../actions/taskbot'
 import FileDownload from "react-file-download"
 import groupApis from "apis/group"
-import { fetchMembers, updateMember } from '../../../actions/agent'
-import { Table, Button, Icon, Dropdown, Label, Pagination, Input, Segment} from 'semantic-ui-react'
+import { fetchMembers, updateMember, fetchMember } from '../../../actions/agent'
+import { Table, Button, Icon, Dropdown, Label, Segment} from 'semantic-ui-react'
 import LingPagination from '../../utils/LingPagination'
 import toJS from 'components/utils/ToJS'
 import qs from 'query-string'
@@ -69,11 +69,9 @@ class Member extends React.Component {
 	onSaveButtonClick = e => {
 		this.setState({ loading: true })
 		const { changes } = this.state
-		const promises = changes.map(c => this.props.updateMember(c.id, { paid_type: c.pid }))
+		const promises = changes.map(c => this.props.updateMember(c.id, { paid_type: c.pid }).then(() => this.props.fetchMember(c.id)))
 		Promise.all(promises).then(() => {
-			this.fetchMembers().then(() => {
-				this.setState({ loading: false })
-			})
+			this.setState({ loading: false })
 		}).catch(() => {
 			this.setState({ loading: false })
 		})
@@ -167,7 +165,7 @@ const mapStateToProps = (state, props) => ({
 })
 
 export default compose(
-	connect(mapStateToProps, { fetchMembers, uploadGroups, fetchGroups, trainGroups, updateMember, fetchTaskbots }),
+	connect(mapStateToProps, { fetchMembers, uploadGroups, fetchGroups, trainGroups, updateMember, fetchTaskbots, fetchMember }),
 	toJS,
 	translate()
 )(Member)

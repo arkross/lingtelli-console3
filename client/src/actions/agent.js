@@ -77,6 +77,11 @@ export const fetchMembers = (page = 1) => dispatch =>
 			return Promise.all(promises)
 		})
 
+export const fetchMember = id => dispatch =>
+	api.readMember(id).then(result => {
+		return dispatch(agentReadMember(id, result))
+	})
+
 export const updateMember = (id, data) => dispatch =>
 	api.updateMember(id, data)
 		.then(result => {
