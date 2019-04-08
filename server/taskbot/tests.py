@@ -312,6 +312,12 @@ class LineTest(TestCase):
         demo_obj = ThirdParty.objects.create(**demo_data)
         staff_obj.third_party.add(demo_obj)
 
+        # Creat new member account
+        user_data = {'username': 'cosmo.hu@lingtelli.com',
+                     'password': 'thisispassword',
+                     'first_name': 'cosmo'}
+        user_obj = User.objects.create_user(**user_data)
+
         # Create new agent account
         agent_data = {'username': 'superuser', 'password': 'agentpassword',
                       'is_staff': True}
@@ -334,7 +340,7 @@ class LineTest(TestCase):
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
                     'failed_msg': 'Cannot understand', 'user': self.agent_obj,
-                    'bot_type': 'TASK'}
+                    'bot_type': 'TASK', 'assign_user': user_obj}
         self.bot_obj = Chatbot.objects.create(**bot_data)
 
         # Initial line
@@ -405,6 +411,12 @@ class FacebookTest(TestCase):
         demo_obj = ThirdParty.objects.create(**demo_data)
         staff_obj.third_party.add(demo_obj)
 
+        # Creat new member account
+        user_data = {'username': 'cosmo.hu@lingtelli.com',
+                     'password': 'thisispassword',
+                     'first_name': 'cosmo'}
+        user_obj = User.objects.create_user(**user_data)
+
         # Create new agent account
         agent_data = {'username': 'superuser', 'password': 'agentpassword',
                       'is_staff': True}
@@ -427,7 +439,7 @@ class FacebookTest(TestCase):
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
                     'failed_msg': 'Cannot understand', 'user': self.agent_obj,
-                    'bot_type': 'TASK'}
+                    'bot_type': 'TASK', 'assign_user': user_obj}
         self.bot_obj = Chatbot.objects.create(**bot_data)
 
         # Initial facebook
