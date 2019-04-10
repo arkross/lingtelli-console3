@@ -65,8 +65,8 @@ export const fetchAllMembers = () => dispatch =>
 			return dispatch(agentAllMembers(data))
 		})
 
-export const fetchMembers = (page = 1) => dispatch =>
-	api.readMembers(page)
+export const fetchMembers = (page = 1, username='') => dispatch =>
+	api.readMembers(page, username)
 		.then(data => {
 			dispatch(agentMembers(data))
 			const promises = data.results.map(el => {

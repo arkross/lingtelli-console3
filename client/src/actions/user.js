@@ -59,3 +59,6 @@ export const updatePackage = (id, data) => dispatch =>
 
 export const createPackage = data => dispatch =>
 	api.createPackage(data).then(result => result)
+
+export const deletePackage = id => dispatch =>
+	api.deletePackage(id).then(result => result)
