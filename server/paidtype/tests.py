@@ -11,7 +11,7 @@ from thirdparty.models import ThirdParty
 
 class PaidTypeTest(TestCase):
     '''Paid type basic testing
-
+    
     RU
     '''
     def setUp(self):
@@ -34,32 +34,12 @@ class PaidTypeTest(TestCase):
             'user_type': 'S'
         }
 
-        tiny_data = {
-            'pk': 3,
-            'name': 'Tiny',
-            'duration': '1_y',
-            'bot_amount': '10',
-            'faq_amount': '50',
-            'user_type': 'M'
-        }
-
-        standard_data = {
-            'pk': 4,
-            'name': 'Standard',
-            'duration': '1_y',
-            'bot_amount': '10',
-            'faq_amount': '100',
-            'user_type': 'S'
-        }
-
         demo_data = {
             'pk': 4,
             'name': 'demo'
         }
         self.trial_obj = PaidType.objects.create(**trial_data)
         staff_obj = PaidType.objects.create(**staff_data)
-        tiny_obj = PaidType.objects.create(**tiny_data)
-        PaidType.objects.create(**standard_data)
         demo_obj = ThirdParty.objects.create(**demo_data)
         self.trial_obj.third_party.add(demo_obj)
 
@@ -70,8 +50,8 @@ class PaidTypeTest(TestCase):
         self.user_obj = User.objects.create(**user_data)
 
         # Create account info
-        acc_data = {'user': self.user_obj, 'paid_type': tiny_obj,
-                    'confirmation_code': 'confirmationcode',
+        acc_data = {'user': self.user_obj, 'paid_type': self.trial_obj,
+                    'confirmation_code': 'confirmationcode', 
                     'code_reset_time': '2019-12-12 00:00:00'}
         AccountInfo.objects.create(**acc_data)
 
@@ -82,7 +62,7 @@ class PaidTypeTest(TestCase):
 
         # Create agent account info
         acc_data = {'user': self.agent_obj, 'paid_type': staff_obj,
-                    'confirmation_code': 'confirmationcode',
+                    'confirmation_code': 'confirmationcode', 
                     'code_reset_time': '2019-12-12 00:00:00'}
         AccountInfo.objects.create(**acc_data)
 
@@ -90,7 +70,7 @@ class PaidTypeTest(TestCase):
         token_obj = Token.objects.create(user=self.user_obj)
         self.accesstoken = token_obj.key
 
-        # Login Agent
+         # Login Agent
         agent_token_obj = Token.objects.create(user=self.agent_obj)
         self.agent_token = agent_token_obj.key
 
@@ -118,7 +98,7 @@ class PaidTypeTest(TestCase):
         response = c.put(the_paidtype_uri, json.dumps({'name': 'Special'}),
                          content_type='application/json')
         self.assertEqual(response.status_code, 401)
-
+    
     def test_not_existed(self):
         '''Paid type is not existed
 
@@ -133,6 +113,13 @@ class PaidTypeTest(TestCase):
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
 
+        # PUT
+        response = c.put(the_paidtype, json.dumps({'name': 'NewName'}),
+                         content_type='application/json', **self.agent_header)
+        self.assertEqual(response.status_code, 404)
+        res_data = json.loads(response.content)
+        self.assertIn('errors', res_data)
+    
     def test_read(self):
         c = Client()
         paidtype_keys = ['id', 'name', 'duration', 'bot_amount', 'faq_amount',
@@ -145,24 +132,24 @@ class PaidTypeTest(TestCase):
         for k in paidtype_keys:
             self.assertIn(k, res_data)
 
-    def test_delete_not_allowed(self):
+    def test_update_member_not_allowed(self):
         c = Client()
         the_paidtype = self.paidtype_uri + '1/'
-        response = c.delete(the_paidtype, **self.agent_header)
+        response = c.put(the_paidtype, json.dumps({'name': 'NewName'}),
+                         content_type='application/json', **self.header)
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
 
-    def test_delete_member_still_assign(self):
+    def test_update_only_agent(self):
         c = Client()
-        the_paidtype = self.paidtype_uri + '3/'
-        response = c.delete(the_paidtype, **self.agent_header)
-        self.assertEqual(response.status_code, 403)
+        the_paidtype = self.paidtype_uri + '1/'
+        response = c.put(the_paidtype, json.dumps({'name': 'NewName',
+                                                   'duration': '0_0',
+                                                   'bot_amount': '1',
+                                                   'faq_amount': '50',
+                                                   'thrid_party': [1,2,3,4]}),
+                         content_type='application/json', **self.agent_header)
+        self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
-        self.assertIn('errors', res_data)
-
-    def test_delete(self):
-        c = Client()
-        the_paidtype = self.paidtype_uri + '4/'
-        response = c.delete(the_paidtype, **self.agent_header)
-        self.assertEqual(response.status_code, 204)
+        self.assertIn('success', res_data)
