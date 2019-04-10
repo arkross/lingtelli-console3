@@ -4,8 +4,8 @@ import { compose } from 'recompose'
 import { connect } from 'react-redux'
 import { translate } from 'react-i18next'
 import _ from 'lodash'
-import { Form, Table, Button, Label, Dropdown, Input, Icon } from 'semantic-ui-react'
-import { fetchPackages, updatePackage } from '../../../actions/user'
+import { Form, Table, Button, Label, Dropdown, Input, Icon, Modal } from 'semantic-ui-react'
+import { fetchPackages, updatePackage, deletePackage } from '../../../actions/user'
 import { fetchPlatforms } from '../../../actions/bot'
 import toJS from 'components/utils/ToJS'
 
@@ -13,6 +13,8 @@ class Plan extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
+			showDeleteModal: false,
+			idToDelete: null,
 			loading: false,
 			paidtypes: props.paidtypes,
 			changes: []
@@ -68,8 +70,28 @@ class Plan extends React.Component {
 			return this.fetchPaidtypes()
 		})
 	}
+	onDeleteButtonClick = (id, e) => {
+		this.setState({
+			showDeleteModal: true,
+			idToDelete: id
+		})
+	}
+	onDeleteConfirmClick = e => {
+		this.setState({ loading: true })
+		this.props.deletePackage(this.state.idToDelete)
+			.finally(() => {
+				this.fetchPaidtypes()
+				this.setState({ loading: false, showDeleteModal: false, idToDelete: null })
+			})
+	}
+	onDeleteCancelClick = e => {
+		this.setState({
+			showDeleteModal: false,
+			idToDelete: null
+		})
+	}
 	render() {
-		const { paidtypes, loading, changes } = this.state
+		const { paidtypes, loading, changes, showDeleteModal, idToDelete } = this.state
 		const { platforms } = this.props
 		const ddOptions = platforms.map(plat => ({
 			key: plat.id,
@@ -78,12 +100,12 @@ class Plan extends React.Component {
 		}))
 		const timeUnitOptions = [
 			{key: 0, text: '∞', value: '0'},
-			{key: 'd', text: 'Day(s)', value: 'd'},
-			{key: 'y', text: 'Year(s)', value: 'y'}
+			{key: 'd', text: 'day(s)', value: 'd'},
+			{key: 'y', text: 'year(s)', value: 'y'}
 		]
+		const selectedPlan = paidtypes.find(el => el.id === idToDelete) || {name: ''}
 		return <div>
 			<NavLink to='/agent/plan/create' className='ui button green'><Icon name='plus' /> Create</NavLink>
-			<Button content='Save Changes' color='blue' icon='save' floated='right' onClick={this.onSaveButtonClick} loading={loading} disabled={changes.length === 0} />
 			<br /><br />
 			<Table size='small'>
 				<Table.Header>
@@ -93,27 +115,49 @@ class Plan extends React.Component {
 						<Table.HeaderCell>FAQ Limit</Table.HeaderCell>
 						<Table.HeaderCell>Duration</Table.HeaderCell>
 						<Table.HeaderCell>Third Party</Table.HeaderCell>
+						<Table.HeaderCell>Actions</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
 					{paidtypes && _.map(paidtypes, pt => {
 						const isChanged = changes.findIndex(c => c.id === pt.id) >= 0
 						const durElements = pt.duration.split('_')
+						const timeUnit = timeUnitOptions.find(el => el.value === durElements[1]) || {text: '', value: ''}
+						const durText = (durElements[1] === '0') ? '∞' : `${durElements[0]} ${timeUnit.text}`
 						const durDropdowns =
 							<Input name='durNumber' value={durElements[0]} type='number' onChange={this.onFormChange.bind(null, pt.id)} action>
 								<input style={{width: '6em'}} />
 								<Dropdown selection options={timeUnitOptions} name='durUnit' onChange={this.onFormChange.bind(null, pt.id)} value={durElements[1]} />
 							</Input>
 						return <Table.Row key={pt.id} warning={isChanged}>
-							<Table.Cell><Input name='name' value={pt.name} type='text' onChange={this.onFormChange.bind(null, pt.id)} /></Table.Cell>
-							<Table.Cell><Input fluid name='bot_amount' min='0' step='1' value={pt.bot_amount} type='number' onChange={this.onFormChange.bind(null, pt.id)}><input style={{ minWidth: '5em'}} /></Input></Table.Cell>
-							<Table.Cell><Input fluid name='faq_amount' min='0' step='1' value={pt.faq_amount} type='number' onChange={this.onFormChange.bind(null, pt.id)}><input minLength={5} style={{minWidth: '5em'}} /></Input></Table.Cell>
-							<Table.Cell>{durDropdowns}</Table.Cell>
-							<Table.Cell><Dropdown fluid multiple selection options={ddOptions} name='third_party' onChange={this.onFormChange.bind(null, pt.id)} value={pt.third_party.map(tp => tp.id)} /></Table.Cell>
+							<Table.Cell>{pt.name}</Table.Cell>
+							<Table.Cell>{pt.bot_amount}</Table.Cell>
+							<Table.Cell>{pt.faq_amount}</Table.Cell>
+							<Table.Cell>{durText}</Table.Cell>
+							<Table.Cell>{pt.third_party.map(tp => <Label content={tp.name} key={tp.id} />)}</Table.Cell>
+							<Table.Cell><Button onClick={this.onDeleteButtonClick.bind(null, pt.id)} content={'Delete'} icon={'trash'} negative /></Table.Cell>
 						</Table.Row>
 					})}
 				</Table.Body>
 			</Table>
+			<Modal
+				open={showDeleteModal}
+				header={`Deleting Plan "${selectedPlan.name}"`}
+				content='Are you sure you want to delete this plan?'
+				actions={[
+					{
+						content: 'Confirm',
+						negative: true,
+						key: 'delete',
+						onClick: this.onDeleteConfirmClick
+					},
+					{
+						content: 'Cancel',
+						key: 'cancel',
+						onClick: this.onDeleteCancelClick
+					}
+				]}
+			/>
 		</div>
 	}
 }
@@ -124,7 +168,7 @@ const mapStateToProps = (state, props) => ({
 })
 
 export default compose(
-	connect(mapStateToProps, {fetchPackages, fetchPlatforms, updatePackage}),
+	connect(mapStateToProps, {fetchPackages, fetchPlatforms, updatePackage, deletePackage}),
 	toJS,
 	translate()
 )(Plan)

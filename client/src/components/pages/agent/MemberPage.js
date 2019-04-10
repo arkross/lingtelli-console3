@@ -10,8 +10,8 @@ import { fetchGroups, uploadGroups, trainGroups } from "actions/group"
 import { fetchTaskbots } from '../../../actions/taskbot'
 import FileDownload from "react-file-download"
 import groupApis from "apis/group"
-import { fetchMembers, updateMember } from '../../../actions/agent'
-import { Table, Button, Icon, Dropdown, Label, Pagination, Input, Segment} from 'semantic-ui-react'
+import { fetchMembers, updateMember, fetchMember } from '../../../actions/agent'
+import { Table, Button, Icon, Dropdown, Label, Segment, Input, Form} from 'semantic-ui-react'
 import LingPagination from '../../utils/LingPagination'
 import toJS from 'components/utils/ToJS'
 import qs from 'query-string'
@@ -24,6 +24,7 @@ class Member extends React.Component {
 			loading: false,
 			pageInput: search.page || 1,
 			activePage: search.page || 1,
+			search: search.username,
 			paidtypeVals: [],
 			changes: []
 		}
@@ -34,9 +35,9 @@ class Member extends React.Component {
 		this.fetchMembers()
 	}
 
-	fetchMembers = (activePage) => {
+	fetchMembers = (activePage, username) => {
 		this.setState({ loading: true })
-		return this.props.fetchMembers(activePage || this.state.activePage).then(() => {
+		return this.props.fetchMembers(activePage || this.state.activePage, username || this.state.search).then(() => {
 			const pts = this.props.members.results.map(el => ({
 				id: el.id,
 				pid: this.props.paidtypes.find(o => o.name === el.paid_type).id,
@@ -69,11 +70,9 @@ class Member extends React.Component {
 	onSaveButtonClick = e => {
 		this.setState({ loading: true })
 		const { changes } = this.state
-		const promises = changes.map(c => this.props.updateMember(c.id, { paid_type: c.pid }))
+		const promises = changes.map(c => this.props.updateMember(c.id, { paid_type: c.pid }).then(() => this.props.fetchMember(c.id)))
 		Promise.all(promises).then(() => {
-			this.fetchMembers().then(() => {
-				this.setState({ loading: false })
-			})
+			this.setState({ loading: false })
 		}).catch(() => {
 			this.setState({ loading: false })
 		})
@@ -84,9 +83,25 @@ class Member extends React.Component {
 		return this.fetchMembers(activePage)
 	}
 
+	onSearchChange = (e, { value }) => {
+		this.setState({ search: value })
+	}
+
+	onSearchSubmit = e => {
+		e.preventDefault()
+		if (this.props.history) {
+			const params = this.props.location ? qs.parse(this.props.location.search) : {username: this.state.search}
+			params.username = this.state.search
+			this.props.history.push({
+				search: `?${qs.stringify(params)}`
+			})
+		}
+		this.fetchMembers(this.state.activePage, this.state.search)
+	}
+
 	render() {
 		const { members, paidtypes, match, location, history } = this.props
-		const { paidtypeVals, changes, activePage, pageInput } = this.state
+		const { paidtypeVals, changes, activePage, pageInput, search } = this.state
 		const { loading } = this.state
 
 		const perPage = 30
@@ -104,6 +119,10 @@ class Member extends React.Component {
 		}))
 
 		return <div>
+			<Form onSubmit={this.onSearchSubmit}>
+				<Input type='text' icon='search' value={search} onChange={this.onSearchChange} name='username' placeholder='Search Username' style={{float: 'left'}} />
+				<Button style={{display: 'none'}} />
+			</Form>
 			<Button content='Save Changes' color='blue' icon='save' floated='right' disabled={changes.length === 0} onClick={this.onSaveButtonClick} loading={loading} />
 			<br /><br />
 			<Segment basic loading={loading}>
@@ -167,7 +186,7 @@ const mapStateToProps = (state, props) => ({
 })
 
 export default compose(
-	connect(mapStateToProps, { fetchMembers, uploadGroups, fetchGroups, trainGroups, updateMember, fetchTaskbots }),
+	connect(mapStateToProps, { fetchMembers, uploadGroups, fetchGroups, trainGroups, updateMember, fetchTaskbots, fetchMember }),
 	toJS,
 	translate()
 )(Member)

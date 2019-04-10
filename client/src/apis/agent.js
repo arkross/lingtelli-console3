@@ -19,9 +19,9 @@ export default {
 
 	readMember: async id => (await axios.get(`${API_HOST}/agent/member/${id}/`)).data,
 
-	readMembers: async (page = 1) => (await axios.get(`${API_HOST}/agent/member/`, { params: { page } })).data,
+	readMembers: async (page = 1, username='') => (await axios.get(`${API_HOST}/agent/member/`, { params: { page, username } })).data,
 
-	readAllMembers: async () => (await axios.get(`${API_HOST}/agent/member/list_all_member/`)).data,
+	readAllMembers: async (params = {}) => (await axios.get(`${API_HOST}/agent/member/list_all_member/`, { params })).data,
 
 	updateMember: async (id, data) => (await axios.put(`${API_HOST}/agent/member/${id}/`, data)).data
 }
