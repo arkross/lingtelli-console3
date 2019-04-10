@@ -1,4 +1,4 @@
-import json
+import json, logging
 from datetime import datetime, timedelta, timezone
 
 from django.shortcuts import render
@@ -8,7 +8,7 @@ from django.utils.translation import gettext as _
 from django.core.validators import EmailValidator
 from django.contrib.auth import authenticate
 
-from rest_framework import viewsets, filters
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.mixins import (ListModelMixin, RetrieveModelMixin,
                                    UpdateModelMixin)
@@ -30,7 +30,7 @@ from rest_framework.status import (
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 
-from chat_console_3 import utils, pagination, filters
+from chat_console_3 import utils, pagination
 from chat_console_3.settings.common import INIT_PASSWORD
 from .serializers import (
     MemberSerializer,
@@ -42,6 +42,8 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from account.models import AccountInfo
 from paidtype.models import PaidType
+
+# logger = logging.getLogger(__name__)
 
 
 # MEMBER PART
@@ -64,10 +66,9 @@ def member_login(request):
     required_key = ['username', 'password']
     login_data = json.loads(request.body)
     for k in required_key:
-        if k not in login_data:
+        if not k in login_data:
             return \
-                Response({'errors':
-                         _('Username and password cannot be empty')},
+                Response({'errors': _('Username and password cannot be empty')},
                          status=HTTP_400_BAD_REQUEST)
 
     username = login_data.get('username')
@@ -75,8 +76,9 @@ def member_login(request):
 
     user = User.objects.filter(username=username).first()
     if not user:
-        return Response({'errors': _('User does not exist.' +
-                        'Please register an account first')},
+        # logger.warning('=== User ' + username + ' not found ===')
+        return Response({'errors': _('User does not exist.' +\
+                                   'Please register an account first')},
                         status=HTTP_404_NOT_FOUND)
 
     user = authenticate(request, username=username, password=password)
@@ -84,21 +86,23 @@ def member_login(request):
     if user:
         old_token_obj = Token.objects.filter(user=user).first()
         expired = utils.check_token_expired(old_token_obj)
-        if expired is True:
+        if expired == True:
             new_token = utils.create_token_with_expire_time(user)
             if new_token:
+                # logger.info('=== User ' + user.username + ' logged in ===')
                 return \
                     Response({'success': new_token.key}, status=HTTP_200_OK)
             else:
-                return Response({'errors': _('Something went wrong. ' +
-                                'Please try again')},
-                                status=HTTP_500_INTERNAL_SERVER_ERROR)
+                # logger.error('XXX Service with login error, please check XXX')
+                return Response({'errors': _('Something went wrong. '+\
+                    'Please try again')}, status=HTTP_500_INTERNAL_SERVER_ERROR)
         else:
+            # logger.info('=== User ' + user.username + ' logged in with' +\
+                        # ' old token ===')
             return Response({'success': old_token_obj.key}, status=HTTP_200_OK)
     else:
         return Response({'errors': _('Username or password is not correct')},
-                        status=HTTP_403_FORBIDDEN)
-
+                         status=HTTP_403_FORBIDDEN) 
 
 @csrf_exempt
 @api_view(['GET'])
@@ -107,9 +111,9 @@ def member_login(request):
 def member_logout(request):
     user = request.user
     Token.objects.filter(user=user).delete()
+    # logger.info('=== User ' + user.username + ' has logged out ===')
     return Response({'success': _('You have successfully logged out')},
                     status=HTTP_200_OK)
-
 
 @csrf_exempt
 @api_view(['POST'])
@@ -132,14 +136,14 @@ def member_register(request):
     required_key = ['username', 'password', 'first_name', 'language']
     register_data = json.loads(request.body)
     err_msg, valid = utils.key_validator(required_key, register_data)
-    if valid is not True:
-        return Response({'errors': _(err_msg)}, status=HTTP_400_BAD_REQUEST)
+    if valid != True:
+        return Response({'errors':_(err_msg)}, status=HTTP_400_BAD_REQUEST)
     user_email = register_data.get('username')
     email_validator = EmailValidator()
     try:
         email_validator(user_email)
     except:
-        return Response({'errors': _('Invalid email address')},
+        return Response({'errors':_('Invalid email address')},
                         status=HTTP_400_BAD_REQUEST)
     user = User.objects.filter(username=register_data.get("username")).first()
     if not user:
@@ -152,28 +156,26 @@ def member_register(request):
         user_create_obj['is_active'] = False
         user = User.objects.create_user(**user_create_obj)
 
-        trail_obj = PaidType.objects.filter(id=2).first()
+        trail_obj = PaidType.objects.get(name='Trial')
         acc_create_obj['user'] = user
         acc_create_obj['paid_type'] = trail_obj
         acc_create_obj['language'] = register_data.get('language')
         acc_create_obj['confirmation_code'] = \
             utils.generate_confirmation_code(user)
-        # Confirmation code expire after 30 minutes
         acc_create_obj['code_reset_time'] = \
-            datetime.now(timezone.utc) + timedelta(minutes=30)
+            datetime.now(timezone.utc) + timedelta(minutes=30)  # Confirmation code expire after 30 minutes
         AccountInfo.objects.create(**acc_create_obj)
         send_successed = utils.send_confirmation_email(user, False)
         if send_successed:
-            return Response({'success': _('User has successfully created. ' +
+            return Response({'success':_('User has successfully created. ' +\
                             'Please check email for account validation')},
                             status=HTTP_201_CREATED)
         else:
-            return Response({'success': _('User has successfully created. ' +
-                            'Email sent failed. Please resend the email to ' +
-                             'validate the account')}, status=HTTP_201_CREATED)
-    return Response({'errors': _('User name has existed')},
-                    status=HTTP_403_FORBIDDEN)
-
+            return Response({'success':_('User has successfully created. ' +\
+                        'Email sent failed. Please resend the email to validate ' +\
+                        'the account')}, status=HTTP_201_CREATED)
+    return Response({'errors':_('User name has existed')},
+                        status=HTTP_403_FORBIDDEN)
 
 @csrf_exempt
 @api_view(['GET'])
@@ -190,32 +192,32 @@ def resend_email(request):
     user = User.objects.filter(username=username).first()
 
     if not user:
-        return Response({'errors': _('Please register an account first')},
+        return Response({'errors':_('Please register an account first')},
                         status=HTTP_404_NOT_FOUND)
     if user.is_active and not user.email:
-        return Response({'errors': _('Account has been confirmed. ' +
+        return Response({'errors':_('Account has been confirmed. ' +\
                         'No need to get confirmation email again')},
                         status=HTTP_403_FORBIDDEN)
 
     # TODO: Logic errors here
     acc_info_obj = user.acc_user.first()
     if acc_info_obj.code_send_times > 3 and \
-       datetime.now(timezone.utc) <= acc_info_obj.code_reset_time:
+        datetime.now(timezone.utc) <= acc_info_obj.code_reset_time:
         time_delta = \
-            (acc_info_obj.code_reset_time -
+            (acc_info_obj.code_reset_time - \
              datetime.now(timezone.utc)).total_seconds()
-        return Response({'errors':
+        return Response({'errors':\
                         _('Please wait for a while to resend the code'),
                         'time': int(time_delta)}, status=HTTP_403_FORBIDDEN)
     if acc_info_obj.code_send_times > 3 and \
-       datetime.now(timezone.utc) > acc_info_obj.code_reset_time:
+        datetime.now(timezone.utc) > acc_info_obj.code_reset_time:
         acc_info_obj.code_send_times = 1
         acc_info_obj.code_reset_time = datetime.now(timezone.utc) + \
-            timedelta(minutes=30)
+                                       timedelta(minutes=30)
         acc_info_obj.save()
 
     if acc_info_obj.code_send_times <= 3 and \
-       datetime.now(timezone.utc) > acc_info_obj.code_reset_time:
+        datetime.now(timezone.utc) > acc_info_obj.code_reset_time:
         acc_info_obj.code_reset_time = \
             datetime.now(timezone.utc) + timedelta(minutes=30)
         acc_info_obj.save()
@@ -223,11 +225,10 @@ def resend_email(request):
     send_successed = utils.send_confirmation_email(user, False)
 
     if send_successed:
-        return Response({'success': _('Confirmation email has been sent')},
+        return Response({'success':_('Confirmation email has been sent')},
                         status=HTTP_200_OK)
-    return Response({'errors': _('Failed to send email')},
+    return Response({'errors':_('Failed to send email')},
                     status=HTTP_400_BAD_REQUEST)
-
 
 @csrf_exempt
 @api_view(['POST'])
@@ -256,18 +257,18 @@ def confirm_user(request):
 
     if user:
         if user.is_active and not user.email:
-            return Response({'errors': _('Account has been confirmed. ' +
+            return Response({'errors':_('Account has been confirmed. ' +\
                             'No need to get confirmation email again')},
                             status=HTTP_400_BAD_REQUEST)
         elif user.is_active and user.email:
             user.username = user.email
             user.email = ""
             user.save()
-            return Response({'success': _('User name has been changed')},
+            return Response({'success':_('User name has been changed')},
                             status=HTTP_200_OK)
         user.is_active = True
         user.save()
-        return Response({'success': _('Account has been validated')},
+        return Response({'success':_('Account has been validated')},
                         status=HTTP_200_OK)
 
     return Response({'errors': _('Account validation failed')},
@@ -279,7 +280,7 @@ class MemberProfileViewset(viewsets.ModelViewSet):
 
     Using RUD with member related data.
 
-    detail_route:
+    detail_route: 
         delete_confirm
 
     Request format example:
@@ -321,23 +322,22 @@ class MemberProfileViewset(viewsets.ModelViewSet):
         if request.body:
             # Prevent from user updating other user's profile
             if request.user.id != int(pk):
-                return Response({'errors': _('Not found')},
+                return Response({'errors':_('Not found')},
                                 status=HTTP_404_NOT_FOUND)
             update_data = json.loads(request.body)
             user_obj = request.user
             # Update username
-            if update_data.get('username') and\
-               update_data.get('username') != '':
+            if update_data.get('username') and update_data.get('username') != '':
                 new_email = update_data.get('username')
                 email_validator = EmailValidator()
                 try:
                     email_validator(new_email)
                 except:
-                    return Response({'errors': _('Invalid email address')},
+                    return Response({'errors':_('Invalid email address')},
                                     status=HTTP_400_BAD_REQUEST)
                 same_user = User.objects.filter(username=new_email)
                 if same_user:
-                    return Response({'errors': _('Username has existed.' +
+                    return Response({'errors':_('Username has existed.' +\
                                     'Please use other one')},
                                     status=HTTP_400_BAD_REQUEST)
                 user_obj.email = new_email
@@ -345,38 +345,34 @@ class MemberProfileViewset(viewsets.ModelViewSet):
                 send_status = utils.send_confirmation_email(user_obj, True)
                 if not send_status:
                     return \
-                        Response({'errors':
-                                 _('Sending confirmation email failed')},
-                                 status=HTTP_400_BAD_REQUEST)
+                        Response({'errors':_('Sending confirmation email failed')},
+                                status=HTTP_400_BAD_REQUEST)
 
                 user_obj.is_active = False
                 user_obj.username = user_obj.email
                 user_obj.email = ''
                 user_obj.save()
                 Token.objects.filter(user=user_obj).delete()
-                return Response({'success': _('Confirmation email has sent.' +
+                return Response({'success':_('Confirmation email has sent.' +\
                                 'Please check your mailbox and login again')},
                                 status=HTTP_200_OK)
 
             # Update password
-            if update_data.get('password') and\
-               update_data.get('password') != '':
+            if update_data.get('password') and update_data.get('password') != '':
                 if not update_data.get('old_password') or\
-                   update_data.get('old_password') == '':
-                    return Response({'errors':
-                                    _('Old password cannot be empty')},
+                    update_data.get('old_password') == '':
+                    return Response({'errors':_('Old password cannot be empty')},
                                     status=HTTP_400_BAD_REQUEST)
                 passwd = update_data.get('password')
                 old_passwd = update_data.get('old_password')
                 if not user_obj.check_password(old_passwd):
-                    return Response({'errors':
-                                    _('Old password is not correct')},
+                    return Response({'errors':_('Old password is not correct')},
                                     status=HTTP_403_FORBIDDEN)
                 user_obj.set_password(passwd)
                 user_obj.save()
                 Token.objects.filter(user=user_obj).delete()
-                return Response({'success': _('Password has updated.' +
-                                 'Please login again')}, status=HTTP_200_OK)
+                return Response({'success':_('Password has updated.' +\
+                                'Please login again')}, status=HTTP_200_OK)
 
             # Update first_name
             if update_data.get('first_name'):
@@ -388,32 +384,32 @@ class MemberProfileViewset(viewsets.ModelViewSet):
                 acc_obj = AccountInfo.objects.filter(user=user_obj).first()
                 acc_obj.language = update_data.get('language')
                 acc_obj.save()
-            elif update_data.get('language') == '':  # Cannot be empty
-                return Response({'errors': _('Please select one language')},
-                                status=HTTP_400_BAD_REQUEST)
+            elif update_data.get('language') == '': # Cannot be empty
+                return Response({'errors':_('Please select one language')},
+                                    status=HTTP_400_BAD_REQUEST)
 
-            return Response({'success': _('Update succeeded')},
+            return Response({'success':_('Update succeeded')},
                             status=HTTP_200_OK)
 
-        return Response({'errors': _('No content')},
+        return Response({'errors':_('No content')},
                         status=HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, pk=None):
         if request.user.id != int(pk):
-            return Response({'errors': _('Not found')},
-                            status=HTTP_404_NOT_FOUND)
+            return Response({'errors':_('Not found')},
+                                status=HTTP_404_NOT_FOUND)
         user_obj = request.user
         acc_obj = AccountInfo.objects.filter(user=user_obj).first()
-        if acc_obj.delete_confirm is not True:
-            return Response({'errors': _('Please confirm the deletion first')},
+        if acc_obj.delete_confirm != True:
+            return Response({'errors':_('Please confirm the deletion first')},
                             status=HTTP_403_FORBIDDEN)
         user_obj.delete()
         check_user_deleted = User.objects.filter(id=user_obj.id).first()
         if check_user_deleted:
             acc_obj.delete_confirm = False
             acc_obj.save()
-            return Response({'errors': _('Deleting account failed')},
-                            status=HTTP_400_BAD_REQUEST)
+            return Response({'errors':_('Deleting account failed')},
+                             status=HTTP_400_BAD_REQUEST)
         return Response(status=HTTP_204_NO_CONTENT)
 
     @action(methods=['put'], detail=True, permission_classes=[IsAuthenticated])
@@ -428,25 +424,24 @@ class MemberProfileViewset(viewsets.ModelViewSet):
 
         if request.body:
             if request.user.id != int(pk):
-                return Response({'errors': _('Not found')},
+                return Response({'errors':_('Not found')},
                                 status=HTTP_404_NOT_FOUND)
 
             request_data = json.loads(request.body)
             user_obj = request.user
             if not request_data.get('password'):
-                return Response({'errors': _('Please enter the password')},
+                return Response({'errors':_('Please enter the password')},
                                 status=HTTP_400_BAD_REQUEST)
             if user_obj.check_password(request_data.get('password')):
                 acc_obj = AccountInfo.objects.filter(user=user_obj).first()
                 acc_obj.delete_confirm = True
                 acc_obj.save()
-                return Response({'success': _('Delete confirmed')},
+                return Response({'success':_('Delete confirmed')},
                                 status=HTTP_200_OK)
-            return Response({'errors': _('Password is not correct')},
+            return Response({'errors':_('Password is not correct')},
                             status=HTTP_403_FORBIDDEN)
-        return Response({'errors': _('No content')},
+        return Response({'errors':_('No content')},
                         status=HTTP_400_BAD_REQUEST)
-
 
 # AGENT PART
 @csrf_exempt
@@ -464,32 +459,30 @@ def agent_login(request):
     password = login_data.get('password')
     check_user_exist = User.objects.filter(username=username).first()
     if not check_user_exist:
-        return Response({'errors': _('User does not exist.' +
-                        ' Please contact admin.')},
+        return Response({'errors':_('User does not exist.' +\
+                                    ' Please contact admin.')},
                         status=HTTP_404_NOT_FOUND)
-    if check_user_exist.is_staff is False:
-        return Response({'errors': _('Only staff can login this page')},
+    if check_user_exist.is_staff == False:
+        return Response({'errors':_('Only staff can login this page')},
                         status=HTTP_403_FORBIDDEN)
     user = authenticate(request, username=username, password=password)
 
     if user:
         old_token_obj = Token.objects.filter(user=user).first()
         expired = utils.check_token_expired(old_token_obj)
-        if expired is True:
+        if expired == True:
             new_token = utils.create_token_with_expire_time(user)
             if new_token:
                 return \
                     Response({'success': new_token.key}, status=HTTP_200_OK)
             else:
-                return Response({'errors': _('Something went wrong. ' +
-                                'Please try again')},
-                                status=HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({'errors': _('Something went wrong. '+\
+                    'Please try again')}, status=HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response({'success': old_token_obj.key}, status=HTTP_200_OK)
     else:
         return Response({'errors': _('Username or password is not correct')},
-                        status=HTTP_403_FORBIDDEN)
-
+                         status=HTTP_403_FORBIDDEN)
 
 @csrf_exempt
 @api_view(['GET'])
@@ -528,7 +521,7 @@ class AgentProfileViewset(viewsets.ModelViewSet):
                 User.objects.create_user(username=username, password=password)
             if new_agent_obj:
                 agent_acc_data = {}
-                staff_type = PaidType.objects.filter(id=1).first()
+                staff_type = PaidType.objects.filter(name='Staff').first()
                 agent_acc_data['confirmation_code'] = 'staff'
                 agent_acc_data['language'] = 'tw'
                 agent_acc_data['code_reset_time'] = datetime.now(timezone.utc)
@@ -537,19 +530,19 @@ class AgentProfileViewset(viewsets.ModelViewSet):
                 agent_acc = AccountInfo.objects.create(**agent_acc_data)
                 new_agent_obj.is_staff = True
                 new_agent_obj.save()
-                return Response({'success': _('Create new agent succeeded')},
+                return Response({'success':_('Create new agent succeeded')},
                                 status=HTTP_201_CREATED)
-            return Response({'errors': _('Create failed')},
+            return Response({'errors':_('Create failed')},
                             status=HTTP_400_BAD_REQUEST)
-        return Response({'errors': _('No content')},
+        return Response({'errors':_('No content')},
                         status=HTTP_400_BAD_REQUEST)
 
     def update(self, request, pk=None):
         if request.body:
             user_obj = request.user
             if user_obj.id != int(pk):
-                return Response({'errors': _('Not found')},
-                                status=HTTP_404_NOT_FOUND)
+                return Response({'errors':_('Not found')},
+                    status=HTTP_404_NOT_FOUND)
             update_data = json.loads(request.body)
 
             # Change password
@@ -559,17 +552,17 @@ class AgentProfileViewset(viewsets.ModelViewSet):
                     user_obj.set_password(update_data.get('password'))
                     user_obj.save()
                     Token.objects.filter(user=user_obj).delete()
-                    return Response({'success': _('Password has updated.' +
+                    return Response({'success':_('Password has updated.' +\
                                     'Please login again')}, status=HTTP_200_OK)
-                return Response({'errors': _('Old password is not correct')},
-                                status=HTTP_403_FORBIDDEN)
+                return Response({'errors':_('Old password is not correct')},
+                                    status=HTTP_403_FORBIDDEN)
 
             # Change username
             if update_data.get('username', None):
                 username = update_data.get('username')
                 same_username = User.objects.filter(username=username).first()
                 if same_username:
-                    return Response({'errors': _('User name existed')},
+                    return Response({'errors':_('User name existed')},
                                     status=HTTP_400_BAD_REQUEST)
                 user_obj.username = username
                 user_obj.save()
@@ -579,34 +572,34 @@ class AgentProfileViewset(viewsets.ModelViewSet):
                 choice_list = ['tw', 'en', 'cn']
                 if not update_data.get('language') in choice_list:
                     return \
-                        Response({'errors': _('Do not support this language')},
-                                 status=HTTP_400_BAD_REQUEST)
+                        Response({'errors':_('Do not support this language')},
+                                status=HTTP_400_BAD_REQUEST)
                 acc_obj = AccountInfo.objects.filter(user=user_obj).first()
                 acc_obj.language = update_data.get('language')
                 acc_obj.save()
 
-            return Response({'success': _('Update succeeded')},
+            return Response({'success':_('Update succeeded')},
                             status=HTTP_200_OK)
 
     def destroy(self, request, pk=None):
         if request.user.is_superuser:
-            return Response({'errors': _('Superuser cannot be deleted')},
+            return Response({'errors':_('Superuser cannot be deleted')},
                             status=HTTP_403_FORBIDDEN)
         if request.user.id != int(pk):
-            return Response({'errors': _('Not found')},
-                            status=HTTP_404_NOT_FOUND)
+            return Response({'errors':_('Not found')},
+                                status=HTTP_404_NOT_FOUND)
         user_obj = request.user
         acc_obj = AccountInfo.objects.filter(user=user_obj).first()
-        if acc_obj.delete_confirm is not True:
-            return Response({'errors': _('Please confirm the deletion first')},
+        if acc_obj.delete_confirm != True:
+            return Response({'errors':_('Please confirm the deletion first')},
                             status=HTTP_403_FORBIDDEN)
         user_obj.delete()
         check_user_deleted = User.objects.filter(id=user_obj.id).first()
         if check_user_deleted:
             acc_obj.delete_confirm = False
             acc_obj.save()
-            return Response({'errors': _('Deleting account failed')},
-                            status=HTTP_400_BAD_REQUEST)
+            return Response({'errors':_('Deleting account failed')},
+                             status=HTTP_400_BAD_REQUEST)
         return Response(status=HTTP_204_NO_CONTENT)
 
     @action(methods=['put'], detail=True,
@@ -627,27 +620,27 @@ class AgentProfileViewset(viewsets.ModelViewSet):
         '''
 
         if request.user.is_superuser:
-            return Response({'errors': _('Superuser cannot be deleted')},
+            return Response({'errors':_('Superuser cannot be deleted')},
                             status=HTTP_403_FORBIDDEN)
         if request.body:
             if request.user.id != int(pk):
-                return Response({'errors': _('Not found')},
+                return Response({'errors':_('Not found')},
                                 status=HTTP_404_NOT_FOUND)
 
             request_data = json.loads(request.body)
             user_obj = request.user
             if not request_data.get('password'):
-                return Response({'errors': _('Please enter the password')},
+                return Response({'errors':_('Please enter the password')},
                                 status=HTTP_400_BAD_REQUEST)
             if user_obj.check_password(request_data.get('password')):
                 acc_obj = AccountInfo.objects.filter(user=user_obj).first()
                 acc_obj.delete_confirm = True
                 acc_obj.save()
-                return Response({'success': _('Delete confirmed')},
+                return Response({'success':_('Delete confirmed')},
                                 status=HTTP_200_OK)
-            return Response({'errors': _('Password is not correct')},
+            return Response({'errors':_('Password is not correct')},
                             status=HTTP_403_FORBIDDEN)
-        return Response({'errors': _('No content')},
+        return Response({'errors':_('No content')},
                         status=HTTP_400_BAD_REQUEST)
 
 
@@ -666,9 +659,7 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
 
     def list(self, request):
         members = User.objects.filter(is_staff=False)
-        filter_members = filters.AgentMemberListFilter(request.GET,
-                                                       queryset=members)
-        page = self.paginate_queryset(filter_members.qs)
+        page = self.paginate_queryset(members)
         serializer = AgentMemberSerializer(page, many=True)
         return self.get_paginated_response(serializer.data)
 
@@ -682,7 +673,7 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
             res_dict['start_date'] = acc_obj.start_date
             res_dict['expire_date'] = acc_obj.expire_date
             return Response(res_dict, status=HTTP_200_OK)
-        return Response({'errors': _('Not found')}, status=HTTP_404_NOT_FOUND)
+        return Response({'errors':_('Not found')}, status=HTTP_404_NOT_FOUND)
 
     def update(self, request, pk=None):
         '''Update member paidtype
@@ -696,7 +687,7 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
                 old_paid_type = acc_obj.paid_type
                 paid_obj = PaidType.objects.filter(id=paid_type_id).first()
                 if paid_obj.user_type == 'S':
-                    return Response({'errors': _('Invalid type')},
+                    return Response({'errors':_('Invalid type')},
                                     status=HTTP_403_FORBIDDEN)
                 # TODO: Send email to inform user type changed
                 utils.change_to_new_paidtype_limitation(user_obj, paid_obj,
@@ -719,15 +710,15 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
                 else:
                     acc_obj.expire_date = None
                 acc_obj.save()
-                return Response({'success': _('Update successed')},
+                return Response({'success':_('Update successed')},
                                 status=HTTP_200_OK)
-            return Response({'errors': _('paid_type cannot be empty')},
+            return Response({'errors':_('paid_type cannot be empty')},
                             status=HTTP_403_FORBIDDEN)
-        return Response({'errors': _('No content')},
+        return Response({'errors':_('No content')},
                         status=HTTP_400_BAD_REQUEST)
-
+    
     @action(methods=['get'], detail=False,
-            permission_classes=[IsAuthenticated, IsAdminUser])
+           permission_classes=[IsAuthenticated, IsAdminUser])
     def list_all_member(self, requset):
         members = User.objects.filter(is_staff=False)
         serializer = AgentMemberSerializer(members, many=True)

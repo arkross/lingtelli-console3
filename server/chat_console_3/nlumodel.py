@@ -1,8 +1,6 @@
 '''NLU Related Features
 '''
-import requests
-import json
-import os
+import requests, json, os
 
 from django.http import HttpResponse
 
@@ -17,7 +15,6 @@ if env:
         from .settings.production import NLU_HOST
 else:
     from .settings.common import NLU_HOST
-
 
 def create_model(chatbot_obj):
     '''Create NLU model
@@ -87,7 +84,6 @@ def train_model(chatbot_obj):
             return False, 'NLU server error: ' +\
                 str(json.loads(response.content))
 
-
 def delete_model(chatbot_obj):
     '''Delete NLU model
 
@@ -105,7 +101,6 @@ def delete_model(chatbot_obj):
         requests.delete(url, timeout=10)
     except Exception as e:
         print('XXX Delete NLU model error: ' + str(e) + ' XXX')
-
 
 def initial_question_answer(chatbot_obj):
     '''Initial QA for model
