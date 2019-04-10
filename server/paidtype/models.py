@@ -6,10 +6,11 @@ USER_TYPE_CHOICE = (
     ('M', 'MEMBER')
 )
 
+
 class PaidType(models.Model):
     '''Paid type
 
-    Giving user different paid type of the services. Each type has different 
+    Giving user different paid type of the services. Each type has different
     features opened.
 
     Args:
@@ -24,12 +25,12 @@ class PaidType(models.Model):
     duration = models.CharField(max_length=100, blank=False, null=False)
     bot_amount = models.CharField(max_length=100, blank=False, null=False)
     faq_amount = models.CharField(max_length=100, blank=False, null=False)
-    third_party = models.ManyToManyField(ThirdParty , related_name='paid_party')
+    third_party = models.ManyToManyField(ThirdParty, related_name='paid_party')
     user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICE,
-                                default='M')
+                                 default='M')
 
     class Meta:
-        db_table='paid_type'
+        db_table = 'paid_type'
 
     def __str__(self):
         return self.name
