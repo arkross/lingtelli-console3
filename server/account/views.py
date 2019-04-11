@@ -1,4 +1,6 @@
 import json
+import random
+import string
 from datetime import datetime, timedelta, timezone
 
 from django.shortcuts import render
@@ -27,6 +29,7 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_403_FORBIDDEN,
     HTTP_404_NOT_FOUND,
+    HTTP_424_FAILED_DEPENDENCY,
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 
@@ -272,6 +275,31 @@ def confirm_user(request):
 
     return Response({'errors': _('Account validation failed')},
                     status=HTTP_400_BAD_REQUEST)
+
+
+@csrf_exempt
+@api_view(['POST'])
+@authentication_classes([])
+@permission_classes([])
+def reset_password(request):
+    req_data = json.loads(request.body)
+    user_obj = User.objects.filter(username=req_data.get('username')).first()
+    if user_obj:
+        letters = string.ascii_letters
+        random_password = ''.join(random.choice(letters) for i in range(10))
+        user_obj.set_password(random_password)
+        user_obj.save()
+        success = utils.send_reset_email(user_obj, random_password)
+        if not success:
+            return Response({'errors': _('Send reset email failed. ' +
+                            'Please send again')},
+                            status=HTTP_424_FAILED_DEPENDENCY)
+        return Response({'success': _('New password has sent to your ' +
+                        'mailbox. Please check and use the new password to ' +
+                         'login')},
+                        status=HTTP_200_OK)
+    return Response({'errors': _('User does not exist')},
+                    status=HTTP_404_NOT_FOUND)
 
 
 class MemberProfileViewset(viewsets.ModelViewSet):
@@ -698,7 +726,6 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
                 if paid_obj.user_type == 'S':
                     return Response({'errors': _('Invalid type')},
                                     status=HTTP_403_FORBIDDEN)
-                # TODO: Send email to inform user type changed
                 utils.change_to_new_paidtype_limitation(user_obj, paid_obj,
                                                         to_delete=True)
                 acc_obj.paid_type = paid_obj
@@ -729,6 +756,8 @@ class AgentMemberViewset(ListModelMixin, RetrieveModelMixin, UpdateModelMixin,
     @action(methods=['get'], detail=False,
             permission_classes=[IsAuthenticated, IsAdminUser])
     def list_all_member(self, requset):
+        '''list all member for assigning to the bot
+        '''
         members = User.objects.filter(is_staff=False)
         serializer = AgentMemberSerializer(members, many=True)
         return Response(serializer.data, status=HTTP_200_OK)
