@@ -8,6 +8,8 @@ import { withRouter } from 'react-router-dom'
 import toJS from '../utils/ToJS'
 import { updateBot } from 'actions/bot'
 
+import APIDocPage from './APIDocPage'
+
 class APIIntegration extends Component {
 
 	constructor(props) {
@@ -112,6 +114,12 @@ class APIIntegration extends Component {
 				: <Label basic color='grey' style={{ float: 'right'}}><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label>}
 				</Grid.Column>
 			</Grid.Row>
+			<Grid.Row>
+				<Grid.Column>
+					<APIDocPage vendorId={vendor_id} />
+				</Grid.Column>
+			</Grid.Row>
+
 			<Grid.Row>
 				<Grid.Column>
 					<div>{t('chatbot.setting.api.description')}</div>
@@ -345,14 +353,15 @@ class APIIntegration extends Component {
 									statusCode: 200,
 									content: {
 										"sender":"BOT",
-										"type":"text",
+										"type":"answer",
 										"state":"start",
 										"success":false,
 										"uid":"c16abf20-bdaf-45c0-abd3-501ca1711085",
 										"sid":"1apt8u6pv63g",
 										"oriQue":"Hi",
 										"data":{
-											"text": info.failed_msg
+											"text": info.failed_msg,
+											"questions": []
 										}
 									}
 								},
@@ -362,7 +371,7 @@ class APIIntegration extends Component {
 									statusCode: 200,
 									content: {
 										"sender":"BOT",
-										"type":"list",
+										"type":"answer",
 										"state":"in_progress",
 										"success":true,
 										"uid":"c16abf20-bdaf-45c0-abd3-501ca1711085",

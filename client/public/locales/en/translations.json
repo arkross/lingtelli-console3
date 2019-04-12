@@ -2,7 +2,18 @@
   "login": {
     "loginBtn": "Login",
     "description": "New to us? ",
+    "forgotPassword": "Forgot your password?",
     "signUp": "Sign up"
+  },
+  "resetPass": {
+    "title": "Reset Password",
+    "email": "Email Address",
+    "continue": "Continue",
+    "done": {
+      "description": "If the account exists, we will send an email to you. Please check your email inbox and follow the instructions.",
+      "title": "All Done!",
+      "backToLogin": "Back to Login"
+    }
   },
   "menu": {
     "dashboard": "Dashboard",
@@ -281,7 +292,7 @@
           "title": "Reply",
           "sender_value": "",
           "sender_desc": "Fixed value \"BOT\"",
-          "type_value": "\"text\" or \"list\"",
+          "type_value": "\"answer\", \"no_answer\" or \"error\"",
           "type_desc": "See table Choice Structure",
           "state_value": "\"start\", \"in_progress\", or \"completed\"",
           "state_desc": "Session's state",
