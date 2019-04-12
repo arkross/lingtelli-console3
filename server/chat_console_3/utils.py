@@ -1,6 +1,13 @@
 '''Put any functional tool in here
 '''
-import base64, urllib, uuid, os, zlib, zipfile, io, csv
+import base64
+import urllib
+import uuid
+import os
+import zlib
+import zipfile
+import io
+import csv
 from datetime import datetime, timedelta, timezone, date
 from Crypto.Cipher import AES
 
@@ -34,7 +41,6 @@ else:
                                                 TOKEN_DURATION)
 
 
-
 def url_encoder(data):
     '''Encode user's email and send as confirmation code
 
@@ -44,11 +50,13 @@ def url_encoder(data):
         encoded: User's encoded email address with key
     '''
 
-    data = data.rjust(128) # Need to be multiple 16 in length
-    cipher = AES.new(URL_ENCODE_KEY, AES.MODE_ECB) # never use ECB in strong systems obviously
-    encrypt_data = (cipher.encrypt(data)) 
+    data = data.rjust(128)  # Need to be multiple 16 in length
+    # never use ECB in strong systems obviously
+    cipher = AES.new(URL_ENCODE_KEY, AES.MODE_ECB)
+    encrypt_data = (cipher.encrypt(data))
     encoded = base64.b64encode(encrypt_data)
     return encoded.decode("utf-8")
+
 
 def url_decoder(encoded):
     '''Decoded user's encoded email address
@@ -63,10 +71,11 @@ def url_decoder(encoded):
     try:
         decoded = cipher.decrypt(base64.b64decode(encoded))
     except Exception as e:
-        print('Decoded error: ' +  str(e))
+        print('Decoded error: ' + str(e))
         return False
     decoded = decoded.decode("utf-8")
     return decoded.strip().split(',')[0]
+
 
 def generate_confirmation_code(user):
     '''Generate confirmation code with key
@@ -82,13 +91,14 @@ def generate_confirmation_code(user):
     encoded = url_encoder(confirmation_code_data)
     return encoded
 
+
 def send_confirmation_email(user, update_user):
     '''Send email process
 
     Args:
-        user: 
+        user:
             User object.
-        update_user: 
+        update_user:
             Bool. Update username with new email.
     Returns:
         False: If sent email failed.
@@ -106,7 +116,7 @@ def send_confirmation_email(user, update_user):
         the_email = 'email_cn.html'
     member_name = user.first_name if user.first_name else user.username
     confirm_email = CONFIRM_DOMAIN + \
-        urllib.parse.quote_plus(str(acc_info.confirmation_code))+ '/'
+        urllib.parse.quote_plus(str(acc_info.confirmation_code)) + '/'
     from_mail = EMAIL_HOST_USER
     html_email = render_to_string(the_email, {'name': member_name,
                                               'confirm_email': confirm_email})
@@ -125,6 +135,36 @@ def send_confirmation_email(user, update_user):
     acc_info.save()
     return True
 
+
+def send_reset_email(user, new_password):
+    '''Send email when member forgot password and reset the password
+
+    Will randomly generate a code for user to login
+    '''
+    acc_info = user.acc_user.first()
+    subject = 'Lingtelli Reset Password Email'
+    the_email = 'reset.html'
+    if acc_info.language == 'tw':
+        subject = '語智網密碼重設'
+        the_email = 'reset_tw.html'
+    elif acc_info.language == 'cn':
+        subject = '语智网密码重设'
+        the_email = 'reset_cn.html'
+    member_name = user.first_name if user.first_name else user.username
+    from_mail = EMAIL_HOST_USER
+    html_email = render_to_string(the_email, {'name': member_name,
+                                              'new_password': new_password})
+    txt_email = strip_tags(html_email)
+    to_mail = user.username
+    try:
+        send_mail(subject, txt_email, from_mail, [to_mail],
+                  fail_silently=False, html_message=html_email)
+    except Exception as err:
+        print('Send email failed: ' + str(err))
+        return False
+    return True
+
+
 def key_validator(key_list, input_dict):
     '''Checking request key correctness
 
@@ -136,11 +176,12 @@ def key_validator(key_list, input_dict):
 
     if len(key_list) != len(input_dict):
         return 'Lack or more then the required key amount', False
-    
+
     for k in key_list:
-        if input_dict.get(k) == None:
+        if input_dict.get(k) is None:
             return 'Key missing or empty: ' + k, False
     return '', True
+
 
 def check_token_expired(token):
     '''Check if the token has expired
@@ -149,13 +190,14 @@ def check_token_expired(token):
     If expired return True else False
     '''
 
-    if token == None:
+    if token is None:
         return True
     if token.created + timedelta(minutes=TOKEN_DURATION) \
-        > datetime.now(timezone.utc):
+       > datetime.now(timezone.utc):
         return False
     token.delete()
     return True
+
 
 def create_token_with_expire_time(user):
     '''Create the token with specified time
@@ -166,6 +208,7 @@ def create_token_with_expire_time(user):
     token_data = {'user': user, 'created': datetime.now(timezone.utc)}
     new_token = Token.objects.create(**token_data)
     return new_token
+
 
 def custom_exception_handler(exc, context):
     '''Customized exception response data
@@ -188,6 +231,7 @@ def custom_exception_handler(exc, context):
             response.data = custom_response_data
     return response
 
+
 def transfer_paidtype_duration_to_time(paid_obj):
     '''Transfer the paidtype duration to time object
 
@@ -209,6 +253,7 @@ def transfer_paidtype_duration_to_time(paid_obj):
         return timedelta(days=count)
     return None
 
+
 def generate_uuid(s_1, s_2):
     '''Generate uuid
 
@@ -224,6 +269,7 @@ def generate_uuid(s_1, s_2):
 
     combine_str = s_1 + s_2
     return uuid.uuid3(uuid.NAMESPACE_DNS, combine_str)
+
 
 def check_upload_file_type(upload_file):
         '''Deal with both utf-8 and big5 files
@@ -241,6 +287,7 @@ def check_upload_file_type(upload_file):
             except:
                 print('====WARNING====: The upload file is not big5')
         return file_result
+
 
 def delete_create_failed_model(create_status, chatbot_obj):
     ''' Delete related model when created failed
@@ -267,6 +314,7 @@ def delete_create_failed_model(create_status, chatbot_obj):
         chatbot_obj.delete()
         create_obj = None
     return create_obj
+
 
 def get_all_bots_faqs(user):
     bots = Chatbot.objects.filter(user=user)
@@ -301,11 +349,12 @@ def get_all_bots_faqs(user):
             zip_obj.writestr(file_name,
                              csv_file.getvalue().encode('utf-8-sig'))
         except Exception as e:
-            print('Compress file error: ',str(e))
+            print('Compress file error: ', str(e))
         finally:
             csv_file.close()
     zip_obj.close()
     return zip_file
+
 
 def set_bot_faq_to_hidden(user):
     '''Initial all bots and faqs to hidden
@@ -320,6 +369,7 @@ def set_bot_faq_to_hidden(user):
         FAQGroup.objects.filter(chatbot=bot).update(hide_status=True)
         bot.save()
 
+
 def setup_all_bots_thirdparty_user(user, new_paid_type):
     '''Setup the new thirdparty for all existing bots under one user
     '''
@@ -331,6 +381,7 @@ def setup_all_bots_thirdparty_user(user, new_paid_type):
         for party in allow_third_party:
             BotThirdPartyGroup.objects.create(chatbot=bot, third_party=party)
 
+
 def reset_all_bots_thirdparty(updated_paidtype):
     '''Update all bots' thirdparty under user has the updated paidtype
     '''
@@ -338,6 +389,7 @@ def reset_all_bots_thirdparty(updated_paidtype):
     accs = AccountInfo.objects.filter(paid_type=updated_paidtype)
     for acc in accs:
         setup_all_bots_thirdparty_user(acc.user, updated_paidtype)
+
 
 def change_to_new_paidtype_limitation(user, new_paid_type, to_delete=False):
     '''Update the bots and faqs based on paidtype
@@ -387,6 +439,7 @@ def change_to_new_paidtype_limitation(user, new_paid_type, to_delete=False):
     # Setup thirdparty for the remaining bots
     setup_all_bots_thirdparty_user(user, new_paid_type)
 
+
 def send_task_downgrade_email(user, acc, new_paidtype, to_send_file=False):
     '''Send email to inform user's paidtype is going to change
 
@@ -419,7 +472,7 @@ def send_task_downgrade_email(user, acc, new_paidtype, to_send_file=False):
             txt_email = strip_tags(html_email)
             try:
                 send_mail(subject, txt_email, from_mail, [to_mail],
-                        fail_silently=False, html_message=html_email)
+                          fail_silently=False, html_message=html_email)
             except Exception as e:
                 print('Sending inform email failed: ' + str(e))
         else:
@@ -436,11 +489,11 @@ def send_task_downgrade_email(user, acc, new_paidtype, to_send_file=False):
                 the_email = 'expired_inform_cn.html'
                 zip_name = '问题集备份-' + today_date + '.zip'
             expire_email = \
-                    render_to_string(the_email,
-                                     {'name': member_name,
-                                     'acc_type': acc.paid_type.name,
-                                     'bot_amount': new_paidtype.bot_amount,
-                                     'faq_total': new_paidtype.faq_amount})
+                render_to_string(the_email,
+                                 {'name': member_name,
+                                  'acc_type': acc.paid_type.name,
+                                  'bot_amount': new_paidtype.bot_amount,
+                                  'faq_total': new_paidtype.faq_amount})
             txt_email = strip_tags(expire_email)
             msg = EmailMultiAlternatives(subject, txt_email, from_mail,
                                          [to_mail])

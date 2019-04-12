@@ -72,7 +72,7 @@ agent_bot_router.register(r'(?P<id>\d+)/facebook', bot_view.FacebookViewset)
 
 # Both used api
 thirdparty_router = routers.DefaultRouter(trailing_slash=True)
-thirdparty_router.register('',third_view.ThirdpartyViewset)
+thirdparty_router.register('', third_view.ThirdpartyViewset)
 
 paidtype_router = routers.DefaultRouter(trailing_slash=True)
 paidtype_router.register('', paid_view.PaidTypeViewset)
@@ -95,6 +95,7 @@ urlpatterns = [
     path('member/register/', acc_view.member_register),
     path('member/confirm/', acc_view.confirm_user),
     path('member/resend/', acc_view.resend_email),
+    path('member/reset/', acc_view.reset_password),
     path('member/', include(member_router.urls), name='member_profile'),
 
     # Agent related urls

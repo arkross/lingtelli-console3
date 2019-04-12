@@ -47,11 +47,12 @@ class Chatbot(models.Model):
                         has confirmed to delete this bot.
         bot_type: The normal bot and task bot are now using the same model. Use
                   this flag to separate between normal and task bot.
-        assign_user: Only can be assigned when the bot type is task and the 
+        assign_user: Only can be assigned when the bot type is task and the
                      user type is staff. For assigning the task bot created by
                      the staff to client to use.
-        hide_status: Hiding the bot when user paid type downgraded
+        hide_status: Hiding the bot when user paid type downgraded.
         choose_answer: The way of choosing answer to reply.
+        domain: For webscript to check if can be used in this domain.
     '''
 
     robot_name = models.CharField(max_length=100, blank=False, null=False)
@@ -63,7 +64,7 @@ class Chatbot(models.Model):
                                       blank=False, null=True)
     updated_at = models.DateTimeField(auto_now_add=False, auto_now=True,
                                       blank=True, null=True)
-    third_party = models.ManyToManyField(ThirdParty, 
+    third_party = models.ManyToManyField(ThirdParty,
                                          through='BotThirdPartyGroup',
                                          related_name='group_bot_party')
     user = models.ForeignKey(User, related_name='chatbot_user',
@@ -73,7 +74,7 @@ class Chatbot(models.Model):
                                 default='tw')
     postback_activate = models.BooleanField(default=True)
     postback_title = \
-        models.CharField(max_length=255, 
+        models.CharField(max_length=255,
                          default='請選擇跟你問題類似的問題，如果沒有請繼續問其他問題。')
     delete_confirm = models.BooleanField(default=False)
     bot_type = models.CharField(max_length=10, choices=BOT_TYPE,
@@ -84,10 +85,11 @@ class Chatbot(models.Model):
     hide_status = models.BooleanField(default=False)
     choose_answer = models.CharField(max_length=10, choices=CHOOSE_ANS_TYPE,
                                      default='1')
+    domain = models.TextField(blank=True, null=True)
 
     class Meta:
         db_table = 'chatbot'
-    
+
     def __str__(self):
         return self.robot_name
 
@@ -107,8 +109,9 @@ class BotThirdPartyGroup(models.Model):
 
     chatbot = models.ForeignKey(Chatbot, related_name='group_chatbot',
                                 on_delete=models.CASCADE)
-    third_party = models.ForeignKey(ThirdParty, related_name='group_thirdparty',
-                                   on_delete=models.CASCADE)
+    third_party = models.ForeignKey(ThirdParty,
+                                    related_name='group_thirdparty',
+                                    on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'bot_third_party_group'
