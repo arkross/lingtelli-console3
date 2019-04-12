@@ -181,7 +181,7 @@ class ChatbotViewset(viewsets.ModelViewSet):
             update_data = json.loads(request.body)
             valid_update_key = ['robot_name', 'greeting_msg', 'failed_msg',
                                 'postback_title', 'postback_activate',
-                                'choose_answer']
+                                'choose_answer', 'domain']
             err_msg, key_status = utils.key_validator(valid_update_key,
                                                       update_data)
             if not key_status:
