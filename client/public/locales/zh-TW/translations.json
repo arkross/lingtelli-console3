@@ -3,6 +3,7 @@
     "loginBtn": "登入",
     "description": "還沒有帳號？ ",
     "forgotPassword": "忘記密碼?",
+    "readDoc": "查看API文件",
     "signUp": "註冊"
   },
   "resetPass": {
@@ -126,7 +127,7 @@
       },
       "api": {
         "title": "API 設定",
-        "description": "啟用後可開始使用API.",
+        "description": "請查看API文件了解呼叫API的方式.",
         "noData": "無資料",
         "object": "物件",
         "objectList": "物件串列",
@@ -239,6 +240,7 @@
     }
   },
   "api": {
+    "read": "查看API文件",
     "info": {
       "title": "機器人基本資料",
       "responses": {

@@ -123,6 +123,7 @@ class LoginForm extends React.Component {
 					</Message>
 					<Link to='/reset'>{t('login.forgotPassword')}</Link>
 				</Segment>
+				<Link to='/doc' style={{float:'right'}}>{t('login.readDoc')}</Link>
 			</div>
 		)
 	}

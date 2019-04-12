@@ -5,7 +5,7 @@ Chatbot API allows more flexible integration with client's existing system and/o
 1. You own a Lingtelli Chatbot Account.
 2. You **own a Chatbot** and its **API function is activated**.
 
-Every Chatbot is assigned a unique `vendor_id`. To get started, obtain `vendor_id` from the Chatbot dashboard. Then simply make a `GET` request to [Bot Info](#bot-info), replacing `{vendor_id}` with the proper value.
+> Every Chatbot is assigned a unique `vendor_id`. To get started, obtain `vendor_id` from the Chatbot dashboard. Then simply make a `GET` request to [Bot Info](#bot-info), replacing `{vendor_id}` with the proper value.
 
 ```http
 GET {{{BASE_URL}}}/info

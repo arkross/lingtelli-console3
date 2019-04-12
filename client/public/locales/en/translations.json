@@ -3,6 +3,7 @@
     "loginBtn": "Login",
     "description": "New to us? ",
     "forgotPassword": "Forgot your password?",
+    "readDoc": "Read API Document",
     "signUp": "Sign up"
   },
   "resetPass": {
@@ -127,7 +128,7 @@
       },
       "api": {
         "title": "API Setting",
-        "description": "Activate this platform to start using the API.",
+        "description": "Please read the API Documentation on how to use Vendor ID to connect with our API.",
         "noData": "None",
         "object": "Object",
         "objectList": "List of Objects",
@@ -241,6 +242,7 @@
     }
   },
   "api": {
+    "read": "Read API Documentation",
     "info": {
       "title": "Bot Info",
       "responses": {

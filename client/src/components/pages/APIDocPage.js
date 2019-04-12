@@ -95,10 +95,6 @@ class APIDocPage extends Component {
 		this.loadMd()
 	}
 
-	componentDidUpdate() {
-		this.loadMd()
-	}
-
 	render() {
 		const { content } = this.state
 		return <ReactMD
