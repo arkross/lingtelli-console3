@@ -41,7 +41,7 @@ class ChatbotTest(TestCase):
 
         # Create account info
         acc_data = {'user': self.user_obj, 'paid_type': trial_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00', }
         AccountInfo.objects.create(**acc_data)
 
@@ -62,7 +62,7 @@ class ChatbotTest(TestCase):
 
     def test_no_auth(self):
         ''' Not authorize actions
-        
+
         POST, GET, PUT, DELETE
         '''
         c = Client()
@@ -76,14 +76,14 @@ class ChatbotTest(TestCase):
         self.assertEqual(response.status_code, 401)
 
         # PUT
-        response = c.put(self.bot_uri, json.dumps({'robot_name': 'newbot'}), 
+        response = c.put(self.bot_uri, json.dumps({'robot_name': 'newbot'}),
                          content_type='application/json')
         self.assertEqual(response.status_code, 401)
 
         # Delete
         response = c.delete(self.bot_uri)
         self.assertEqual(response.status_code, 401)
-    
+
     def test_not_existed(self):
         ''' Bot not existed
 
@@ -127,7 +127,7 @@ class ChatbotTest(TestCase):
         self.assertEqual(bot_obj.bot_type, 'NORMAL')
         for k in bot_return_key:
             self.assertIn(k, res_data)
-    
+
     def test_create_no_bot_name(self):
         header = {'HTTP_AUTHORIZATION': 'bearer ' + self.accesstoken}
         c = Client()
@@ -136,7 +136,7 @@ class ChatbotTest(TestCase):
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-    
+
     def test_create_over_limited_amount(self):
         bot_1_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
                       'failed_msg': 'Cannot understand'}
@@ -151,7 +151,7 @@ class ChatbotTest(TestCase):
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-    
+
     def test_read_list(self):
         bot_data = ['id', 'robot_name']
         c = Client()
@@ -163,7 +163,7 @@ class ChatbotTest(TestCase):
 
     def test_read_retrieve(self):
         bot_data = ['robot_name', 'greeting_msg', 'failed_msg',
-                    'postback_title', 'created_at', 'updated_at','vendor_id',
+                    'postback_title', 'created_at', 'updated_at', 'vendor_id',
                     'postback_activate', 'delete_confirm', 'bot_type',
                     'assign_user', 'activate', 'language', 'third_party',
                     'user']
@@ -173,11 +173,12 @@ class ChatbotTest(TestCase):
         res_data = json.loads(response.content)
         for k in bot_data:
             self.assertIn(k, res_data)
-    
+
     def test_update(self):
         bot_update_data = {'robot_name': 'newnamebot', 'greeting_msg': 'LOL',
-                           'failed_msg':'bye', 'postback_title':'similar',
-                           'postback_activate': True}
+                           'failed_msg': 'bye', 'postback_title': 'similar',
+                           'postback_activate': True, 'choose_answer': '1',
+                           'domain': 'abc.com'}
 
         c = Client()
         response = c.put(self.bot_uri, json.dumps(bot_update_data),
@@ -188,7 +189,7 @@ class ChatbotTest(TestCase):
         res_data = json.loads(response.content)
         for k, v in bot_update_data.items():
             self.assertEqual(getattr(updated_bot_obj, k), v)
-    
+
     def test_update_bot_name_blank(self):
         c = Client()
         response = c.put(self.bot_uri, json.dumps({}),
@@ -196,7 +197,7 @@ class ChatbotTest(TestCase):
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-    
+
     def test_update_to_type_taskbot(self):
         c = Client()
         response = c.put(self.bot_uri, json.dumps({'bot_type': 'TASKBOT'}),
@@ -206,14 +207,14 @@ class ChatbotTest(TestCase):
         self.assertIn('errors', res_data)
 
     def test_update_assign_user_not_allowed(self):
-        c= Client()
-        response = c.put(self.bot_uri, 
+        c = Client()
+        response = c.put(self.bot_uri,
                          json.dumps({'assign_user': self.user_obj.id}),
                          content_type='application/json', **self.header)
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-    
+
     def test_delete(self):
         # Pretend the confirm has passed
         self.bot_obj.delete_confirm = True
@@ -222,7 +223,7 @@ class ChatbotTest(TestCase):
         c = Client()
         response = c.delete(self.bot_uri, **self.header)
         self.assertEqual(response.status_code, 204)
-    
+
     def test_delete_no_confirm(self):
         c = Client()
         response = c.delete(self.bot_uri, **self.header)
@@ -263,7 +264,7 @@ class DeleteBotConfirmTest(TestCase):
 
         # Create account info
         acc_data = {'user': self.user_obj, 'paid_type': trial_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00', }
         AccountInfo.objects.create(**acc_data)
 
@@ -282,21 +283,21 @@ class DeleteBotConfirmTest(TestCase):
         self.uri = '/chatbot/' + str(self.bot_obj.id) + '/delete_confirm/'
 
     def test_update_confirm_no_auth(self):
-        ''' Delete bot confirm 
+        ''' Delete bot confirm
 
         PUT
         '''
         c = Client()
         correct_password = {'password': 'thisispassword'}
-        response = c.put(self.uri, json.dumps(correct_password), 
-                          content_type='application/json')
+        response = c.put(self.uri, json.dumps(correct_password),
+                         content_type='application/json')
         self.assertEqual(response.status_code, 401)
 
     def test_update_confirm_correct_password(self):
         c = Client()
         correct_password = {'password': 'thisispassword'}
-        response = c.put(self.uri, json.dumps(correct_password), 
-                          content_type='application/json', **self.header)
+        response = c.put(self.uri, json.dumps(correct_password),
+                         content_type='application/json', **self.header)
         user_obj = User.objects.get(username='cosmo.hu@lingtelli.com')
         pk = self.bot_obj.id
         updated_bot_obj = Chatbot.objects.filter(id=pk, user=user_obj).first()
@@ -304,12 +305,12 @@ class DeleteBotConfirmTest(TestCase):
         self.assertEqual(updated_bot_obj.delete_confirm, True)
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
-    
+
     def test_update_confirm_wrong_password(self):
         c = Client()
         correct_password = {'password': 'wrongpassword'}
-        response = c.put(self.uri, json.dumps(correct_password), 
-                          content_type='application/json', **self.header)
+        response = c.put(self.uri, json.dumps(correct_password),
+                         content_type='application/json', **self.header)
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertEqual(res_data.get('errors'), 'Password is not correct')
@@ -348,7 +349,7 @@ class LineTest(TestCase):
 
         # Create account info
         acc_data = {'user': self.user_obj, 'paid_type': trial_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00', }
         AccountInfo.objects.create(**acc_data)
 
@@ -398,7 +399,7 @@ class LineTest(TestCase):
         self.assertEqual(len(res_data), len(line_keys))
         for k in line_keys:
             self.assertIn(k, res_data)
- 
+
     def test_update(self):
         c = Client()
         line_data = {'secret': 'newsecret'}
@@ -441,7 +442,7 @@ class FacebookTest(TestCase):
 
         # Create account info
         acc_data = {'user': self.user_obj, 'paid_type': trial_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00', }
         AccountInfo.objects.create(**acc_data)
 
@@ -491,7 +492,7 @@ class FacebookTest(TestCase):
         self.assertEqual(len(res_data), len(fb_keys))
         for k in fb_keys:
             self.assertIn(k, res_data)
- 
+
     def test_update(self):
         c = Client()
         fb_data = {'verify_str': 'newverifystr'}
