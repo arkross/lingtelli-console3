@@ -2,7 +2,19 @@
   "login": {
     "loginBtn": "登录",
     "description": "没有帐户? ",
+    "forgotPassword": "忘记密码",
+    "readDoc": "查看API文件",
     "signUp": "注册"
+  },
+  "resetPass": {
+    "title": "重设密码",
+    "email": "电子邮件地址",
+    "continue": "继续",
+    "done": {
+      "description": "请检查您的电子邮件信箱",
+      "title": "完成",
+      "backToLogin": "回到登录"
+    }
   },
   "register": {
     "mail": "电子邮件",
@@ -126,7 +138,7 @@
       },
       "api": {
         "title": "API 设定",
-        "description": "启用后可开始使用API.",
+        "description": "请查看API文件了解呼叫API的方式。",
         "noData": "无资料",
         "object": "物件",
         "objectList": "物件串列",
@@ -239,6 +251,7 @@
     }
   },
   "api": {
+    "read": "查看API文件",
     "info": {
       "title": "机器人基本资料",
       "responses": {
@@ -290,7 +303,7 @@
           "title": "Reply",
           "sender_value": "",
           "sender_desc": "固定为 \"BOT\"",
-          "type_value": "text 或 list",
+          "type_value": "\"answer\", \"no_answer\" 或 \"error\"",
           "type_desc": "请参考表格 Choice Structure",
           "state_value": "\"start\", \"in_progress\" 或 \"completed\"",
           "state_desc": "对话进行状态",

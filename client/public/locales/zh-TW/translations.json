@@ -2,7 +2,19 @@
   "login": {
     "loginBtn": "登入",
     "description": "還沒有帳號？ ",
+    "forgotPassword": "忘記密碼?",
+    "readDoc": "查看API文件",
     "signUp": "註冊"
+  },
+  "resetPass": {
+    "title": "重設密碼",
+    "email": "電子郵件",
+    "continue": "下一步",
+    "done": {
+      "description": "請檢查您的電子郵件信箱.",
+      "title": "完成",
+      "backToLogin": "回到登入頁面"
+    }
   },
   "demo": {
     "button": "測試聊天機器人",
@@ -115,7 +127,7 @@
       },
       "api": {
         "title": "API 設定",
-        "description": "啟用後可開始使用API.",
+        "description": "請查看API文件了解呼叫API的方式.",
         "noData": "無資料",
         "object": "物件",
         "objectList": "物件串列",
@@ -228,6 +240,7 @@
     }
   },
   "api": {
+    "read": "查看API文件",
     "info": {
       "title": "機器人基本資料",
       "responses": {
@@ -279,7 +292,7 @@
           "title": "Reply",
           "sender_value": "",
           "sender_desc": "固定為 \"BOT\"",
-          "type_value": "\"text\" 或 \"list\"",
+          "type_value": "\"answer\", \"no_answer\" 或 \"error\"",
           "type_desc": "請參考表格 Choice Structure",
           "state_value": "\"start\", \"in_progress\", 或 \"completed\"",
           "state_desc": "對話進行狀態",

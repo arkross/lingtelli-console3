@@ -2,7 +2,19 @@
   "login": {
     "loginBtn": "Login",
     "description": "New to us? ",
+    "forgotPassword": "Forgot your password?",
+    "readDoc": "Read API Document",
     "signUp": "Sign up"
+  },
+  "resetPass": {
+    "title": "Reset Password",
+    "email": "Email Address",
+    "continue": "Continue",
+    "done": {
+      "description": "If the account exists, we will send an email to you. Please check your email inbox and follow the instructions.",
+      "title": "All Done!",
+      "backToLogin": "Back to Login"
+    }
   },
   "menu": {
     "dashboard": "Dashboard",
@@ -116,7 +128,7 @@
       },
       "api": {
         "title": "API Setting",
-        "description": "Activate this platform to start using the API.",
+        "description": "Please read the API Documentation on how to use Vendor ID to connect with our API.",
         "noData": "None",
         "object": "Object",
         "objectList": "List of Objects",
@@ -230,6 +242,7 @@
     }
   },
   "api": {
+    "read": "Read API Documentation",
     "info": {
       "title": "Bot Info",
       "responses": {
@@ -281,7 +294,7 @@
           "title": "Reply",
           "sender_value": "",
           "sender_desc": "Fixed value \"BOT\"",
-          "type_value": "\"text\" or \"list\"",
+          "type_value": "\"answer\", \"no_answer\" or \"error\"",
           "type_desc": "See table Choice Structure",
           "state_value": "\"start\", \"in_progress\", or \"completed\"",
           "state_desc": "Session's state",

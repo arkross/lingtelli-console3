@@ -50,3 +50,7 @@ export const confirm = code => dispatch =>
 export const resend = username => dispatch =>
 	api.resend(username)
 		.then(() => dispatch(resendEmail()))
+
+export const resetPass = username => dispatch =>
+	api.resetPassword(username)
+		.then(data => data)
