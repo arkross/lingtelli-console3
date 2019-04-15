@@ -123,7 +123,17 @@
         "chatIcon": "縮圖像 (PNG, SVG, GIF, JPEG)",
         "headerBackgroundColor": "主題背景顏色",
         "headerTextColor": "主題文字顏色",
-        "chatLabel": "縮圖標題文字"
+        "chatLabel": "縮圖標題文字",
+        "domains": {
+          "title": "可信網域",
+          "description": "Protect Web Chat Plugin from being added to unauthorized sites. Web Chat Plugin will only work on the domains you listed below. You may disable this feature by leaving it empty.",
+          "addDomain": "新增",
+          "delete": "刪除",
+          "deleteDomain": "確認刪除",
+          "or": "或",
+          "cancel": "取消",
+          "save": "儲存"
+        }
       },
       "api": {
         "title": "API 設定",
@@ -348,6 +358,7 @@
     }
   },
   "register": {
+    "title": "註冊帳號",
     "mail": "信箱",
     "registerBtn": "註冊",
     "nickname": "暱稱",

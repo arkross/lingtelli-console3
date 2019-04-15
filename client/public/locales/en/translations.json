@@ -114,7 +114,7 @@
         }
       },
       "web": {
-        "title": "Web Setting",
+        "title": "Web Chat Plugin",
         "description": "Activate this platform and copy the following script and paste it before the body closing tag (</body>) of your website.",
         "customizations": "Customizations",
         "custHeader": "Warning",
@@ -124,7 +124,17 @@
         "chatIcon": "Chat Icon (PNG, SVG, GIF, JPEG)",
         "headerBackgroundColor": "Theme Background Color",
         "headerTextColor": "Theme Text Color",
-        "chatLabel": "Icon Text"
+        "chatLabel": "Icon Text",
+        "domains": {
+          "title": "Trusted Domains",
+          "description": "Protect Web Chat Plugin from being added to unauthorized sites. Web Chat Plugin will only work on the domains you listed below. You may disable this feature by leaving it empty.",
+          "addDomain": "Add",
+          "delete": "Delete",
+          "deleteDomain": "Delete Domain",
+          "or": "or",
+          "cancel": "Cancel",
+          "save": "Save"
+        }
       },
       "api": {
         "title": "API Setting",
@@ -350,6 +360,7 @@
     }
   },
   "register": {
+    "title": "Create Account",
     "mail": "Email",
     "registerBtn": "Register",
     "nickname": "Nickname",
