@@ -86,7 +86,8 @@ class LoginPage extends React.Component {
 			<Container>
 				<div className='login-container'>
 					<Segment textAlign='center'>
-						<h2> <Image src={logo} size='mini' inline /> Lingtelli Agent </h2>
+						<h2> <Image src={logo} size='mini' inline /> Lingtelli Chatbot </h2>
+						<h3>Agent Login</h3>
 						{errors.api && (
 							<Message negative>
 								<p>{errors.api}</p>
@@ -124,6 +125,7 @@ class LoginPage extends React.Component {
 							<Button fluid color='teal'>{t('login.loginBtn')}</Button>
 						</Form>
 					</Segment>
+					<Link to='/login'>Member Login</Link>
 				</div>
 			</Container>
 		)

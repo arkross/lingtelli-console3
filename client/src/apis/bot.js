@@ -48,7 +48,8 @@ export default {
 		greeting_msg: data.greeting_msg,
 		postback_title: data.postback_title,
 		postback_activate: data.postback_activate,
-		choose_answer: data.choose_answer
+		choose_answer: data.choose_answer,
+		domain: data.domain
 	})).data,
 
 	facebook: {

@@ -177,7 +177,7 @@ class BotConfigForm extends React.Component {
 		const { info, openModal, openDeleteModal } = this.state;
 
 		return (
-			<Form success={showSuccess} loading={loading} className='bot-config-container' style={{padding: '15px', overflow: 'auto'}}>
+			<Form success={showSuccess} loading={loading} className='' style={{padding: '15px', overflow: 'auto'}}>
 				<Message success><p>{t('chatbot.success')}</p></Message>
 				<Form.Field>
 					<Form.Input
