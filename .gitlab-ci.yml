@@ -14,7 +14,7 @@ stages:
 
 build_env:
   stage: build
-  script: pip install -r requirement.txt
+  script: pip install -r requirements.txt
 
 test_backend:
   stage: test
