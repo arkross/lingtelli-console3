@@ -17,18 +17,15 @@ build_env:
   stage: build
   script:
     - cd server
-    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
-    - test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
-    - test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-    - test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile
-    - echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
-    - brew install pipenv
-    - pipenv --python 3.6
-    - pipenv install -r requirements.txt
+    - pip install -r requirements.txt
+    - python manage.py makemigrations
+    - python manage.py migrate
+    - python manage.py loaddata fixtures/third_party.json
+    - python manage.py loaddata fixtures/paid_type.json
 
 test_backend:
   stage: test
   script:
     - cd server
-    - pipenv shell
+    - pip install -r requirements.txt
     - python manage.py test
