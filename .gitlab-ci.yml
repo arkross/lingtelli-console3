@@ -12,10 +12,10 @@ stages:
   - build
   - test
 
-job 1:
+build_env:
   - stage: build
   - script: pip install -r requirement.txt
 
-job 2:
+test_backend:
   - stage: test
   - script: python manage.py test
