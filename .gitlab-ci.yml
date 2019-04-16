@@ -5,8 +5,7 @@ services:
 
 variables:
   MYSQL_DATABASE: console
-  MYSQL_USER: superuser
-  MYSQL_PASSWORD: pass1234
+  MYSQL_USER: root
   MYSQL_ROOT_PASSWORD: pass1234
 
 stages:
@@ -17,7 +16,7 @@ build_env:
   stage: build
   script:
     - export ENV="DEV"
-    - export DB_USER="superuser"
+    - export DB_USER="root"
     - export DB_NAME="console"
     - export DB_PASS="pass1234"
     - export DB_HOST="mysql"
@@ -38,7 +37,7 @@ test_backend:
   stage: test
   script:
     - export ENV="DEV"
-    - export DB_USER="superuser"
+    - export DB_USER="root"
     - export DB_NAME="console"
     - export DB_PASS="pass1234"
     - export DB_HOST="mysql"
