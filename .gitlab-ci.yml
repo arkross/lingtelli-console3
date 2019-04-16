@@ -7,7 +7,7 @@ variables:
   MYSQL_DATABASE: console
   MYSQL_USER: superuer
   MYSQL_PASSWORD: pass1234
-  MYSQL_ALLOW_EMPTY_PASSWORD: true 
+  MYSQL_ALLOW_EMPTY_PASSWORD: yes 
 
 stages:
   - build
