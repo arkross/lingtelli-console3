@@ -5,7 +5,7 @@ services:
 
 variables:
   MYSQL_DATABASE: console
-  MYSQL_USER: superuer
+  MYSQL_USER: superuser
   MYSQL_PASSWORD: pass1234
   MYSQL_ROOT_PASSWORD: pass1234
 
