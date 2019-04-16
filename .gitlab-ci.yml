@@ -14,7 +14,7 @@ stages:
 
 build_env:
   only:
-    - develop@gitlab-org/gitlab-ce
+    - branches@gitlab-org/gitlab-ce
   stage: build
   script:
     - cd server
@@ -22,7 +22,7 @@ build_env:
 
 test_backend:
   only:
-    - develop@gitlab-org/gitlab-ce
+    - branches@gitlab-org/gitlab-ce
   stage: test
   script:
     - cd server
