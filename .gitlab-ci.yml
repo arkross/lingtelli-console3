@@ -1,7 +1,7 @@
 image: python:3.6
 
 services:
-  - mysql:8.0.12
+  - mysql:5.7
 
 variables:
   MYSQL_DATABASE: console
@@ -9,11 +9,10 @@ variables:
   MYSQL_ROOT_PASSWORD: pass1234
 
 stages:
-  - build
   - test
 
-build_env:
-  stage: build
+build_and_test_env:
+  stage: test
   script:
     - export ENV="DEV"
     - export DB_USER="root"
@@ -32,21 +31,4 @@ build_env:
     - python manage.py migrate
     - python manage.py loaddata fixtures/third_party.json
     - python manage.py loaddata fixtures/paid_type.json
-
-test_backend:
-  stage: test
-  script:
-    - export ENV="DEV"
-    - export DB_USER="root"
-    - export DB_NAME="console"
-    - export DB_PASS="pass1234"
-    - export DB_HOST="mysql"
-    - export SECRET_KEY="testthissecretkey"
-    - export ALLOW_HOST="127.0.0.1"
-    - export WHITE_LIST="127.0.0.1:8000"
-    - export INIT_PASS="initpassword"
-    - export NLU="http://127.0.0.1:8787/chatbot/"
-    - export CONFIRM="http://127.0.0.1:8000/confirm/?code="
-    - cd server
-    - pip install -r requirements.txt
     - python manage.py test
