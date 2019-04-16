@@ -1,0 +1,21 @@
+image: python:3.6
+
+services:
+  - mysql:latest
+
+variables:
+  MYSQL_DATABASE: console
+  MYSQL_USER: superuer
+  MYSQL_PASSWORD: pass1234
+
+stages:
+  - build
+  - test
+
+job 1:
+  - stage: build
+  - script: pip install -r requirement.txt
+
+job 2:
+  - stage: test
+  - script: python manage.py test
