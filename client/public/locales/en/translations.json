@@ -249,6 +249,22 @@
     },
     "test": {
       "text": "Test"
+    },
+    "batch": {
+      "text": "Batch Test",
+      "description": "Each line is structured like [question,expected answer]. Expected answer is optional.",
+      "result": "Result",
+      "run": "Run",
+      "question": "Question",
+      "expected": "Expected Answer",
+      "actual": "Actual Answer",
+      "showExpected": "Show Expected Answer",
+      "showPostback": "Show Postback Choices",
+      "total": "Total",
+      "executed": "Executed",
+      "errors": "Errors",
+      "matches": "Matches",
+      "choice": "Choices"
     }
   },
   "api": {

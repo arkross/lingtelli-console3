@@ -259,6 +259,22 @@
     },
     "test": {
       "text": "测试"
+    },
+    "batch": {
+      "text": "批量测试",
+      "description": "每行的格式为【问题，预期答案】。预期答案是非必填的。",
+      "result": "结果",
+      "run": "开始",
+      "question": "问题",
+      "expected": "预期答案",
+      "actual": "实际答案",
+      "showExpected": "显示预期答案",
+      "showPostback": "显示选项",
+      "total": "总共",
+      "executed": "已执行",
+      "errors": "错误",
+      "matches": "符合预期",
+      "choice": "有选择"
     }
   },
   "api": {

@@ -247,6 +247,22 @@
     },
     "test": {
       "text": "測試"
+    },
+    "batch": {
+      "text": "批量測試",
+      "description": "每行的格式為【問題,預期答案】. 預期答案是非必填的.",
+      "result": "結果",
+      "run": "開始",
+      "question": "問題",
+      "expected": "預期答案",
+      "actual": "實際答案",
+      "showExpected": "顯示預期答案",
+      "showPostback": "顯示選項",
+      "total": "總共",
+      "executed": "已執行",
+      "errors": "錯誤",
+      "matches": "符合預期",
+      "choice": "有選擇"
     }
   },
   "api": {

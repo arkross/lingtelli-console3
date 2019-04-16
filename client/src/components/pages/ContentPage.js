@@ -24,6 +24,7 @@ import toJS from 'components/utils/ToJS'
 import DemoModal from 'components/modals/DemoModal'
 import TestBotPage from './TestBotPage';
 import IntegrationPage from './IntegrationPage'
+import BatchTestPage from './BatchTestPage'
 import FBIntegrationPage from './FBIntegrationPage'
 import LineIntegrationPage from './LineIntegrationPage'
 import WebIntegrationPage from './WebIntegrationPage'
@@ -164,7 +165,8 @@ class ContentPage extends React.Component {
 			{ text: t('chatbot.history.text'), id: 'history'},
 			{ text: t('chatbot.recommendations.text'), id: 'recommendations'},
 			{ text: t('chatbot.faq.text'), id: 'faq', hide: isTask },
-			{ text: t('chatbot.test.text'), id: 'test'}
+			{ text: t('chatbot.test.text'), id: 'test'},
+			{ text: t('chatbot.batch.text'), id: 'batch'}
 		]
 		.filter(el => !el.hide)
 		.map(el => Object.assign({value: `${match.url}/${el.id}`, key: el.id}, el))
@@ -238,6 +240,7 @@ class ContentPage extends React.Component {
 					<Route path={`${match.path}/history`} render={props => <Segment loading={loading}><HistoryPage {...props} fetchData={this.onFetchHistory} /></Segment>} />
 					<Route path={`${match.path}/recommendations`} render={props => <Segment loading={loading}><RecomLogPage {...props} fetchData={this.onFetchMatching} /></Segment>} />
 					<Route path={`${match.path}/test`} render={props => <Segment loading={loading}><TestBotPage {...props} /></Segment>} />
+					<Route path={`${match.path}/batch`} render={props => <Segment loading={loading}><BatchTestPage {...props} /></Segment>} />
 					<Route path={`${match.path}/integration/facebook`} render={props => <Segment loading={loading}><FBIntegrationPage {...props} /></Segment>} />
 					<Route path={`${match.path}/integration/line`} render={props => <Segment loading={loading}><LineIntegrationPage {...props} /></Segment>} />
 					<Route path={`${match.path}/integration/web`} render={props => <Segment loading={loading}><WebIntegrationPage {...props} /></Segment>} />
