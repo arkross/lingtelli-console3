@@ -13,16 +13,12 @@ stages:
   - test
 
 build_env:
-  only:
-    - branches@gitlab-org/gitlab-ce
   stage: build
   script:
     - cd server
     - pip install -r requirements.txt
 
 test_backend:
-  only:
-    - branches@gitlab-org/gitlab-ce
   stage: test
   script:
     - cd server
