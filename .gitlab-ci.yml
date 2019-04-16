@@ -29,8 +29,8 @@ build_env:
     - export CONFIRM="http://127.0.0.1:8000/confirm/?code="
     - cd server
     - pip install -r requirements.txt
-    - python manage.py makemigrations
-    - python manage.py migrate
+    - python manage.py makemigrations account chatbot thirdparty paidtype faq history
+    - python manage.py migrate account chatbot thirdparty paidtype faq history
     - python manage.py loaddata fixtures/third_party.json
     - python manage.py loaddata fixtures/paid_type.json
 
