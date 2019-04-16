@@ -7,6 +7,7 @@ variables:
   MYSQL_DATABASE: console
   MYSQL_USER: superuer
   MYSQL_PASSWORD: pass1234
+  MYSQL_ALLOW_EMPTY_PASSWORD: True 
 
 stages:
   - build
@@ -16,10 +17,13 @@ build_env:
   stage: build
   script:
     - cd server
-    - pip install -r requirements.txt
+    - brew install pipenv
+    - pipenv --python 3.6
+    - pipenv install -r requirements.txt
 
 test_backend:
   stage: test
   script:
     - cd server
+    - pipenv shell
     - python manage.py test
