@@ -75,7 +75,8 @@ class WebIntegration extends Component {
 		})
 	}
 
-	handleNewDomainSubmit = () => {
+	handleNewDomainSubmit = e => {
+		e.preventDefault()
 		const finalDomains = [...this.state.domains.map(el => el.name), this.state.newDomain]
 		this.setState({ newDomainLoading: true })
 		return this.handleDomainSubmit(finalDomains).then(() => {
@@ -86,19 +87,22 @@ class WebIntegration extends Component {
 		})
 	} 
 
-	handleDomainDelete = index => {
+	handleDomainDelete = (index, e) => {
+		e.preventDefault()
 		this.setState({
 			domains: _.set([...this.state.domains], [index, 'isDeleting'], true)
 		})
 	}
 
-	handleDomainConfirmDelete = index => {
+	handleDomainConfirmDelete = (index, e) => {
+		e.preventDefault()
 		const finalDomains = [...this.state.domains.map(el => el.name)].filter((val, idx) => idx !== index)
 		this.setState({ domains: _.set([...this.state.domains], [index, 'isLoading'], true)})
 		return this.handleDomainSubmit(finalDomains).catch(() => this.setState({ domains: _.set([...this.state.domains], [index, 'isLoading'], false)}))
 	}
 
-	handleDomainCancelDelete = index => {
+	handleDomainCancelDelete = (index, e) => {
+		e.preventDefault()
 		this.setState({
 			domains: _.set([...this.state.domains], [index, 'isDeleting'], false)
 		})
