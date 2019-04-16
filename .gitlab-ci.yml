@@ -25,8 +25,11 @@ build_and_test_env:
     - export INIT_PASS="initpassword"
     - export NLU="http://127.0.0.1:8787/chatbot/"
     - export CONFIRM="http://127.0.0.1:8000/confirm/?code="
+    - export EMAIL_PASS="emailpasswd"
     - cd server
     - pip install -r requirements.txt
+    - apt-get update
+    - apt-get install -y gettext
     - python manage.py makemigrations account chatbot thirdparty paidtype faq history
     - python manage.py migrate
     - python manage.py loaddata fixtures/third_party.json
