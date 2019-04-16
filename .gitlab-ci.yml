@@ -22,6 +22,11 @@ build_env:
     - export DB_PASS="pass1234"
     - export DB_HOST="mysql"
     - export SECRET_KEY="testthissecretkey"
+    - export ALLOW_HOST="127.0.0.1"
+    - export WHITE_LIST="127.0.0.1:8000"
+    - export INIT_PASS="initpassword"
+    - export NLU="http://127.0.0.1:8787/chatbot/"
+    - export CONFIRM="http://127.0.0.1:8000/confirm/?code="
     - cd server
     - pip install -r requirements.txt
     - python manage.py makemigrations
