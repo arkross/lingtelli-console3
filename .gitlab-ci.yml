@@ -16,6 +16,12 @@ stages:
 build_env:
   stage: build
   script:
+    - export ENV="DEV"
+    - export DB_USER="superuser"
+    - export DB_NAME="console"
+    - export DB_PASS="pass1234"
+    - export DB_HOST="mysql"
+    - export SECRET_KEY="testthissecretkey"
     - cd server
     - pip install -r requirements.txt
     - python manage.py makemigrations
