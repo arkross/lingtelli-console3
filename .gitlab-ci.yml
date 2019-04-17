@@ -7,9 +7,9 @@ variables:
   MYSQL_USER: root
   MYSQL_ROOT_PASSWORD: pass1234
  
-stage:
-  build_db
-  buid_test_env
+stages:
+  - build_db
+  - buid_test_env
 
 build_db:
   image: mysql
