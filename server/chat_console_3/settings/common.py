@@ -189,15 +189,18 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'contact@lingtelli.com'
 EMAIL_HOST_PASSWORD = 'gong1si1mi4ma3'
 EMAIL_PORT = 587
-CONFIRM_URL_EXPIRE = 30 # Expires after 30 minutes
-URL_ENCODE_KEY = 'FuckingChatbot!!' # Need to be length 16 long
-CONFIRM_DOMAIN='http://127.0.0.1:3000/confirm/?code='
+CONFIRM_URL_EXPIRE = 30  # Expires after 30 minutes
+URL_ENCODE_KEY = 'FuckingChatbot!!'  # Need to be length 16 long
+CONFIRM_DOMAIN = 'http://127.0.0.1:3000/confirm/?code='
 
 # Token related
-TOKEN_DURATION = 10080 # Expires every week
+TOKEN_DURATION = 10080  # Expires every week
 
 # NLU related
-NLU_HOST='http://192.168.10.16:8787/chatbot/'
+NLU_HOST = 'http://192.168.10.16:8787/chatbot/'
+
+# Semantic related
+SEMANTIC_HOST = 'http://192.168.10.16:3126/surfaceconvert'
 
 # Iniital password for agent user
 INIT_PASSWORD = 'test1234'

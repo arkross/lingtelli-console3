@@ -1,4 +1,5 @@
-import json, csv
+import json
+import csv
 from io import StringIO
 from django.shortcuts import render
 from django.utils.translation import gettext as _
@@ -27,6 +28,7 @@ from .serializers import (FAQGrouptSerializer, AnswerSerializer,
 from .models import FAQGroup, Answer, Question
 from account.models import AccountInfo
 from chatbot.models import Chatbot
+
 
 class FAQGrouptViewset(viewsets.ModelViewSet):
     '''FAQ group viewset
@@ -104,8 +106,8 @@ class FAQGrouptViewset(viewsets.ModelViewSet):
         bot_obj = Chatbot.objects.filter(id=id, user=user_obj,
                                          hide_status=False).first()
         if not bot_obj:
-            return Response({'errors':_('Not found')},
-                             status=HTTP_404_NOT_FOUND)
+            return Response({'errors': _('Not found')},
+                            status=HTTP_404_NOT_FOUND)
         # Get total count first
         faq_count = 0
         bots = Chatbot.objects.filter(user=user_obj, hide_status=False)
@@ -113,8 +115,8 @@ class FAQGrouptViewset(viewsets.ModelViewSet):
             bot_faq_count = FAQGroup.objects.filter(chatbot=bot).count()
             faq_count += bot_faq_count
         if acc_obj.paid_type.user_type != 'S' and\
-            faq_count >= int(faq_group_limit):
-            return Response({'errors':_('Faq group exceeded upper limit')},
+           faq_count >= int(faq_group_limit):
+            return Response({'errors': _('Faq group exceeded upper limit')},
                             status=HTTP_403_FORBIDDEN)
         new_csv_id = faq_count + 1
         faq_group_obj = FAQGroup.objects.create(chatbot_id=id,
@@ -123,7 +125,7 @@ class FAQGrouptViewset(viewsets.ModelViewSet):
             res = {}
             res['id'] = faq_group_obj.id
             return Response(res, status=HTTP_201_CREATED)
-        return Response({'errors':_('Create faq group failed')},
+        return Response({'errors': _('Create faq group failed')},
                         status=HTTP_400_BAD_REQUEST)
 
 
@@ -176,59 +178,60 @@ class AnswerViewset(viewsets.ModelViewSet):
             bot_obj = Chatbot.objects.filter(id=id, hide_status=False,
                                              user=user_obj).first()
             if not bot_obj:
-                return Response({'errors':_('Not found')},
+                return Response({'errors': _('Not found')},
                                 status=HTTP_404_NOT_FOUND)
             create_data = json.loads(request.body)
             ans_key = ['group', 'content']
             err_msg, valid_status = utils.key_validator(ans_key, create_data)
             if not valid_status:
-                return Response({'errors':_(err_msg)},
-                                 status=HTTP_403_FORBIDDEN)
+                return Response({'errors': _(err_msg)},
+                                status=HTTP_403_FORBIDDEN)
             faq_group_obj = \
                 FAQGroup.objects.filter(id=create_data.get('group'),
                                         chatbot=bot_obj).first()
             if not faq_group_obj:
-                return Response({'errors':_('Not found')},
+                return Response({'errors': _('Not found')},
                                 status=HTTP_404_NOT_FOUND)
-            ans_obj = Answer.objects.create(group_id=create_data.get('group'),
-                                            content=create_data.get('content'),
-                                            chatbot=bot_obj)
+            ans_obj =\
+                Answer.objects.create(group_id=create_data.get('group'),
+                                      content=create_data.get('content'),
+                                      train_content=create_data.get('content'),
+                                      chatbot=bot_obj)
             if ans_obj:
                 res = {}
                 res['id'] = ans_obj.id
                 res['content'] = ans_obj.content
                 res['group'] = ans_obj.group.id
                 return Response(res, status=HTTP_201_CREATED)
-            return Response({'errors':_('Create failed')},
+            return Response({'errors': _('Create failed')},
                             status=HTTP_400_BAD_REQUEST)
-        return Response({'errors':_('No content')},
+        return Response({'errors': _('No content')},
                         status=HTTP_400_BAD_REQUEST)
-    
+
     def update(self, request, id=None, pk=None):
         if request.body:
             user_obj = request.user
             bot_obj = Chatbot.objects.filter(id=id, hide_status=False,
                                              user=user_obj).first()
             if not bot_obj:
-                return Response({'errors':_('Not found')},
+                return Response({'errors': _('Not found')},
                                 status=HTTP_404_NOT_FOUND)
             update_data = json.loads(request.body)
             ans_key = ['content']
             err_msg, valid_status = utils.key_validator(ans_key, update_data)
             if not valid_status:
-                return Response({'errors':_(err_msg)},
-                                 status=HTTP_403_FORBIDDEN)
+                return Response({'errors': _(err_msg)},
+                                status=HTTP_403_FORBIDDEN)
             ans_obj = Answer.objects.filter(id=pk, chatbot=bot_obj).first()
             if not ans_obj:
-                return Response({'errors':_('Not found')},
+                return Response({'errors': _('Not found')},
                                 status=HTTP_404_NOT_FOUND)
             ans_obj.content = update_data.get('content')
             ans_obj.save()
-            return Response({'success':_('Update succeeded')},
+            return Response({'success': _('Update succeeded')},
                             status=HTTP_200_OK)
-        return Response({'errors':_('No content')},
+        return Response({'errors': _('No content')},
                         status=HTTP_400_BAD_REQUEST)
-
 
 
 class QuestionViewset(viewsets.ModelViewSet):
@@ -281,34 +284,36 @@ class QuestionViewset(viewsets.ModelViewSet):
                                              Q(assign_user=user_obj),
                                              id=id, hide_status=False).first()
             if not bot_obj:
-                return Response({'errors':_('Not found')},
+                return Response({'errors': _('Not found')},
                                 status=HTTP_404_NOT_FOUND)
             create_data = json.loads(request.body)
             que_key = ['group', 'content']
             err_msg, valid_status = utils.key_validator(que_key, create_data)
             if not valid_status:
-                return Response({'errors':_(err_msg)},
-                                 status=HTTP_403_FORBIDDEN)
+                return Response({'errors': _(err_msg)},
+                                status=HTTP_403_FORBIDDEN)
             faq_group_obj = \
                 FAQGroup.objects.filter(id=create_data.get('group'),
                                         chatbot=bot_obj).first()
             if not faq_group_obj:
-                return Response({'errors':_('Not found')},
+                return Response({'errors': _('Not found')},
                                 status=HTTP_404_NOT_FOUND)
-            que_obj = Question.objects.create(group_id=create_data.get('group'),
-                                            content=create_data.get('content'),
-                                            chatbot=bot_obj)
+            que_obj = Question.objects\
+                              .create(group_id=create_data.get('group'),
+                                      content=create_data.get('content'),
+                                      train_content=create_data.get('content'),
+                                      chatbot=bot_obj)
             if que_obj:
                 res = {}
                 res['id'] = que_obj.id
                 res['content'] = que_obj.content
                 res['group'] = que_obj.group.id
                 return Response(res, status=HTTP_201_CREATED)
-            return Response({'errors':_('Create failed')},
+            return Response({'errors': _('Create failed')},
                             status=HTTP_400_BAD_REQUEST)
-        return Response({'errors':_('No content')},
+        return Response({'errors': _('No content')},
                         status=HTTP_400_BAD_REQUEST)
-    
+
     def update(self, request, id=None, pk=None):
         if request.body:
             user_obj = request.user
@@ -316,24 +321,26 @@ class QuestionViewset(viewsets.ModelViewSet):
                                              Q(assign_user=user_obj),
                                              id=id, hide_status=False).first()
             if not bot_obj:
-                return Response({'errors':_('Not found')},
+                return Response({'errors': _('Not found')},
                                 status=HTTP_404_NOT_FOUND)
             update_data = json.loads(request.body)
             que_key = ['content']
             err_msg, valid_status = utils.key_validator(que_key, update_data)
             if not valid_status:
-                return Response({'errors':_(err_msg)},
-                                 status=HTTP_403_FORBIDDEN)
+                return Response({'errors': _(err_msg)},
+                                status=HTTP_403_FORBIDDEN)
             que_obj = Question.objects.filter(id=pk, chatbot=bot_obj).first()
             if not que_obj:
-                return Response({'errors':_('Not found')},
+                return Response({'errors': _('Not found')},
                                 status=HTTP_404_NOT_FOUND)
             que_obj.content = update_data.get('content')
+            que_obj.train_content = update_data.get('content')
             que_obj.save()
-            return Response({'success':_('Update succeeded')},
+            return Response({'success': _('Update succeeded')},
                             status=HTTP_200_OK)
-        return Response({'errors':_('No content')},
+        return Response({'errors': _('No content')},
                         status=HTTP_400_BAD_REQUEST)
+
 
 @csrf_exempt
 @api_view(['POST'])
@@ -366,7 +373,7 @@ def upload_faq_csv(request, pk=None):
             try:
                 buff = StringIO(str(f_s_result))
                 data = csv.reader(buff, delimiter=',', quotechar='"')
-                count_col = len(next(data)) # Skip header
+                count_col = len(next(data))  # Skip header
                 if count_col != 3:
                     return Response({'errors': _('CSV column is not correct')},
                                     status=HTTP_400_BAD_REQUEST)
@@ -395,22 +402,23 @@ def upload_faq_csv(request, pk=None):
                 if created:
                     group_count += 1
                     if group_count > int(faq_limit) and\
-                        acc_obj.paid_type.user_type != 'S':
+                       acc_obj.paid_type.user_type != 'S':
                         FAQGroup.objects.filter(chatbot=bot_obj).delete()
-                        return Response({'errors':_('Group over limitation')},
+                        return Response({'errors': _('Group over limitation')},
                                         status=HTTP_403_FORBIDDEN)
                 if ans != '':
                     Answer.objects.create(group=group_obj, content=ans,
-                                        chatbot=bot_obj)
+                                          chatbot=bot_obj)
                 if que != '':
                     Question.objects.create(group=group_obj, content=que,
+                                            train_content=que,
                                             chatbot=bot_obj)
-            return Response({'success':_('Upload succeeded')},
+            return Response({'success': _('Upload succeeded')},
                             status=HTTP_201_CREATED)
-                
-        return Response({'errors':_('Bot not found')},
+
+        return Response({'errors': _('Bot not found')},
                         status=HTTP_404_NOT_FOUND)
-    return Response({'errors':_('No content')},
+    return Response({'errors': _('No content')},
                     status=HTTP_404_NOT_FOUND)
 
 
@@ -451,8 +459,9 @@ def export_faq_csv(request, pk=None):
         contents = csv_file.getvalue().encode('utf-8-sig')
         csv_file.close()
         return Response(contents, headers=headers, content_type='text/csv')
-    return Response({'errors':_('Bot not found')},
-                        status=HTTP_404_NOT_FOUND)
+    return Response({'errors': _('Bot not found')},
+                    status=HTTP_404_NOT_FOUND)
+
 
 @csrf_exempt
 @api_view(['GET'])
@@ -465,11 +474,11 @@ def train_bot_faq(request, pk=None):
     bot_obj = Chatbot.objects.filter(id=pk, hide_status=False,
                                      user=user_obj).first()
     if not bot_obj:
-        return Response({'errors':_('Not found')},
+        return Response({'errors': _('Not found')},
                         status=HTTP_404_NOT_FOUND)
     train_status, err_msg = nlumodel.train_model(bot_obj)
     if not train_status:
         return Response({'errors': err_msg},
                         status=HTTP_500_INTERNAL_SERVER_ERROR)
-    return Response({'success':_('Training bot succeeded')},
+    return Response({'success': _('Training bot succeeded')},
                     status=HTTP_200_OK)
