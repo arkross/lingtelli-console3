@@ -8,8 +8,8 @@ variables:
   MYSQL_ROOT_PASSWORD: pass1234
  
 stage:
-  build_db
-  buid_test_env
+  - build_db
+  - buid_test_env
 
 build_db:
   image: mysql
@@ -17,7 +17,7 @@ build_db:
     - service mysql start
     - echo "CREATE DATABASE console CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" | mysql -u root -ppass1234
 
-build_and_test_env:
+buid_test_env:
   script:
     - export ENV="DEV"
     - export DB_USER="root"
