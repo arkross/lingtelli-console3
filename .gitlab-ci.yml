@@ -9,15 +9,17 @@ variables:
  
 stages:
   - build_db
-  - buid_test_env
+  - build_test_env
 
-build_db:
+db:
+  stage: build_db
   image: mysql
   script:
     - service mysql start
     - echo "CREATE DATABASE console CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" | mysql -u root -ppass1234
 
-buid_test_env:
+test:
+  stage: build_test_env
   script:
     - export ENV="DEV"
     - export DB_USER="root"
