@@ -23,29 +23,32 @@ class BatchTestPage extends Component {
 
 	CSVtoArray = text => {
     var re_valid = /^\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*(?:,\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*)*$/;
-    var re_value = /(?!\s*$)\s*(?:'([^'\\]*(?:\\[\S\s][^'\\]*)*)'|"([^"\\]*(?:\\[\S\s][^"\\]*)*)"|([^,'"\s\\]*(?:\s+[^,'"\s\\]+)*))\s*(?:,|$)/g;
+		// var re_value = /(?!\s*$)\s*(?:'([^'\\]*(?:\\[\S\s][^'\\]*)*)'|"([^"\\]*(?:\\[\S\s][^"\\]*)*)"|([^,'"\s\\]*(?:\s+[^,'"\s\\]+)*))\s*(?:,|$)/g;
+		var re_value = /(?:"((?:[^"]|"")*)")|([^,"\n\r]*)(,|,?\r?\n|\r)/gm
     // Return NULL if input string is not well formed CSV string.
-    if (!re_valid.test(text)) return null;
-    var a = [];                     // Initialize array to receive values.
-    text.replace(re_value, // "Walk" the string using replace with callback.
-        function(m0, m1, m2, m3) {
-            // Remove backslash from \' in single quoted values.
-            if      (m1 !== undefined) a.push(m1.replace(/\\'/g, "'"));
-            // Remove backslash from \" in double quoted values.
-            else if (m2 !== undefined) a.push(m2.replace(/\\"/g, '"'));
-            else if (m3 !== undefined) a.push(m3);
-            return ''; // Return empty string.
-        });
+		// if (!re_valid.test(text)) return null;
+		
+    var a = [], result = []                    // Initialize array to receive values.
+		var row = []
+		while((a = re_value.exec(text)) !== null) {
+			row.push(a[1] || a[2])
+			if (/[\r?\n]/.test(a[3])) {
+				result.push(row)
+				row = []
+			}
+		}
+		
     // Handle special case of empty last value.
-    if (/,\s*$/.test(text)) a.push('');
-    return a;
+    if (/,\s*$/.test(text)) result.push('')
+    return result
 	}
 
 	readCsv = text => {
-		const rows = text.split('\n').map(row => this.CSVtoArray(row))
+		const rows = this.CSVtoArray(text)
 		const records = rows.filter(row => (row && row[0])).map(row => ({
 			question: row[0].trim(),
 			expected: row[1] ? row[1].trim() : '',
+			isEditing: false,
 			isRun: false,
 			isRunning: false,
 			isError: false,
@@ -105,11 +108,13 @@ class BatchTestPage extends Component {
 			const response = await this.sendMessage(record.question)
 			_.set(records, [index, 'response'], response)
 			_.set(records, [index, 'isRun'], true)
+			_.set(records, [index, 'isEditing'], false)
 			_.set(records, [index, 'isRunning'], false)
 			_.set(records, [index, 'isExactMatch'], this.responseToMatch(response, record.expected))
 		} catch(err) {
 			_.set(record, [index, 'isError'], true)
 			_.set(record, [index, 'isRunning'], false)
+			_.set(record, [index, 'isEditing'], false)
 			_.set(record, [index, 'isRun'], false)
 		}
 		this.setState({ records })
@@ -140,6 +145,14 @@ class BatchTestPage extends Component {
 			return (resObj.data.title === expected) || (resObj.data.text === expected)
 		}
 		return false
+	}
+
+	handleChangeEditing = (index, toState = true, e) => {
+		const records = _.clone(this.state.records)
+		_.set(records, [index, 'isEditing'], toState)
+		this.setState({
+			records
+		})
 	}
 
 	handleQuestionChange = (index, e, { value }) => {
@@ -196,7 +209,7 @@ class BatchTestPage extends Component {
 						<Table.Header>
 							<Table.Row>
 								<Table.HeaderCell collapsing></Table.HeaderCell>
-								<Table.HeaderCell>{t('chatbot.batch.question')}</Table.HeaderCell>
+								<Table.HeaderCell width={6}>{t('chatbot.batch.question')}</Table.HeaderCell>
 								<Table.HeaderCell>{t('chatbot.batch.actual')}</Table.HeaderCell>
 								{showExpected &&
 								<Table.HeaderCell>{t('chatbot.batch.expected')}</Table.HeaderCell>}
@@ -207,8 +220,9 @@ class BatchTestPage extends Component {
 								<Table.Cell>
 									{!record.isRun ? <Button size='small' icon='play' color='blue' loading={record.isRunning} onClick={this.handleIndividualRun.bind(null, idx)} /> : <Icon name='check' color='teal' />}
 								</Table.Cell>
-								<Table.Cell>
-									<Input fluid type='text' value={record.question} onChange={this.handleQuestionChange.bind(null, idx)} />
+								<Table.Cell onClick={this.handleChangeEditing.bind(null, idx, true)}>
+									{record.isEditing ?
+									<Input fluid type='text' value={record.question} onBlur={this.handleChangeEditing.bind(null, idx, false)} onChange={this.handleQuestionChange.bind(null, idx)} /> : record.question}
 								</Table.Cell>
 								<Table.Cell negative={record.response.type === 'error'}>{record.response ? this.responseToString(record.response) : ''}</Table.Cell>
 								{showExpected && <Table.Cell positive={record.isExactMatch}>{record.expected}</Table.Cell>}
