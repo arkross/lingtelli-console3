@@ -4,27 +4,34 @@ services:
   - mysql:5.7
 
 variables:
-  MYSQL_DATABASE: console
   MYSQL_USER: root
   MYSQL_ROOT_PASSWORD: pass1234
+ 
+stage:
+  - build_db
+  - buid_test_env
 
-before_script:
-  - export ENV="DEV"
-  - export DB_USER="root"
-  - export DB_NAME="console"
-  - export DB_PASS="pass1234"
-  - export DB_HOST="mysql"
-  - export SECRET_KEY="testthissecretkey"
-  - export ALLOW_HOST="127.0.0.1"
-  - export WHITE_LIST="127.0.0.1:8000"
-  - export INIT_PASS="initpassword"
-  - export NLU="http://127.0.0.1:8787/chatbot/"
-  - export CONFIRM="http://127.0.0.1:8000/confirm/?code="
-  - export EMAIL_PASS="emailpasswd"
-  - export ENCODE_KEY="aaaabbbbccccdddd"
+build_db:
+  image: mysql
+  script:
+    - service mysql start
+    - echo "CREATE DATABASE console CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" | mysql -u root -ppass1234
 
 build_and_test_env:
   script:
+    - export ENV="DEV"
+    - export DB_USER="root"
+    - export DB_NAME="console"
+    - export DB_PASS="pass1234"
+    - export DB_HOST="mysql"
+    - export SECRET_KEY="testthissecretkey"
+    - export ALLOW_HOST="127.0.0.1"
+    - export WHITE_LIST="127.0.0.1:8000"
+    - export INIT_PASS="initpassword"
+    - export NLU="http://127.0.0.1:8787/chatbot/"
+    - export CONFIRM="http://127.0.0.1:8000/confirm/?code="
+    - export EMAIL_PASS="emailpasswd"
+    - export ENCODE_KEY="aaaabbbbccccdddd"
     - cd server
     - pip install -r requirements.txt
     - python manage.py makemigrations account chatbot thirdparty paidtype faq history
