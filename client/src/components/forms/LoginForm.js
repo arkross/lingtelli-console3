@@ -81,7 +81,8 @@ class LoginForm extends React.Component {
 		return (
 			<div className='login-container'>
 				<Segment textAlign='center'>
-					<h2> <Image src={logo} size='mini' inline /> Lingtelli Chatbot </h2>
+					<h2> <Image src={logo} size='mini' inline /> Lingtelli Chatbot</h2>
+					<h3>{t('login.loginBtn')}</h3>
 					{errors.api && (
 						<Message negative>
 							<p>{errors.api}</p>
@@ -121,7 +122,9 @@ class LoginForm extends React.Component {
 						{t('login.description')}
 						<Link to='/signup'>{t('login.signUp')}</Link>
 					</Message>
+					<Link to='/reset'>{t('login.forgotPassword')}</Link>
 				</Segment>
+				<Link to='/doc' target='_BLANK' style={{float:'right'}}>{t('login.readDoc')}</Link>
 			</div>
 		)
 	}

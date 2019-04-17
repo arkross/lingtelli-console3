@@ -1,12 +1,12 @@
 import React, {Component, Fragment} from 'react'
 import _ from 'lodash'
-import {Image, Icon, Grid, Header, Button, Message, Segment, Form, FormField, Input, TextArea, Label} from 'semantic-ui-react'
+import {Image, Icon, Grid, Header, Button, Message, Segment, Form, FormField, Input, TextArea, Label, List} from 'semantic-ui-react'
 import { compose } from 'recompose'
 import { translate, Trans} from 'react-i18next'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import toJS from '../utils/ToJS'
-import { updateBot } from 'actions/bot'
+import { updateBot, fetchBot } from '../../actions/bot'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 class WebIntegration extends Component {
@@ -24,6 +24,9 @@ class WebIntegration extends Component {
 				headerTextColor: '',
 				chatLabel: '',
 			},
+			domains: [],
+			newDomain: '',
+			newDomainLoading: false,
 			copied: false,
 			robotIcon: '',
 			chatIcon: '',
@@ -45,7 +48,11 @@ class WebIntegration extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		if (JSON.stringify(nextProps.info) !== JSON.stringify(this.state.info)) {
-			this.setState({ info: nextProps.info })
+			this.setState({ info: nextProps.info, domains: (nextProps.info.domain ? nextProps.info.domain.split(',').map(el => ({
+				name: el,
+				isDeleting: false,
+				isLoading: false
+			})) : []) })
 		}
 	}
 
@@ -60,6 +67,49 @@ class WebIntegration extends Component {
 		this.setState({
 			show: {...this.state.show, [platformName]: ! this.state.show[platformName]}
 		})
+	}
+
+	handleNewDomainChange = (e, { value }) => {
+		this.setState({
+			newDomain: value
+		})
+	}
+
+	handleNewDomainSubmit = e => {
+		e.preventDefault()
+		const finalDomains = [...this.state.domains.map(el => el.name), this.state.newDomain]
+		this.setState({ newDomainLoading: true })
+		return this.handleDomainSubmit(finalDomains).then(() => {
+			this.setState({ newDomain: '' })
+		})
+		.finally(() => {
+			this.setState({ newDomainLoading: false })
+		})
+	} 
+
+	handleDomainDelete = (index, e) => {
+		e.preventDefault()
+		this.setState({
+			domains: _.set([...this.state.domains], [index, 'isDeleting'], true)
+		})
+	}
+
+	handleDomainConfirmDelete = (index, e) => {
+		e.preventDefault()
+		const finalDomains = [...this.state.domains.map(el => el.name)].filter((val, idx) => idx !== index)
+		this.setState({ domains: _.set([...this.state.domains], [index, 'isLoading'], true)})
+		return this.handleDomainSubmit(finalDomains).catch(() => this.setState({ domains: _.set([...this.state.domains], [index, 'isLoading'], false)}))
+	}
+
+	handleDomainCancelDelete = (index, e) => {
+		e.preventDefault()
+		this.setState({
+			domains: _.set([...this.state.domains], [index, 'isDeleting'], false)
+		})
+	}
+
+	handleDomainSubmit = finalDomains => {
+		return this.props.updateBot(this.state.info.id, _.set(_.cloneDeep(this.state.info), ['domain'], finalDomains.join(','))).then(() => this.props.fetchBot(this.props.activeBot))
 	}
 
 	handleChange = (platformName, e) => {
@@ -168,7 +218,7 @@ ${str}</script>
 
 	render() {
 		const { supportPlatforms, t, user, user: {packages} } = this.props
-		const { info, info: {third_party}, copied, loading, show, robotIcon, chatIcon, headerTextColor, headerBackgroundColor, chatLabel} = this.state
+		const { info, info: { third_party }, domains, newDomain, newDomainLoading, copied, loading, show, robotIcon, chatIcon, headerTextColor, headerBackgroundColor, chatLabel } = this.state
 		const currentPlatforms = _.filter(supportPlatforms, plat => third_party.indexOf(plat.id) >= 0)
 
 		const webScript = this.generateScript()
@@ -181,7 +231,7 @@ ${str}</script>
 
 		return <Fragment><Grid className='integration-page'>
 			<Grid.Row columns='equal'>
-				<Grid.Column><Header>Web</Header></Grid.Column>
+				<Grid.Column><Header>Web Chat Plugin</Header></Grid.Column>
 				<Grid.Column floated='right'>
 				{webActive ? 
 					<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>
@@ -201,6 +251,33 @@ ${str}</script>
 							</Button>
 						</CopyToClipboard>
 					</Form>
+				</Grid.Column>
+			</Grid.Row>
+			<Grid.Row>
+				<Grid.Column>
+					<Header>{t('chatbot.setting.web.domains.title')}</Header>
+					<p>{t('chatbot.setting.web.domains.description')}</p>
+					<List style={{maxWidth: '400px'}} divided>
+						{domains.map((domain, key) => <List.Item key={key}>
+							{domain.isDeleting ? <Fragment>
+								<Button negative loading={domain.isLoading} onClick={this.handleDomainConfirmDelete.bind(null, key)} size='tiny' content={t('chatbot.setting.web.domains.deleteDomain')} />&nbsp;
+								{t('chatbot.setting.web.domains.or')}&nbsp;
+								<a href='#' onClick={this.handleDomainCancelDelete.bind(null, key)}>{t('chatbot.setting.web.domains.cancel')}</a>
+							</Fragment> : <Fragment>
+								<List.Content floated='left'>
+									{domain.name}
+								</List.Content>
+								<List.Content floated='right'>
+									<a href='#' onClick={this.handleDomainDelete.bind(null, key)}>{t('chatbot.setting.web.domains.delete')}</a>
+								</List.Content>
+							</Fragment>}
+						</List.Item>)}
+						<List.Item>
+							<Form onSubmit={this.handleNewDomainSubmit}>
+								<Input size='small' type='text' loading={newDomainLoading} fluid placeholder='mydomain.com' value={newDomain} onChange={this.handleNewDomainChange} action={<Button icon='plus' content={t('chatbot.setting.web.domains.addDomain')} disabled={!newDomain} onClick={this.handleNewDomainSubmit} />} />
+							</Form>
+						</List.Item>
+					</List>
 				</Grid.Column>
 			</Grid.Row>
 			<Grid.Row>
@@ -247,7 +324,7 @@ const mapStateToProps = (state, props) => ({
 })
 export default compose(
 	withRouter,
-	connect(mapStateToProps, { updateBot }),
+	connect(mapStateToProps, { updateBot, fetchBot }),
 	translate(),
 	toJS
 )(WebIntegration)

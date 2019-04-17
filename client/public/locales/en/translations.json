@@ -2,7 +2,19 @@
   "login": {
     "loginBtn": "Login",
     "description": "New to us? ",
+    "forgotPassword": "Forgot your password?",
+    "readDoc": "Read API Document",
     "signUp": "Sign up"
+  },
+  "resetPass": {
+    "title": "Reset Password",
+    "email": "Email Address",
+    "continue": "Continue",
+    "done": {
+      "description": "If the account exists, we will send an email to you. Please check your email inbox and follow the instructions.",
+      "title": "All Done!",
+      "backToLogin": "Back to Login"
+    }
   },
   "menu": {
     "dashboard": "Dashboard",
@@ -102,7 +114,7 @@
         }
       },
       "web": {
-        "title": "Web Setting",
+        "title": "Web Chat Plugin",
         "description": "Activate this platform and copy the following script and paste it before the body closing tag (</body>) of your website.",
         "customizations": "Customizations",
         "custHeader": "Warning",
@@ -112,11 +124,21 @@
         "chatIcon": "Chat Icon (PNG, SVG, GIF, JPEG)",
         "headerBackgroundColor": "Theme Background Color",
         "headerTextColor": "Theme Text Color",
-        "chatLabel": "Icon Text"
+        "chatLabel": "Icon Text",
+        "domains": {
+          "title": "Trusted Domains",
+          "description": "Protect Web Chat Plugin from being added to unauthorized sites. Web Chat Plugin will only work on the domains you listed below. You may disable this feature by leaving it empty.",
+          "addDomain": "Add",
+          "delete": "Delete",
+          "deleteDomain": "Delete Domain",
+          "or": "or",
+          "cancel": "Cancel",
+          "save": "Save"
+        }
       },
       "api": {
         "title": "API Setting",
-        "description": "Activate this platform to start using the API.",
+        "description": "Please read the API Documentation on how to use Vendor ID to connect with our API.",
         "noData": "None",
         "object": "Object",
         "objectList": "List of Objects",
@@ -227,9 +249,26 @@
     },
     "test": {
       "text": "Test"
+    },
+    "batch": {
+      "text": "Batch Test",
+      "description": "Each line is structured like [question,expected answer]. Expected answer is optional.",
+      "result": "Result",
+      "run": "Run",
+      "question": "Question",
+      "expected": "Expected Answer",
+      "actual": "Actual Answer",
+      "showExpected": "Show Expected Answer",
+      "showPostback": "Show Postback Choices",
+      "total": "Total",
+      "executed": "Executed",
+      "errors": "Errors",
+      "matches": "Matches",
+      "choice": "Choices"
     }
   },
   "api": {
+    "read": "Read API Documentation",
     "info": {
       "title": "Bot Info",
       "responses": {
@@ -281,7 +320,7 @@
           "title": "Reply",
           "sender_value": "",
           "sender_desc": "Fixed value \"BOT\"",
-          "type_value": "\"text\" or \"list\"",
+          "type_value": "\"answer\", \"no_answer\" or \"error\"",
           "type_desc": "See table Choice Structure",
           "state_value": "\"start\", \"in_progress\", or \"completed\"",
           "state_desc": "Session's state",
@@ -337,6 +376,7 @@
     }
   },
   "register": {
+    "title": "Create Account",
     "mail": "Email",
     "registerBtn": "Register",
     "nickname": "Nickname",
