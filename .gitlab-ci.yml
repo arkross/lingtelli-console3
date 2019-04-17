@@ -9,7 +9,7 @@ variables:
  
 before_script:
     - apt-get update && apt-get --assume-yes install mysql-client
-    - echo "CREATE DATABASE console CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" | mysql -u root -ppass1234 -h mysql
+    - echo "CREATE DATABASE console CHARACTER SET utf8 COLLATE utf8_general_ci;" | mysql -u root -ppass1234 -h mysql
     - export ENV="DEV"
     - export DB_USER="root"
     - export DB_NAME="console"
