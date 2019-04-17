@@ -7,19 +7,9 @@ variables:
   MYSQL_USER: root
   MYSQL_ROOT_PASSWORD: pass1234
  
-stages:
-  - build_db
-  - build_test_env
-
-db:
-  stage: build_db
-  script:
+before_script:
     - apt-get update && apt-get --assume-yes install mysql-client
     - echo "CREATE DATABASE console CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" | mysql -u root -ppass1234 -h mysql
-
-test:
-  stage: build_test_env
-  script:
     - export ENV="DEV"
     - export DB_USER="root"
     - export DB_NAME="console"
@@ -33,6 +23,9 @@ test:
     - export CONFIRM="http://127.0.0.1:8000/confirm/?code="
     - export EMAIL_PASS="emailpasswd"
     - export ENCODE_KEY="aaaabbbbccccdddd"
+
+build_and_test:
+  script:
     - cd server
     - pip install -r requirements.txt
     - python manage.py makemigrations account chatbot thirdparty paidtype faq history
