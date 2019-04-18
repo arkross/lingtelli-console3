@@ -28,7 +28,7 @@ class BatchTestPage extends Component {
     // Return NULL if input string is not well formed CSV string.
 		// if (!re_value.test(text)) return []
 		
-    var a = [], result = []                    // Initialize array to receive values.
+    var a = [], result = []  // Initialize array to receive values.
 		var row = []
 		while((a = re_value.exec(text)) !== null) {
 			row.push(a[1] || a[2])
@@ -45,6 +45,7 @@ class BatchTestPage extends Component {
 
 	readCsv = text => {
 		const rows = this.CSVtoArray(text)
+		console.log(rows)
 		const records = rows.filter(row => (row && row[0])).map(row => ({
 			question: row[0].trim(),
 			expected: row[1] ? row[1].trim() : '',
@@ -209,10 +210,10 @@ class BatchTestPage extends Component {
 						<Table.Header>
 							<Table.Row>
 								<Table.HeaderCell collapsing></Table.HeaderCell>
-								<Table.HeaderCell width={6}>{t('chatbot.batch.question')}</Table.HeaderCell>
-								<Table.HeaderCell>{t('chatbot.batch.actual')}</Table.HeaderCell>
+								<Table.HeaderCell width={showExpected ? 6 : 8}>{t('chatbot.batch.question')}</Table.HeaderCell>
+								<Table.HeaderCell width={showExpected ? 6 : 9}>{t('chatbot.batch.actual')}</Table.HeaderCell>
 								{showExpected &&
-								<Table.HeaderCell>{t('chatbot.batch.expected')}</Table.HeaderCell>}
+								<Table.HeaderCell width={5}>{t('chatbot.batch.expected')}</Table.HeaderCell>}
 							</Table.Row>
 						</Table.Header>
 						<Table.Body>
