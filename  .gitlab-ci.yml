@@ -25,6 +25,8 @@ before_script:
     - export ENCODE_KEY="aaaabbbbccccdddd"
 
 build_and_test:
+  only:
+    - branches
   script:
     - cd server
     - pip install -r requirements.txt
