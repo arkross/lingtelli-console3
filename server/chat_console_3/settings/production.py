@@ -30,6 +30,9 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
 # NLU related
 NLU_HOST = os.environ.get('NLU')
 
+# Semantic related
+SEMANTIC_HOST = os.environ.get('SEMANTIC')
+
 # Initial staff's password
 INIT_PASSWORD = os.environ.get('INIT_PASS')
 
