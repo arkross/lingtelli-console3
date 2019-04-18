@@ -109,7 +109,13 @@ class WebIntegration extends Component {
 	}
 
 	handleDomainSubmit = finalDomains => {
-		return this.props.updateBot(this.state.info.id, _.set(_.cloneDeep(this.state.info), ['domain'], finalDomains.join(','))).then(() => this.props.fetchBot(this.props.activeBot))
+		return this.props.updateBot(this.state.info.id, _.set(_.cloneDeep(this.state.info), ['domain'], finalDomains.join(',')))
+			.then(() => this.props.fetchBot(this.props.activeBot))
+			.then(() => {
+				if (this.frame) {
+					this.frame.srcdoc = this.frame.srcdoc
+				}
+			})
 	}
 
 	handleChange = (platformName, e) => {
@@ -300,7 +306,7 @@ ${str}</script>
 					</Form>
 				</Grid.Column>
 				<Grid.Column>
-					<iframe srcDoc={srcDoc} width='330' height='450'></iframe>
+					<iframe ref={el => {this.frame = el}} srcDoc={srcDoc} width='330' height='450'></iframe>
 				</Grid.Column>
 			</Grid.Row>
 			<Grid.Row>

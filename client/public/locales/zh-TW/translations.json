@@ -126,7 +126,7 @@
         "chatLabel": "縮圖標題文字",
         "domains": {
           "title": "可信網域",
-          "description": "Protect Web Chat Plugin from being added to unauthorized sites. Web Chat Plugin will only work on the domains you listed below. You may disable this feature by leaving it empty.",
+          "description": "Protect Web Chat Plugin from being added to unauthorized sites. Web Chat Plugin will only work on the domains you listed below. If you want to enable Preview, please remember to add this site's domain into the list. You may disable this feature by leaving it empty.",
           "addDomain": "新增",
           "delete": "刪除",
           "deleteDomain": "確認刪除",
