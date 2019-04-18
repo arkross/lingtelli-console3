@@ -195,7 +195,6 @@ class AnswerViewset(viewsets.ModelViewSet):
             ans_obj =\
                 Answer.objects.create(group_id=create_data.get('group'),
                                       content=create_data.get('content'),
-                                      train_content=create_data.get('content'),
                                       chatbot=bot_obj)
             if ans_obj:
                 res = {}
