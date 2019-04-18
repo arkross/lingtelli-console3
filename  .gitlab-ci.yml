@@ -1,0 +1,35 @@
+image: python:3.6
+
+services:
+  - mysql:5.7
+
+variables:
+  MYSQL_USER: root
+  MYSQL_ROOT_PASSWORD: pass1234
+ 
+before_script:
+    - apt-get update && apt-get --assume-yes install mysql-client
+    - echo "CREATE DATABASE console CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" | mysql -u root -ppass1234 -h mysql
+    - export ENV="DEV"
+    - export DB_USER="root"
+    - export DB_NAME="console"
+    - export DB_PASS="pass1234"
+    - export DB_HOST="mysql"
+    - export SECRET_KEY="testthissecretkey"
+    - export ALLOW_HOST="127.0.0.1"
+    - export WHITE_LIST="127.0.0.1:8000"
+    - export INIT_PASS="initpassword"
+    - export NLU="http://127.0.0.1:8787/chatbot/"
+    - export CONFIRM="http://127.0.0.1:8000/confirm/?code="
+    - export EMAIL_PASS="emailpasswd"
+    - export ENCODE_KEY="aaaabbbbccccdddd"
+
+build_and_test:
+  script:
+    - cd server
+    - pip install -r requirements.txt
+    - python manage.py makemigrations account chatbot thirdparty paidtype faq history
+    - python manage.py migrate
+    - python manage.py loaddata fixtures/third_party.json
+    - python manage.py loaddata fixtures/paid_type.json
+    - python manage.py test
