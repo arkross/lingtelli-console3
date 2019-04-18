@@ -26,7 +26,7 @@ class BatchTestPage extends Component {
 		// var re_value = /(?!\s*$)\s*(?:'([^'\\]*(?:\\[\S\s][^'\\]*)*)'|"([^"\\]*(?:\\[\S\s][^"\\]*)*)"|([^,'"\s\\]*(?:\s+[^,'"\s\\]+)*))\s*(?:,|$)/g;
 		var re_value = /(?:"((?:[^"]|"")*)")|([^,"\n\r]*)(,|,?\r?\n|\r)/gm
     // Return NULL if input string is not well formed CSV string.
-		// if (!re_valid.test(text)) return null;
+		// if (!re_value.test(text)) return []
 		
     var a = [], result = []                    // Initialize array to receive values.
 		var row = []
