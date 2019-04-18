@@ -127,7 +127,7 @@
         "chatLabel": "Icon Text",
         "domains": {
           "title": "Trusted Domains",
-          "description": "Protect Web Chat Plugin from being added to unauthorized sites. Web Chat Plugin will only work on the domains you listed below. You may disable this feature by leaving it empty.",
+          "description": "Protect Web Chat Plugin from being added to unauthorized sites. Web Chat Plugin will only work on the domains you listed below. If you want to enable Preview, please remember to add this site's domain into the list. You may disable this feature by leaving it empty.",
           "addDomain": "Add",
           "delete": "Delete",
           "deleteDomain": "Delete Domain",
