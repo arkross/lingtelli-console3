@@ -26,7 +26,7 @@ class BatchTestPage extends Component {
 	CSVtoArray = text => {
     var re_valid = /^\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*(?:,\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*)*$/;
 		// var re_value = /(?!\s*$)\s*(?:'([^'\\]*(?:\\[\S\s][^'\\]*)*)'|"([^"\\]*(?:\\[\S\s][^"\\]*)*)"|([^,'"\s\\]*(?:\s+[^,'"\s\\]+)*))\s*(?:,|$)/g;
-		var re_value = /(?:"((?:[^"]|"")*)")|([^,"\n\r]*)(,|,?\r?\n|\r)/gm
+		var re_value = /(?:"((?:[^"]|"")*)"|([^,"\n\r]*))(,|,?\r?\n|\r)/gm
     // Return NULL if input string is not well formed CSV string.
 		// if (!re_value.test(text)) return []
 		
