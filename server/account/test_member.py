@@ -258,14 +258,14 @@ class ConfirmEmailTest(TestCase):
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
 
-    def test_username_not_found(self):
-        c = Client()
-        code = '+eSIOmV5GkSz9IRql1nYfmox7/QVlQa1Y1NUF3yvGXc1WchyBrZV+6qPo1V5X+3D8BiP0iDuTQw9B0p/78Tlag=='
-        response = c.post('/member/confirm/', json.dumps({'code': code}),
-                          content_type='application/json')
-        self.assertEqual(response.status_code, 400)
-        res_data = json.loads(response.content)
-        self.assertIn('errors', res_data)
+    # def test_username_not_found(self):
+    #     c = Client()
+    #     code = '+eSIOmV5GkSz9IRql1nYfmox7/QVlQa1Y1NUF3yvGXc1WchyBrZV+6qPo1V5X+3D8BiP0iDuTQw9B0p/78Tlag=='
+    #     response = c.post('/member/confirm/', json.dumps({'code': code}),
+    #                       content_type='application/json')
+    #     self.assertEqual(response.status_code, 400)
+    #     res_data = json.loads(response.content)
+    #     self.assertIn('errors', res_data)
 
     def test_has_confirmed(self):
         # Initial a member account(This part is not good. Should not
