@@ -63,10 +63,9 @@ THIRD_PARTY = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
-    'django_filters',
 ]
 
-OUR_APP = [
+OUR_APP =[
     'account',
     'chatbot',
     'thirdparty',

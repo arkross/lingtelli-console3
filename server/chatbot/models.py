@@ -75,7 +75,7 @@ class Chatbot(models.Model):
     postback_activate = models.BooleanField(default=True)
     postback_title = \
         models.CharField(max_length=255,
-                         default='請選擇跟你問題類似的問題，如果沒有請繼續問其他問題。')
+                         default='Please choose the similar question.')
     delete_confirm = models.BooleanField(default=False)
     bot_type = models.CharField(max_length=10, choices=BOT_TYPE,
                                 default='NORMAL')

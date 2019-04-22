@@ -114,8 +114,9 @@ msgstr "使用者不存在"
 #: chatbot/views.py:390 chatbot/views.py:409 chatbot/views.py:419
 #: faq/views.py:107 faq/views.py:179 faq/views.py:191 faq/views.py:213
 #: faq/views.py:223 faq/views.py:284 faq/views.py:296 faq/views.py:319
-#: faq/views.py:329 faq/views.py:468 history/views.py:57 report/views.py:85
-#: taskbot/views.py:88 taskbot/views.py:123 taskbot/views.py:153
+#: faq/views.py:329 faq/views.py:468 history/views.py:57 paidtype/views.py:103
+#: report/views.py:85 taskbot/views.py:88 taskbot/views.py:123
+#: taskbot/views.py:153
 msgid "Not found"
 msgstr "資料不存在"
 
@@ -226,31 +227,31 @@ msgstr "更新成功"
 msgid "paid_type cannot be empty"
 msgstr "方案不能為空"
 
-#: chatbot/views.py:116
+#: chatbot/views.py:115
 msgid "Reach bot create limitation"
 msgstr "已到建立機器人數量上限"
 
-#: chatbot/views.py:128
+#: chatbot/views.py:127
 msgid "Reach faq create limitation"
 msgstr "已到問答數量上限"
 
-#: chatbot/views.py:159 taskbot/views.py:70
+#: chatbot/views.py:158 taskbot/views.py:70
 msgid "Create bot failed. Cause by NLU error."
 msgstr "建立機器人失敗"
 
-#: chatbot/views.py:166 taskbot/views.py:77
+#: chatbot/views.py:165 taskbot/views.py:77
 msgid "Create bot failed"
 msgstr "建立機器人失敗"
 
-#: chatbot/views.py:218 taskbot/views.py:134
+#: chatbot/views.py:217 taskbot/views.py:134
 msgid "Deleting bot failed"
 msgstr "刪除機器人失敗"
 
-#: chatbot/views.py:292 chatbot/views.py:305 chatbot/views.py:324
+#: chatbot/views.py:291 chatbot/views.py:304 chatbot/views.py:323
 msgid "Not allowed to get user line data"
 msgstr "不允許此操作"
 
-#: chatbot/views.py:381 chatbot/views.py:394 chatbot/views.py:413
+#: chatbot/views.py:380 chatbot/views.py:393 chatbot/views.py:412
 msgid "Not allowed to get user fb data"
 msgstr "不允許此操作"
 
@@ -302,21 +303,13 @@ msgstr "問答組不存在"
 msgid "Create new question successed"
 msgstr "成功建立新問題"
 
-#: paidtype/views.py:67 paidtype/views.py:100
+#: paidtype/views.py:65 paidtype/views.py:98
 msgid "Not allowed"
 msgstr "不允許此操作"
 
-#: paidtype/views.py:82
+#: paidtype/views.py:80
 msgid "Create paidtype failed"
 msgstr "建立方案失敗"
-
-#: paidtype/views.py:106
-msgid "Cannot delete this paidtype"
-msgstr "無法刪除這個方案"
-
-#: paidtype/views.py:111
-msgid "User is still using this paidtype"
-msgstr "還有使用者使用這個方案"
 
 #: taskbot/views.py:97
 msgid "Key missing or empty: robot_name"

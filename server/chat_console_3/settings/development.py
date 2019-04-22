@@ -50,3 +50,32 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute=0, hour=0)
     }
 }
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters':{
+#         'verbose': {
+#             'format': '{levelname} {asctime} {message}',
+#             'style': '{',
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'verbose'
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'propagate': True
+#         },
+#         'account.views': {
+#             'level': 'DEBUG',
+#             'handlers': ['console'],
+#             'propagate': True
+#         }
+#     },
+# }
