@@ -91,7 +91,7 @@ class ChatbotTest(TestCase):
         GET, PUT, DELETE
         '''
         # Init not existed bot url
-        bot_uri = '/chatbot/5/'
+        bot_uri = '/chatbot/9999/'
 
         c = Client()
 
