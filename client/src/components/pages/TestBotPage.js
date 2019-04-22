@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
 import { connect } from 'react-redux'
-import { Input, Container, Header, List, Icon, Form} from 'semantic-ui-react'
+import { Input, Container, Header, List, Icon, Form, Popup} from 'semantic-ui-react'
 import { compose } from 'recompose';
 import { translate } from 'react-i18next'
+import { NavLink } from 'react-router-dom'
 import api from 'apis/demo'
 import toJS from 'components/utils/ToJS'
 import _ from 'lodash'
@@ -160,7 +161,12 @@ class TestBotPage extends Component {
 		moment.locale(localStorage.i18nextLng.toLowerCase())
 		let keyCounter = 0
 		return <Container text className='chat-container'>
-			<Header as='h3'>{info.robot_name}</Header>
+			<Header as='h3'>
+				{info.robot_name}
+				<Popup trigger={<NavLink style={{float: 'right', color: '#fff', fontWeight: 'normal', fontSize: '0.8em'}} to={`/dashboard/bot/${info.id}/batch`}>
+					{t('chatbot.batch.text')}
+				</NavLink>} content={t('chatbot.batch.popup')} />
+			</Header>
 			<div ref={el => {this.chatMessages = el}} className='chat-messages-container'>
 				{
 					_.map(messages, message => {

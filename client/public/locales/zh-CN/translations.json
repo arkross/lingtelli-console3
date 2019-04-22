@@ -43,7 +43,8 @@
     "facebook": "Facebook",
     "line": "LINE",
     "web": "网站",
-    "task": "任务"
+    "task": "任务",
+    "thirdparty": "第三方"
   },
   "chatbot": {
     "name": "机器人称呼",
@@ -171,6 +172,7 @@
     },
     "integration": {
       "text": "连接",
+      "thirdParty": "第三方",
       "facebook": "Facebook",
       "line": "LINE",
       "web": "网站",
@@ -261,8 +263,14 @@
       "text": "测试"
     },
     "batch": {
-      "text": "批量测试",
+      "text": "进阶测试",
+      "basic": "一般测试",
+      "popup": "使用多个问题进行测试",
       "description": "每行的格式为【问题，预期答案】。预期答案是非必填的。",
+      "description2": "您可以使用任何电子表格编辑器（例：Google Sheets, Microsoft Excel, LibreOffice Calc 等)写好内容并汇出一份CSV档。",
+      "readMore": "了解更多",
+      "uploadCsv": "上传测试档案",
+      "csvFormat": "CSV档内容格式",
       "result": "结果",
       "run": "开始",
       "question": "问题",

@@ -23,8 +23,8 @@ import BotDashboard from './BotDashboard'
 import toJS from 'components/utils/ToJS'
 import DemoModal from 'components/modals/DemoModal'
 import TestBotPage from './TestBotPage';
-import IntegrationPage from './IntegrationPage'
 import BatchTestPage from './BatchTestPage'
+import ThirdPartyIntegrationPage from './ThirdPartyIntegrationPage'
 import FBIntegrationPage from './FBIntegrationPage'
 import LineIntegrationPage from './LineIntegrationPage'
 import WebIntegrationPage from './WebIntegrationPage'
@@ -157,16 +157,14 @@ class ContentPage extends React.Component {
 
 		const subMenus = [
 			{ text: t('chatbot.setting.text') , id: 'setting'},
-			{ text: t('chatbot.integration.facebook') , id: 'integration/facebook', hide: isHidden},
-			{ text: t('chatbot.integration.line') , id: 'integration/line', hide: isHidden},
+			{ text: t('chatbot.integration.thirdParty') , id: 'integration/thirdparty', hide: isHidden},
 			{ text: t('chatbot.integration.web') , id: 'integration/web'},
 			{ text: t('chatbot.integration.api') , id: 'integration/api'},
 			{ text: t('chatbot.analysis.text'), id: 'analysis' },
 			{ text: t('chatbot.history.text'), id: 'history'},
 			{ text: t('chatbot.recommendations.text'), id: 'recommendations'},
 			{ text: t('chatbot.faq.text'), id: 'faq', hide: isTask },
-			{ text: t('chatbot.test.text'), id: 'test'},
-			{ text: t('chatbot.batch.text'), id: 'batch'}
+			{ text: t('chatbot.test.text'), id: 'test'}
 		]
 		.filter(el => !el.hide)
 		.map(el => Object.assign({value: `${match.url}/${el.id}`, key: el.id}, el))
@@ -179,8 +177,7 @@ class ContentPage extends React.Component {
 			exact: true
 		}, ...subMenus]
 		const currentMenu = _.findLast(dropdownMenu, el => matchPath(location.pathname, {path: `${match.url}/${el.id}`}))
-		const renderItems = subMenus.map( (item, ix) => (
-
+		const renderItems = subMenus.map( (item, ix) =>
 			<NavLink
 				className='item'
 				to={`${match.url}/${item.id}`}
@@ -190,8 +187,7 @@ class ContentPage extends React.Component {
 				style={{
 					flex: '0 0 auto'
 				}}
-			>{item.text}</NavLink>
-		))
+			>{item.text}</NavLink>)
 
 		// renderItems.push(<Menu.Menu key='testbot' position='right'><Menu.Item><Button onClick={this.onOpenDemoModal} color='green'><Icon name='play'></Icon> {t('demo.button')}</Button></Menu.Item></Menu.Menu>)
 
@@ -241,6 +237,7 @@ class ContentPage extends React.Component {
 					<Route path={`${match.path}/recommendations`} render={props => <Segment loading={loading}><RecomLogPage {...props} fetchData={this.onFetchMatching} /></Segment>} />
 					<Route path={`${match.path}/test`} render={props => <Segment loading={loading}><TestBotPage {...props} /></Segment>} />
 					<Route path={`${match.path}/batch`} render={props => <Segment loading={loading}><BatchTestPage {...props} /></Segment>} />
+					<Route path={`${match.path}/integration/thirdparty`} render={props => <Segment loading={loading}><ThirdPartyIntegrationPage {...props} /></Segment>} />
 					<Route path={`${match.path}/integration/facebook`} render={props => <Segment loading={loading}><FBIntegrationPage {...props} /></Segment>} />
 					<Route path={`${match.path}/integration/line`} render={props => <Segment loading={loading}><LineIntegrationPage {...props} /></Segment>} />
 					<Route path={`${match.path}/integration/web`} render={props => <Segment loading={loading}><WebIntegrationPage {...props} /></Segment>} />
