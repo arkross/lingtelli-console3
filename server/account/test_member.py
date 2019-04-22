@@ -18,7 +18,7 @@ class MemberRegisterTest(TestCase):
     def setUp(self):
         # Initial paid type an third party
         trial_data = {
-            'pk': 2,
+            'pk': 1,
             'name': 'Trial',
             'duration': '0_0',
             'bot_amount': '1',
@@ -37,19 +37,19 @@ class MemberRegisterTest(TestCase):
     def test_key_amount_not_correct(self):
         c = Client()
         response = c.post('/member/register/',
-                          json.dumps({'username': 'test@gmail.com',
-                                      'password': 'thisispassword',
-                                      'first_name': 'nickname',
+                          json.dumps({'username':'test@gmail.com',
+                                      'password':'thisispassword',
+                                      'first_name':'nickname',
                                       'language': 'en',
-                                      'other': 'other'}),
+                                      'other':'other'}),
                           content_type='application/json')
         self.assertEqual(response.status_code, 400)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-
+        
         response = c.post('/member/register/',
-                          json.dumps({'username': 'test@gmail.com',
-                                      'password': 'thisispassword'}),
+                          json.dumps({'username':'test@gmail.com',
+                                      'password':'thisispassword'}),
                           content_type='application/json')
         self.assertEqual(response.status_code, 400)
         res_data = json.loads(response.content)
@@ -61,14 +61,14 @@ class MemberRegisterTest(TestCase):
         self.assertEqual(response.status_code, 400)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-
+    
     def test_key_not_correct(self):
         c = Client()
         response = c.post('/member/register/',
-                          json.dumps({'username': 'test@gmail.com',
-                                      'password': 'thisispassword',
+                          json.dumps({'username':'test@gmail.com',
+                                      'password':'thisispassword',
                                       'first_name': 'test',
-                                      'other': 'other'}),
+                                      'other':'other'}),
                           content_type='application/json')
         self.assertEqual(response.status_code, 400)
         res_data = json.loads(response.content)
@@ -77,9 +77,9 @@ class MemberRegisterTest(TestCase):
     def test_email_not_valid(self):
         c = Client()
         response = c.post('/member/register/',
-                          json.dumps({'username': 'thisisemail123',
-                                      'password': 'thisispassword',
-                                      'first_name': 'nickname',
+                          json.dumps({'username':'thisisemail123',
+                                      'password':'thisispassword',
+                                      'first_name':'nickname',
                                       'language': 'en'}),
                           content_type='application/json')
         self.assertEqual(response.status_code, 400)
@@ -95,9 +95,9 @@ class MemberRegisterTest(TestCase):
         User.objects.create(**user_obj)
         c = Client()
         response = c.post('/member/register/',
-                          json.dumps({'username': 'cosmo.hu@lingtelli.com',
-                                      'password': 'anotherpassword',
-                                      'first_name': 'cosmoother',
+                          json.dumps({'username':'cosmo.hu@lingtelli.com',
+                                      'password':'anotherpassword',
+                                      'first_name':'cosmoother',
                                       'language': 'en'}),
                           content_type='application/json')
         self.assertEqual(response.status_code, 403)
@@ -107,9 +107,9 @@ class MemberRegisterTest(TestCase):
     def test_register_successed(self):
         c = Client()
         response = c.post('/member/register/',
-                          json.dumps({'username': 'cosmo.hu@lingtelli.com',
-                                      'password': 'thisispassword',
-                                      'first_name': 'cosmo',
+                          json.dumps({'username':'cosmo.hu@lingtelli.com',
+                                      'password':'thisispassword',
+                                      'first_name':'cosmo',
                                       'language': 'en'}),
                           content_type='application/json')
         self.assertEqual(response.status_code, 201)
@@ -127,7 +127,7 @@ class ResendEmailTest(TestCase):
     def setUp(self):
         # Initial paid type an third party
         trial_data = {
-            'pk': 2,
+            'pk': 1,
             'name': 'Trial',
             'duration': '0_0',
             'bot_amount': '1',
@@ -146,18 +146,18 @@ class ResendEmailTest(TestCase):
 
     def test_cannot_find_user(self):
         c = Client()
-
+        
         response = c.get('/member/resend/',
-                         {'username': 'cosmo.hu@lingtelli.com'})
+                          {'username': 'cosmo.hu@lingtelli.com'})
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
 
     def test_confirmed_resend(self):
         c = Client()
-        # Initial a member account first(This part is not good. Should not
+        # Initial a member account first(This part is not good. Should not 
         # implement other function in here for initialing data.)
-        c.post('/member/register/',
+        c.post('/member/register/', 
                json.dumps({'username': 'cosmo.hu@lingtelli.com',
                            'password': 'thistispassword',
                            'first_name': 'cosmo',
@@ -179,16 +179,16 @@ class ResendEmailTest(TestCase):
     def test_send_over_3_times(self):
         c = Client()
         # Initial a member account first
-        c.post('/member/register/',
+        c.post('/member/register/', 
                json.dumps({'username': 'cosmo.hu@lingtelli.com',
                            'password': 'thistispassword',
                            'first_name': 'cosmo',
                            'language': 'en'}),
                content_type='application/json')
         response = {}
-        for i in range(0, 4):
+        for i in range(0,4):
             response = \
-                c.get('/member/resend/',
+                c.get('/member/resend/', 
                       {'username': 'cosmo.hu@lingtelli.com'})
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
@@ -203,7 +203,7 @@ class ConfirmEmailTest(TestCase):
     def setUp(self):
         # Initial paid type an third party
         trial_data = {
-            'pk': 2,
+            'pk': 1,
             'name': 'Trial',
             'duration': '0_0',
             'bot_amount': '1',
@@ -221,10 +221,10 @@ class ConfirmEmailTest(TestCase):
         trial_obj.third_party.add(demo_obj)
 
     def test_first_confirm_successed(self):
-        # Initial a member account first(This part is not good. Should not
+        # Initial a member account first(This part is not good. Should not 
         # implement other function in here for initialing data.)
         c = Client()
-        c.post('/member/register/',
+        c.post('/member/register/', 
                json.dumps({'username': 'cosmo.hu@lingtelli.com',
                            'password': 'thistispassword',
                            'first_name': 'cosmo',
@@ -232,7 +232,7 @@ class ConfirmEmailTest(TestCase):
                content_type='application/json')
         user = User.objects.get(username='cosmo.hu@lingtelli.com')
         code = AccountInfo.objects.get(user=user).confirmation_code
-
+        
         response = c.post('/member/confirm/', json.dumps({'code': code}),
                           content_type='application/json')
         user = User.objects.get(username='cosmo.hu@lingtelli.com')
@@ -242,15 +242,15 @@ class ConfirmEmailTest(TestCase):
         self.assertEqual(user.is_active, True)
 
     def test_code_invalid(self):
-        # Initial a member account first(This part is not good. Should not
+        # Initial a member account first(This part is not good. Should not 
         # implement other function in here for initialing data.)
         c = Client()
-        c.post('/member/register/',
+        c.post('/member/register/', 
                json.dumps({'username': 'cosmo.hu@lingtelli.com',
                            'password': 'thistispassword',
                            'first_name': 'cosmo'}),
                content_type='application/json')
-
+        
         code = 'thisisnotcorrectconfirmationcode'
         response = c.post('/member/confirm/', json.dumps({'code': code}),
                           content_type='application/json')
@@ -268,10 +268,10 @@ class ConfirmEmailTest(TestCase):
     #     self.assertIn('errors', res_data)
 
     def test_has_confirmed(self):
-        # Initial a member account(This part is not good. Should not
+        # Initial a member account(This part is not good. Should not 
         # implement other function in here for initialing data.)
         c = Client()
-        c.post('/member/register/',
+        c.post('/member/register/', 
                json.dumps({'username': 'cosmo.hu@lingtelli.com',
                            'password': 'thistispassword',
                            'first_name': 'cosmo',
@@ -279,11 +279,11 @@ class ConfirmEmailTest(TestCase):
                content_type='application/json')
         user = User.objects.get(username='cosmo.hu@lingtelli.com')
         code = AccountInfo.objects.get(user=user).confirmation_code
-
+        
         # First confirmation
         c.post('/member/confirm/', json.dumps({'code': code}),
                content_type='application/json')
-
+        
         # Confirm again
         response = c.post('/member/confirm/', json.dumps({'code': code}),
                           content_type='application/json')
@@ -292,10 +292,10 @@ class ConfirmEmailTest(TestCase):
         self.assertIn('errors', res_data)
 
     def test_change_username(self):
-        # Initial a member account(This part is not good. Should not
+        # Initial a member account(This part is not good. Should not 
         # implement other function in here for initialing data.)
         c = Client()
-        c.post('/member/register/',
+        c.post('/member/register/', 
                json.dumps({'username': 'cosmo.hu@lingtelli.com',
                            'password': 'thistispassword',
                            'first_name': 'cosmo',
@@ -318,7 +318,7 @@ class ConfirmEmailTest(TestCase):
         acc_info.save()
 
         response = c.post('/member/confirm/', json.dumps({'code': new_code}),
-                          content_type='application/json')
+                           content_type='application/json')
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
@@ -388,7 +388,7 @@ class MemberAccessTest(TestCase):
     def setUp(self):
         # Initial paid type an third party
         trial_data = {
-            'pk': 2,
+            'pk': 1,
             'name': 'Trial',
             'duration': '0_0',
             'bot_amount': '1',
@@ -426,7 +426,7 @@ class MemberAccessTest(TestCase):
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
-
+    
     def test_login_empty_input(self):
         c = Client()
         response = c.post('/member/login/', json.dumps({}),
@@ -434,7 +434,7 @@ class MemberAccessTest(TestCase):
         self.assertEqual(response.status_code, 400)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-
+    
     def test_login_user_not_found(self):
         c = Client()
         response = c.post('/member/login/',
@@ -444,7 +444,7 @@ class MemberAccessTest(TestCase):
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-
+    
     def test_login_wrong_password(self):
         c = Client()
         response = c.post('/member/login/',
@@ -454,7 +454,7 @@ class MemberAccessTest(TestCase):
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-
+    
     def test_login_not_confirmed(self):
         c = Client()
         response = c.post('/member/login/',
@@ -464,7 +464,7 @@ class MemberAccessTest(TestCase):
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-
+    
     def test_login_again(self):
         '''User has logged in but tried to login again
         '''
@@ -484,6 +484,7 @@ class MemberAccessTest(TestCase):
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
 
+    
     def test_logout(self):
         # Login to get token first
         user_obj = User.objects.get(username='cosmo.hu@lingtelli.com')
@@ -498,7 +499,7 @@ class MemberAccessTest(TestCase):
         old_token = Token.objects.filter(key=accesstoken.key).first()
         self.assertIn('success', res_data)
         self.assertIs(old_token, None)
-
+    
     def test_logout_no_auth(self):
         c = Client()
         response = c.get('/member/logout/')
@@ -516,7 +517,7 @@ class MemberProfileTest(TestCase):
     def setUp(self):
         # Initial paid type an third party
         trial_data = {
-            'pk': 2,
+            'pk': 1,
             'name': 'Trial',
             'duration': '0_0',
             'bot_amount': '1',
@@ -540,7 +541,7 @@ class MemberProfileTest(TestCase):
 
         # Create account info
         acc_data = {'user': self.user_obj, 'paid_type': trial_obj,
-                    'confirmation_code': 'confirmationcode',
+                    'confirmation_code': 'confirmationcode', 
                     'code_reset_time': '2019-12-12 00:00:00', }
         AccountInfo.objects.create(**acc_data)
 
@@ -564,7 +565,7 @@ class MemberProfileTest(TestCase):
         self.assertEqual(response.status_code, 401)
 
         # PUT
-        response = c.put(self.uri,
+        response = c.put(self.uri, 
                          json.dumps({'old_password': 'thisispassword',
                                      'password': 'newpassword'}),
                          content_type='application/json')
@@ -573,7 +574,7 @@ class MemberProfileTest(TestCase):
         # Delete
         response = c.delete(self.uri)
         self.assertEqual(response.status_code, 401)
-
+    
     def test_not_existed(self):
         '''Member account not existed
 
@@ -602,9 +603,9 @@ class MemberProfileTest(TestCase):
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-
+        
     def test_read(self):
-        profile_key = ['id', 'username', 'first_name', 'paid_type',
+        profile_key = ['id','username', 'first_name', 'paid_type',
                        'start_date', 'expire_date', 'language']
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
@@ -614,7 +615,7 @@ class MemberProfileTest(TestCase):
         self.assertEqual(len(res_data), len(profile_key))
         for k in profile_key:
             self.assertIn(k, res_data)
-
+    
     def test_update_empty(self):
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
@@ -622,7 +623,7 @@ class MemberProfileTest(TestCase):
         self.assertEqual(response.status_code, 400)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-
+    
     def test_update_username(self):
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
@@ -647,11 +648,11 @@ class MemberProfileTest(TestCase):
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
         self.assertEqual(token.key, self.accesstoken)
-
+    
     def test_update_password(self):
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
-        response = c.put(self.uri,
+        response = c.put(self.uri, 
                          json.dumps({'old_password': 'thisispassword',
                                      'password': 'newpassword'}),
                          content_type='application/json', **header)
@@ -660,7 +661,7 @@ class MemberProfileTest(TestCase):
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
         self.assertEqual(token, None)
-
+    
     def test_update_wrong_old_password(self):
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
@@ -702,7 +703,7 @@ class MemberProfileTest(TestCase):
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         ori_acc_obj = AccountInfo.objects.filter(user=self.user_obj).first()
         response = c.put(self.uri,
-                         json.dumps({'language':  ''}),
+                         json.dumps({'language':''}),
                          content_type='application/json', **header)
         new_acc_obj = AccountInfo.objects.filter(user=self.user_obj).first()
         self.assertEqual(response.status_code, 400)
@@ -722,7 +723,7 @@ class MemberProfileTest(TestCase):
             User.objects.filter(username='cosmo.hu@lingtelli.com').first()
         self.assertEqual(response.status_code, 204)
         self.assertEqual(check_delete_user, None)
-
+    
     def test_delete_no_confirm(self):
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
@@ -734,7 +735,6 @@ class MemberProfileTest(TestCase):
         self.assertIn('errors', res_data)
         self.assertNotEqual(check_delete_user, None)
 
-
 class DeleteAccountConfirmTest(TestCase):
     '''Deleting account confirm
 
@@ -743,7 +743,7 @@ class DeleteAccountConfirmTest(TestCase):
     def setUp(self):
         # Initial thirdparty and paidtype
         trial_data = {
-            'pk': 2,
+            'pk': 1,
             'name': 'Trial',
             'duration': '0_0',
             'bot_amount': '1',
@@ -767,7 +767,7 @@ class DeleteAccountConfirmTest(TestCase):
 
         # Create account info
         acc_data = {'user': user_obj, 'paid_type': trial_obj,
-                    'confirmation_code': 'confirmationcode',
+                    'confirmation_code': 'confirmationcode', 
                     'code_reset_time': '2019-12-12 00:00:00', }
         AccountInfo.objects.create(**acc_data)
 
@@ -782,16 +782,16 @@ class DeleteAccountConfirmTest(TestCase):
     def test_update_confirm_no_auth(self):
         c = Client()
         correct_password = {'password': 'thisispassword'}
-        response = c.put(self.uri, json.dumps(correct_password),
-                         content_type='application/json')
+        response = c.put(self.uri, json.dumps(correct_password), 
+                          content_type='application/json')
         self.assertEqual(response.status_code, 401)
 
     def test_update_confirm_correct_password(self):
         c = Client()
         correct_password = {'password': 'thisispassword'}
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
-        response = c.put(self.uri, json.dumps(correct_password),
-                         content_type='application/json', **header)
+        response = c.put(self.uri, json.dumps(correct_password), 
+                          content_type='application/json', **header)
         user_obj = User.objects.get(username='cosmo.hu@lingtelli.com')
         acc_info = AccountInfo.objects.get(user=user_obj)
         self.assertEqual(response.status_code, 200)
@@ -803,8 +803,8 @@ class DeleteAccountConfirmTest(TestCase):
         c = Client()
         correct_password = {'password': 'wrongpassword'}
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
-        response = c.put(self.uri, json.dumps(correct_password),
-                         content_type='application/json', **header)
+        response = c.put(self.uri, json.dumps(correct_password), 
+                          content_type='application/json', **header)
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)

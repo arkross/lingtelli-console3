@@ -31,7 +31,8 @@
     "facebook": "Facebook",
     "line": "LINE",
     "web": "網站",
-    "task": "任務"
+    "task": "任務",
+    "thirdparty": "第三方"
   },
   "chatbot": {
     "name": "機器人名稱",
@@ -159,6 +160,7 @@
     },
     "integration": {
       "text": "連接",
+      "thirdParty": "第三方",
       "facebook": "Facebook",
       "line": "LINE",
       "web": "網站",
@@ -249,8 +251,14 @@
       "text": "測試"
     },
     "batch": {
-      "text": "批量測試",
+      "text": "進階測試",
+      "basic": "一般測試",
+      "popup": "使用多個問題進行測試",
       "description": "每行的格式為【問題,預期答案】. 預期答案是非必填的.",
+      "description2": "您可以使用任何電子表格編輯器(例: Google Sheets, Microsoft Excel, LibreOffice Calc 等)寫好內容並匯出一份CSV檔.",
+      "readMore": "了解更多",
+      "uploadCsv": "上傳測試檔案",
+      "csvFormat": "CSV檔內容格式",
       "result": "結果",
       "run": "開始",
       "question": "問題",

@@ -26,7 +26,8 @@
     "line": "LINE",
     "web": "Web",
     "api": "API",
-    "task": "TASK"
+    "task": "TASK",
+    "thirdparty": "Third Party"
   },
   "demo": {
     "button": "Test Bot",
@@ -160,6 +161,7 @@
     },
     "integration": {
       "text": "Integration",
+      "thirdParty": "Third Party",
       "facebook": "Facebook",
       "line": "LINE",
       "web": "Web",
@@ -251,8 +253,14 @@
       "text": "Test"
     },
     "batch": {
-      "text": "Batch Test",
-      "description": "Each line is structured like [question,expected answer]. Expected answer is optional.",
+      "text": "Advanced Test",
+      "basic": "Basic Test",
+      "popup": "Test with multiple questions at once",
+      "description": "Test file format is comma-separated values (CSV). Each line is structured as [question,expected answer]. Expected answer is optional.",
+      "description2": "The CSV file can be created using any spreadsheet applications of your choice (e.g. Google Sheet, Microsoft Excel, LibreOffice Calc, etc)",
+      "readMore": "Read More",
+      "uploadCsv": "Upload Test File",
+      "csvFormat": "CSV File Content Format",
       "result": "Result",
       "run": "Run",
       "question": "Question",
