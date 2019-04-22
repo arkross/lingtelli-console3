@@ -1,8 +1,9 @@
 import React, {Component, Fragment} from 'react'
 import { connect } from 'react-redux'
-import { Input, Container, Header, List, Icon, Form, Table, Grid, Button, Checkbox, Label} from 'semantic-ui-react'
+import { Input, Container, Header, List, Icon, Form, Table, Grid, Button, Checkbox, Label, Image, Modal} from 'semantic-ui-react'
 import { compose } from 'recompose';
 import { translate } from 'react-i18next'
+import { NavLink } from 'react-router-dom'
 import api from 'apis/demo'
 import toJS from 'components/utils/ToJS'
 import _ from 'lodash'
@@ -13,6 +14,7 @@ class BatchTestPage extends Component {
 		super(props)
 		this.state = {
 			records: [],
+			openDescriptionModal: false,
 			file: null,
 			isRunning: false,
 			isParsingCSV: false,
@@ -32,9 +34,12 @@ class BatchTestPage extends Component {
 		var row = []
 		while((a = re_value.exec(text)) !== null) {
 			row.push(a[1] || a[2])
-			if (/[\r?\n]/.test(a[3])) {
+			if (/[\r?\n]/.test(a[3]) || !a[3]) {
 				result.push(row)
 				row = []
+			}
+			if (!a[3]) {
+				break
 			}
 		}
 		
@@ -45,7 +50,6 @@ class BatchTestPage extends Component {
 
 	readCsv = text => {
 		const rows = this.CSVtoArray(text)
-		console.log(rows)
 		const records = rows.filter(row => (row && row[0])).map(row => ({
 			question: row[0].trim(),
 			expected: row[1] ? row[1].trim() : '',
@@ -174,9 +178,19 @@ class BatchTestPage extends Component {
 		return api.ask(this.props.info.vendor_id, message)
 	}
 
+	handleReadMoreClick = e => {
+		e.preventDefault()
+		this.setState({ openDescriptionModal: true })
+	}
+
+	handleCloseModal = () => {
+		this.setState({ openDescriptionModal: false })
+	}
+
 	render() {
-		const { t } = this.props
-		const { records, showExpected, showPostback, isRunning, isParsingCSV } = this.state
+		const { t, info } = this.props
+		const { records, showExpected, showPostback, isRunning, isParsingCSV, openDescriptionModal } = this.state
+		const img = require('../../assets/img/chatbot/csvdemo.png')
 
 		const total = records.length
 		const errors = records.filter(record => (record.isRun && record.response.type === 'error')).length
@@ -186,12 +200,18 @@ class BatchTestPage extends Component {
 		return <Grid>
 			<Grid.Row>
 				<Grid.Column>
-					<Header>{t('chatbot.batch.text')}</Header>
+					<Header style={{float: 'left'}}>{t('chatbot.batch.text')}</Header>
+					<NavLink style={{float: 'right'}} to={`/dashboard/bot/${info.id}/test`}>{t('chatbot.batch.basic')}</NavLink>
+				</Grid.Column>
+			</Grid.Row>
+			<Grid.Row>
+				<Grid.Column>
 					<Form>
 						<Form.Field>
-							<label>CSV</label>
+							<label>{t('chatbot.batch.uploadCsv')}</label>
+							<p>{t('chatbot.batch.popup')}. <a href="#" onClick={this.handleReadMoreClick}>{t('chatbot.batch.readMore')}</a></p>
 							<Input type='file' loading={isParsingCSV} onChange={this.handleUpload} placeholder={'CSV file'} action={<Button content={t('chatbot.batch.run')} onClick={this.handleRun} primary icon='play' disabled={!total} loading={isRunning} />} />
-							<p>{t('chatbot.batch.description')}</p>
+							<p></p>
 						</Form.Field>
 						<Form.Field>
 							<Checkbox label={t('chatbot.batch.showExpected')} checked={showExpected} onChange={this.handleToggleExpected} />
@@ -230,6 +250,16 @@ class BatchTestPage extends Component {
 							</Table.Row>)}
 						</Table.Body>
 					</Table>
+					<Modal open={openDescriptionModal} onClose={this.handleCloseModal}>
+						<Modal.Header>{t('chatbot.batch.csvFormat')}</Modal.Header>
+						<Modal.Content image>
+							<Image src={img} centered rounded />
+							<Modal.Description>
+								<p>{t('chatbot.batch.description')}</p>
+								<p>{t('chatbot.batch.description2')}</p>
+							</Modal.Description>
+						</Modal.Content>
+					</Modal>
 				</Grid.Column>
 			</Grid.Row>
 		</Grid>
