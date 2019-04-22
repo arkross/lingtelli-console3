@@ -2,7 +2,19 @@
   "login": {
     "loginBtn": "登入",
     "description": "還沒有帳號？ ",
+    "forgotPassword": "忘記密碼?",
+    "readDoc": "查看API文件",
     "signUp": "註冊"
+  },
+  "resetPass": {
+    "title": "重設密碼",
+    "email": "電子郵件",
+    "continue": "下一步",
+    "done": {
+      "description": "請檢查您的電子郵件信箱.",
+      "title": "完成",
+      "backToLogin": "回到登入頁面"
+    }
   },
   "demo": {
     "button": "測試聊天機器人",
@@ -19,7 +31,8 @@
     "facebook": "Facebook",
     "line": "LINE",
     "web": "網站",
-    "task": "任務"
+    "task": "任務",
+    "thirdparty": "第三方"
   },
   "chatbot": {
     "name": "機器人名稱",
@@ -111,11 +124,21 @@
         "chatIcon": "縮圖像 (PNG, SVG, GIF, JPEG)",
         "headerBackgroundColor": "主題背景顏色",
         "headerTextColor": "主題文字顏色",
-        "chatLabel": "縮圖標題文字"
+        "chatLabel": "縮圖標題文字",
+        "domains": {
+          "title": "可信網域",
+          "description": "Protect Web Chat Plugin from being added to unauthorized sites. Web Chat Plugin will only work on the domains you listed below. If you want to enable Preview, please remember to add this site's domain into the list. You may disable this feature by leaving it empty.",
+          "addDomain": "新增",
+          "delete": "刪除",
+          "deleteDomain": "確認刪除",
+          "or": "或",
+          "cancel": "取消",
+          "save": "儲存"
+        }
       },
       "api": {
         "title": "API 設定",
-        "description": "啟用後可開始使用API.",
+        "description": "請查看API文件了解呼叫API的方式.",
         "noData": "無資料",
         "object": "物件",
         "objectList": "物件串列",
@@ -137,6 +160,7 @@
     },
     "integration": {
       "text": "連接",
+      "thirdParty": "第三方",
       "facebook": "Facebook",
       "line": "LINE",
       "web": "網站",
@@ -225,9 +249,32 @@
     },
     "test": {
       "text": "測試"
+    },
+    "batch": {
+      "text": "進階測試",
+      "basic": "一般測試",
+      "popup": "使用多個問題進行測試",
+      "description": "每行的格式為【問題,預期答案】. 預期答案是非必填的.",
+      "description2": "您可以使用任何電子表格編輯器(例: Google Sheets, Microsoft Excel, LibreOffice Calc 等)寫好內容並匯出一份CSV檔.",
+      "readMore": "了解更多",
+      "uploadCsv": "上傳測試檔案",
+      "csvFormat": "CSV檔內容格式",
+      "result": "結果",
+      "run": "開始",
+      "question": "問題",
+      "expected": "預期答案",
+      "actual": "實際答案",
+      "showExpected": "顯示預期答案",
+      "showPostback": "顯示選項",
+      "total": "總共",
+      "executed": "已執行",
+      "errors": "錯誤",
+      "matches": "符合預期",
+      "choice": "有選擇"
     }
   },
   "api": {
+    "read": "查看API文件",
     "info": {
       "title": "機器人基本資料",
       "responses": {
@@ -279,7 +326,7 @@
           "title": "Reply",
           "sender_value": "",
           "sender_desc": "固定為 \"BOT\"",
-          "type_value": "\"text\" 或 \"list\"",
+          "type_value": "\"answer\", \"no_answer\" 或 \"error\"",
           "type_desc": "請參考表格 Choice Structure",
           "state_value": "\"start\", \"in_progress\", 或 \"completed\"",
           "state_desc": "對話進行狀態",
@@ -335,6 +382,7 @@
     }
   },
   "register": {
+    "title": "註冊帳號",
     "mail": "信箱",
     "registerBtn": "註冊",
     "nickname": "暱稱",

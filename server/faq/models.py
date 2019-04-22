@@ -11,6 +11,7 @@ When creating new answer with more than one should check if the bot type is
 NORMAL. If not, should not allow create additional answer.
 '''
 
+
 class FAQGroup(models.Model):
     '''Question and answer group
     '''
@@ -41,7 +42,7 @@ class FAQStatus(models.Model):
 
     class Meta:
         db_table = 'faqstatus'
-    
+
     def __str__(self):
         return self.chatbot.robot_name
 
@@ -79,14 +80,15 @@ class Question(models.Model):
 
     Args:
         content: Question content.
+        train_content: Modified content for NLU to train.
         created_at: Question created time.
         updated_at: Question updated time.
         chatbot: Chatbot object.
-        answer: Answer object.
         group: FAQ group for answer to connect to questions.
     '''
 
     content = models.TextField(blank=True, null=True)
+    train_content = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, auto_now=False,
                                       blank=False, null=False)
     updated_at = models.DateTimeField(auto_now_add=False, auto_now=True,
@@ -95,6 +97,7 @@ class Question(models.Model):
                                 on_delete=models.CASCADE)
     group = models.ForeignKey(FAQGroup, related_name='question_faqgroup',
                               on_delete=models.CASCADE)
+
     class Meta:
         db_table = 'faq_question'
 

@@ -1,25 +1,18 @@
 Group,Sentence,TaskPattern
-1,安安,你好
-1,早安,早安
-1,hello,嗨
-1,歐嗨呦,早安喔
-2,午餐吃什麼,牛排怎麼樣
-2,晚餐吃什麼,雞排怎樣
-3,魔物,獵人
-3,惡魔,獵人
-3,獵人X,獵人
-4,福爾摩斯,華生
-5,雷神索爾,漫威
-5,美國隊長,復仇者聯盟
-5,鋼鐵人,
-5,奇異博士,
-6,今天天氣如何,我不知道，你可以出門看看
-7,是誰,我是Superman
-8,會做什麼,會跟你說幹話
-9,喜歡什麼電影,DC有超人的所有電影
-10,喜歡什麼電視劇,英劇美劇都喜歡
-11,喜歡吃什麼,吃我女友做的菜
-12,在幹嘛,跟你聊天
-13,肚子餓嗎,還好
-13,你餓嗎,普通
-14,什麼能力,眼睛會發射雷射光
+1,hi,hello
+1,good morning,good morning
+1,hello,hi
+2,what do you want to eat for lunch,how about steak
+2,what do you want for dinner,fried chicken
+3,monster,hunter
+3,devil,hunter
+3,hunterX,hunter
+4,holmes,Watson
+5,thor,marvel
+5,captain america,avengers
+5,iron man,
+5,doctor strange,
+6,how is the weather,i do not know. you can go out and check it
+7,who are you,i am superman
+8,what can you do,can talk shit to you
+9,what movie do you like,DC movie with superman in it

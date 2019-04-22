@@ -15,6 +15,8 @@ export default {
 
 	updatePackage: async (id, data) => (await axios.put(`${API_HOST}/paidtype/${id}/`, data)).data,
 
+	deletePackage: async id => (await axios.delete(`${API_HOST}/paidtype/${id}/`)).data,
+
 	edit: async (id, data) => (await axios.put(`${API_HOST}/member/${id}/`, {
 		username: data.username,
 		first_name: data.first_name,

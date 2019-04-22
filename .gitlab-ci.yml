@@ -26,10 +26,6 @@ before_script:
     - export ENCODE_KEY="aaaabbbbccccdddd"
 
 build_and_test:
-  only:
-    - branches@gitlab-org/gitlab-ce
-  except:
-    - master@gitlab-org/gitlab-ce
   script:
     - cd server
     - pip install -r requirements.txt
