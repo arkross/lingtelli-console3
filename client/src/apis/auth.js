@@ -70,5 +70,7 @@ export default {
 	 * @async
 	 * @returns {Promise<LogoutResponse>}
 	 */
-	logout: async () => (await axios.get(`${API_HOST}/member/logout/`)).data
+	logout: async () => (await axios.get(`${API_HOST}/member/logout/`)).data,
+
+	resetPassword: async email => (await axios.post(`${API_HOST}/member/reset/`, { username: email })).data
 }

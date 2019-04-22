@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from account.models import AccountInfo
 
+
 # Member related
 class MemberSerializer(serializers.Serializer):
     '''Member profile
@@ -56,6 +57,7 @@ class AgentSerializer(serializers.Serializer):
             user_data['agent_type'] = 'staff'
         return user_data
 
+
 class AgentMemberSerializer(serializers.Serializer):
     '''For agent to manage members
 
@@ -64,4 +66,3 @@ class AgentMemberSerializer(serializers.Serializer):
 
     id = serializers.IntegerField(read_only=True)
     username = serializers.CharField(read_only=True)
-

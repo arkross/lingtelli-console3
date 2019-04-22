@@ -16,7 +16,7 @@ class TaskbotTest(TestCase):
     '''
     def setUp(self):
         # Initial paid type an third party
-        staff_data ={
+        staff_data = {
             'pk': 1,
             'name': 'Staff',
             'duration': '0_0',
@@ -41,7 +41,7 @@ class TaskbotTest(TestCase):
 
         # Create agent account info
         acc_data = {'user': self.agent_obj, 'paid_type': staff_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00'}
         AccountInfo.objects.create(**acc_data)
 
@@ -55,8 +55,8 @@ class TaskbotTest(TestCase):
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
-                    'failed_msg': 'Cannot understand', 'user': self.agent_obj,
-                    'bot_type': 'TASK'}
+                    'failed_msg': 'Cannot understand', 'language': 'en',
+                    'user': self.agent_obj, 'bot_type': 'TASK'}
         self.bot_obj = Chatbot.objects.create(**bot_data)
 
         # Initial uri
@@ -64,12 +64,13 @@ class TaskbotTest(TestCase):
 
     def test_no_auth(self):
         ''' Not authorize actions
-        
+
         POST, GET, PUT, DELETE
         '''
         c = Client()
         # POST
-        response = c.post('/agent/taskbot/', json.dumps({'robot_name': 'thebot'}),
+        response = c.post('/agent/taskbot/',
+                          json.dumps({'robot_name': 'thebot'}),
                           content_type='application/json')
         self.assertEqual(response.status_code, 401)
 
@@ -78,14 +79,14 @@ class TaskbotTest(TestCase):
         self.assertEqual(response.status_code, 401)
 
         # PUT
-        response = c.put(self.bot_uri, json.dumps({'robot_name': 'newbot'}), 
+        response = c.put(self.bot_uri, json.dumps({'robot_name': 'newbot'}),
                          content_type='application/json')
         self.assertEqual(response.status_code, 401)
 
         # Delete
         response = c.delete(self.bot_uri)
         self.assertEqual(response.status_code, 401)
-    
+
     def test_not_existed(self):
         ''' Bot not existed
 
@@ -117,7 +118,7 @@ class TaskbotTest(TestCase):
 
     def test_create(self):
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
-                    'failed_msg': 'Cannot understand', 'language': 'tw',
+                    'failed_msg': 'Cannot understand', 'language': 'en',
                     'postback_title': 'Similar'}
         bot_return_key = ['id', 'robot_name']
         c = Client()
@@ -129,7 +130,7 @@ class TaskbotTest(TestCase):
         self.assertEqual(bot_obj.bot_type, 'TASK')
         for k in bot_return_key:
             self.assertIn(k, res_data)
-    
+
     def test_create_no_bot_name(self):
         c = Client()
         response = c.post('/agent/taskbot/', json.dumps({}),
@@ -137,7 +138,7 @@ class TaskbotTest(TestCase):
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-    
+
     def test_read_list(self):
         bot_data = ['id', 'robot_name']
         c = Client()
@@ -159,7 +160,7 @@ class TaskbotTest(TestCase):
         res_data = json.loads(response.content)
         for k in bot_data:
             self.assertIn(k, res_data)
-    
+
     def test_update(self):
         bot_update_data = {'robot_name': 'newnamebot', 'greeting_msg': 'LOL',
                            'failed_msg': 'failed', 'postback_title': 'related',
@@ -175,7 +176,7 @@ class TaskbotTest(TestCase):
         res_data = json.loads(response.content)
         for k, v in bot_update_data.items():
             self.assertEqual(getattr(updated_bot_obj, k), v)
-    
+
     def test_update_bot_name_blank(self):
         c = Client()
         response = c.put(self.bot_uri, json.dumps({}),
@@ -183,7 +184,7 @@ class TaskbotTest(TestCase):
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-    
+
     def test_delete(self):
         # Pretend the confirm has passed
         self.bot_obj.delete_confirm = True
@@ -192,7 +193,7 @@ class TaskbotTest(TestCase):
         c = Client()
         response = c.delete(self.bot_uri, **self.agent_header)
         self.assertEqual(response.status_code, 204)
-    
+
     def test_delete_no_confirm(self):
         c = Client()
         response = c.delete(self.bot_uri, **self.agent_header)
@@ -208,7 +209,7 @@ class DeleteBotConfirmTest(TestCase):
     '''
     def setUp(self):
         # Initial paid type an third party
-        staff_data ={
+        staff_data = {
             'pk': 1,
             'name': 'Staff',
             'duration': '0_0',
@@ -227,13 +228,13 @@ class DeleteBotConfirmTest(TestCase):
         staff_obj.third_party.add(demo_obj)
 
         # Create new agent account
-        agent_data = {'username': 'superuser', 'password':'test1234',
+        agent_data = {'username': 'superuser', 'password': 'test1234',
                       'is_staff': True}
         self.agent_obj = User.objects.create_user(**agent_data)
 
         # Create agent account info
         acc_data = {'user': self.agent_obj, 'paid_type': staff_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00'}
         AccountInfo.objects.create(**acc_data)
 
@@ -247,41 +248,42 @@ class DeleteBotConfirmTest(TestCase):
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
-                    'failed_msg': 'Cannot understand', 'user': self.agent_obj,
-                    'bot_type': 'TASK'}
+                    'failed_msg': 'Cannot understand', 'language': 'en',
+                    'user': self.agent_obj, 'bot_type': 'TASK'}
         self.bot_obj = Chatbot.objects.create(**bot_data)
 
         # Initial bot uri
-        self.uri = '/agent/taskbot/' + str(self.bot_obj.id) + '/delete_confirm/'
+        self.uri = '/agent/taskbot/' + str(self.bot_obj.id) +\
+                   '/delete_confirm/'
 
     def test_update_confirm_no_auth(self):
-        ''' Delete bot confirm 
+        ''' Delete bot confirm
 
         PUT
         '''
         c = Client()
         correct_password = {'password': 'test1234'}
-        response = c.put(self.uri, json.dumps(correct_password), 
-                          content_type='application/json')
+        response = c.put(self.uri, json.dumps(correct_password),
+                         content_type='application/json')
         self.assertEqual(response.status_code, 401)
 
     def test_update_confirm_correct_password(self):
         c = Client()
         correct_password = {'password': 'test1234'}
-        response = c.put(self.uri, json.dumps(correct_password), 
-                          content_type='application/json', **self.agent_header)
+        response = c.put(self.uri, json.dumps(correct_password),
+                         content_type='application/json', **self.agent_header)
         agent_obj = User.objects.get(username='superuser')
         bot_obj = Chatbot.objects.filter(user=agent_obj).first()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(bot_obj.delete_confirm, True)
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
-    
+
     def test_update_confirm_wrong_password(self):
         c = Client()
         correct_password = {'password': 'wrongpassword'}
-        response = c.put(self.uri, json.dumps(correct_password), 
-                          content_type='application/json', **self.agent_header)
+        response = c.put(self.uri, json.dumps(correct_password),
+                         content_type='application/json', **self.agent_header)
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertEqual(res_data.get('errors'), 'Password is not correct')
@@ -294,7 +296,7 @@ class LineTest(TestCase):
     '''
     def setUp(self):
         # Initial paid type an third party
-        staff_data ={
+        staff_data = {
             'pk': 1,
             'name': 'Staff',
             'duration': '0_0',
@@ -325,7 +327,7 @@ class LineTest(TestCase):
 
         # Create agent account info
         acc_data = {'user': self.agent_obj, 'paid_type': staff_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00'}
         AccountInfo.objects.create(**acc_data)
 
@@ -339,8 +341,9 @@ class LineTest(TestCase):
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
-                    'failed_msg': 'Cannot understand', 'user': self.agent_obj,
-                    'bot_type': 'TASK', 'assign_user': user_obj}
+                    'failed_msg': 'Cannot understand', 'language': 'en',
+                    'user': self.agent_obj, 'bot_type': 'TASK',
+                    'assign_user': user_obj}
         self.bot_obj = Chatbot.objects.create(**bot_data)
 
         # Initial line
@@ -350,7 +353,7 @@ class LineTest(TestCase):
 
         # Initial uri
         self.uri = '/agent/taskbot/' + str(self.bot_obj.id) + '/line/' +\
-                    str(self.line_obj.id) + '/'
+                   str(self.line_obj.id) + '/'
 
     def test_no_auth(self):
         '''Line no authorization
@@ -376,7 +379,7 @@ class LineTest(TestCase):
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
- 
+
     def test_update_not_allowed(self):
         c = Client()
         line_data = {'secret': 'newsecret'}
@@ -393,7 +396,7 @@ class FacebookTest(TestCase):
     '''
     def setUp(self):
         # Initial paid type an third party
-        staff_data ={
+        staff_data = {
             'pk': 1,
             'name': 'Staff',
             'duration': '0_0',
@@ -424,7 +427,7 @@ class FacebookTest(TestCase):
 
         # Create agent account info
         acc_data = {'user': self.agent_obj, 'paid_type': staff_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00'}
         AccountInfo.objects.create(**acc_data)
 
@@ -438,8 +441,9 @@ class FacebookTest(TestCase):
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
-                    'failed_msg': 'Cannot understand', 'user': self.agent_obj,
-                    'bot_type': 'TASK', 'assign_user': user_obj}
+                    'failed_msg': 'Cannot understand', 'language': 'en',
+                    'user': self.agent_obj, 'bot_type': 'TASK',
+                    'assign_user': user_obj}
         self.bot_obj = Chatbot.objects.create(**bot_data)
 
         # Initial facebook
@@ -449,7 +453,7 @@ class FacebookTest(TestCase):
 
         # Initial uri
         self.uri = '/agent/taskbot/' + str(self.bot_obj.id) + '/facebook/' +\
-                    str(self.fb_obj.id) + '/'
+                   str(self.fb_obj.id) + '/'
 
     def test_no_auth(self):
         '''Line no authorization
@@ -475,7 +479,7 @@ class FacebookTest(TestCase):
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
- 
+
     def test_update_not_allowed(self):
         c = Client()
         fb_data = {'verify_str': 'newverifystr'}

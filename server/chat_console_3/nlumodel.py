@@ -10,11 +10,11 @@ from faq.models import FAQGroup, Answer, Question
 env = os.environ.get('ENV')
 if env:
     if env == 'DEV':
-        from .settings.development import NLU_HOST
+        from .settings.development import NLU_HOST, SEMANTIC_HOST
     else:
-        from .settings.production import NLU_HOST
+        from .settings.production import NLU_HOST, SEMANTIC_HOST
 else:
-    from .settings.common import NLU_HOST
+    from .settings.common import NLU_HOST, SEMANTIC_HOST
 
 def create_model(chatbot_obj):
     '''Create NLU model
@@ -71,6 +71,9 @@ def train_model(chatbot_obj):
         chatbot_id = chatbot_obj.id
         url = NLU_HOST + str(chatbot_id) + '/model'
         data = {'lang': chatbot_obj.language}
+        status, errors = get_enhanced_qa(chatbot_obj)
+        if status is not True:
+            return False, errors
         try:
             response = requests.put(url, data=data)
         except Exception as e:
@@ -135,7 +138,38 @@ def initial_question_answer(chatbot_obj):
 
     question = {
         'content': ques_content.get(chatbot_obj.language),
+        'train_content': ques_content.get(chatbot_obj.language),
         'chatbot': chatbot_obj,
         'group': faq_group_obj
     }
     Question.objects.create(**question)
+
+
+def get_enhanced_qa(bot_obj):
+    '''Send question to Claude's service to enhance the content
+
+    Only question needs to modify. Save the result in question train_content
+    column.
+    '''
+
+    que_qry = Question.objects.filter(chatbot=bot_obj)
+    data = []
+    for que in que_qry:
+        que_dict = {}
+        que_dict['id'] = que.id
+        que_dict['content'] = que.content
+        data.append(que_dict)
+    try:
+        response = requests.post(SEMANTIC_HOST, json=data)
+    except Exception as e:
+        print('XXX Semantic server timeout error: ', str(e))
+        return False, 'Semantic server timeout error: ' + str(e)
+    if response.status_code == 200:
+        que_data = json.loads(response.content)
+        print(que_data)
+        for que in que_data:
+            Question.objects.filter(id=que.get('id'))\
+                    .update(train_content=que.get('content'))
+        return True, ''
+    else:
+        return False, 'Semantic error: ' + str(response.__dict__)

@@ -12,6 +12,8 @@ import DashBoardPage from 'components/pages/DashBoardPage';
 import ValidationPage from 'components/pages/ValidationPage';
 import ConfirmationPage from 'components/pages/ConfirmationPage';
 import NotFoundPage from 'components/pages/NotFoundPage'
+import ResetPasswordPage from 'components/pages/ResetPasswordPage'
+import APIDocPage from 'components/pages/APIDocPage'
 import Group from 'components/utils/Group';
 import UserRoute from 'components/routes/UserRoute';
 import GuestRoute from 'components/routes/GuestRoute';
@@ -88,6 +90,8 @@ class App extends React.Component {
 
     return (
       <Switch>
+        <Route location={location} path='/doc' component={APIDocPage} />
+        <GuestRoute location={location} path='/reset' exact component={ResetPasswordPage} />
         <Route location={location} path='/question' exact component={Group} />
         <GuestRoute location={location} path='/' exact component={LoginPage} />
         <Route location={location} path='/confirm' exact component={ValidationPage} />

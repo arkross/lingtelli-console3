@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-07 16:53+0800\n"
+"POT-Creation-Date: 2019-04-11 13:01+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: account/views.py:71
+#: account/views.py:73
 msgid "Username and password cannot be empty"
 msgstr "旧密码不能为空"
 
-#: account/views.py:80
+#: account/views.py:81
 msgid "User does not exist.Please register an account first"
 msgstr "帐号不存在，请先注册帐号"
 
-#: account/views.py:97 account/views.py:479
+#: account/views.py:96 account/views.py:512
 msgid "Something went wrong. Please try again"
 msgstr "错误，请再尝试一次"
 
-#: account/views.py:104 account/views.py:484
+#: account/views.py:102 account/views.py:518
 msgid "Username or password is not correct"
 msgstr "帐号或密码不正确"
 
-#: account/views.py:115 account/views.py:499
+#: account/views.py:113 account/views.py:534
 msgid "You have successfully logged out"
 msgstr "已成功登出"
 
-#: account/views.py:146 account/views.py:336
+#: account/views.py:145 account/views.py:364
 msgid "Invalid email address"
 msgstr "信箱格式不正確"
 
@@ -56,48 +56,62 @@ msgstr "已经成功建立使用者，信箱传送失败，请再次传送验证
 msgid "User name has existed"
 msgstr "使用者名称已存在"
 
-#: account/views.py:195
+#: account/views.py:196
 msgid "Please register an account first"
 msgstr "请先注册帐号"
 
-#: account/views.py:198 account/views.py:260
+#: account/views.py:199 account/views.py:262
 msgid "Account has been confirmed. No need to get confirmation email again"
 msgstr "帐号已验证，不需再次传送验证信"
 
-#: account/views.py:210
+#: account/views.py:211
 msgid "Please wait for a while to resend the code"
 msgstr "请稍候再尝试"
 
-#: account/views.py:228
+#: account/views.py:229
 msgid "Confirmation email has been sent"
 msgstr "已寄送验证信"
 
-#: account/views.py:230
+#: account/views.py:231
 msgid "Failed to send email"
 msgstr "传送信件失败"
 
-#: account/views.py:254
+#: account/views.py:256
 msgid "Invalid code"
 msgstr "认证失败"
 
-#: account/views.py:267
+#: account/views.py:269
 msgid "User name has been changed"
 msgstr "帐号已更改"
 
-#: account/views.py:271
+#: account/views.py:273
 msgid "Account has been validated"
 msgstr "帐号已验证"
 
-#: account/views.py:274
+#: account/views.py:276
 msgid "Account validation failed"
 msgstr "帐号验证失败"
 
-#: account/views.py:325 account/views.py:399 account/views.py:427
-#: account/views.py:544 account/views.py:589 account/views.py:627
-#: account/views.py:676 chatbot/views.py:178 chatbot/views.py:206
-#: chatbot/views.py:236 chatbot/views.py:287 chatbot/views.py:300
-#: chatbot/views.py:319 chatbot/views.py:329 chatbot/views.py:376
-#: chatbot/views.py:389 chatbot/views.py:408 chatbot/views.py:418
+#: account/views.py:294
+msgid "Send reset email failed. Please send again"
+msgstr "传送信件失败，请在传送一次"
+
+#: account/views.py:297
+msgid ""
+"New password has sent to your mailbox. Please check and use the new password "
+"to login"
+msgstr "新的密码已寄送至信箱，请收信后使用新密码来登入"
+
+#: account/views.py:301
+msgid "User does not exist"
+msgstr "使用者不存在"
+
+#: account/views.py:352 account/views.py:431 account/views.py:459
+#: account/views.py:579 account/views.py:624 account/views.py:662
+#: account/views.py:713 chatbot/views.py:179 chatbot/views.py:207
+#: chatbot/views.py:237 chatbot/views.py:288 chatbot/views.py:301
+#: chatbot/views.py:320 chatbot/views.py:330 chatbot/views.py:377
+#: chatbot/views.py:390 chatbot/views.py:409 chatbot/views.py:419
 #: faq/views.py:107 faq/views.py:179 faq/views.py:191 faq/views.py:213
 #: faq/views.py:223 faq/views.py:284 faq/views.py:296 faq/views.py:319
 #: faq/views.py:329 faq/views.py:468 history/views.py:57 paidtype/views.py:103
@@ -106,110 +120,110 @@ msgstr "帐号验证失败"
 msgid "Not found"
 msgstr "资料不存在"
 
-#: account/views.py:340
+#: account/views.py:368
 msgid "Username has existed.Please use other one"
 msgstr "帐号名称已存在，请输入其他名称"
 
-#: account/views.py:348
+#: account/views.py:377
 msgid "Sending confirmation email failed"
 msgstr "寄送认证信失败"
 
-#: account/views.py:356
+#: account/views.py:385
 msgid "Confirmation email has sent.Please check your mailbox and login again"
 msgstr "认证信已寄送，请至信箱进行认证后登入"
 
-#: account/views.py:364
+#: account/views.py:395
 msgid "Old password cannot be empty"
 msgstr "旧密码不能为空"
 
-#: account/views.py:369 account/views.py:557
+#: account/views.py:401 account/views.py:592
 msgid "Old password is not correct"
 msgstr "旧密码不正确"
 
-#: account/views.py:374 account/views.py:555
+#: account/views.py:406 account/views.py:590
 msgid "Password has updated.Please login again"
 msgstr "密码已更新，请重新登入"
 
-#: account/views.py:388
+#: account/views.py:420
 msgid "Please select one language"
 msgstr "请选择语言"
 
-#: account/views.py:391 account/views.py:581 chatbot/views.py:192
-#: chatbot/views.py:335 chatbot/views.py:424 faq/views.py:227 faq/views.py:333
-#: paidtype/views.py:121 taskbot/views.py:110
+#: account/views.py:423 account/views.py:616 chatbot/views.py:193
+#: chatbot/views.py:336 chatbot/views.py:425 faq/views.py:227 faq/views.py:333
+#: taskbot/views.py:110
 msgid "Update succeeded"
 msgstr "更新成功"
 
-#: account/views.py:394 account/views.py:443 account/views.py:537
-#: account/views.py:643 account/views.py:717 chatbot/views.py:167
-#: chatbot/views.py:194 chatbot/views.py:249 chatbot/views.py:337
-#: chatbot/views.py:426 faq/views.py:204 faq/views.py:229 faq/views.py:309
-#: faq/views.py:335 faq/views.py:413 paidtype/views.py:88 paidtype/views.py:123
-#: taskbot/views.py:79 taskbot/views.py:112 taskbot/views.py:166
+#: account/views.py:426 account/views.py:475 account/views.py:572
+#: account/views.py:678 account/views.py:753 chatbot/views.py:168
+#: chatbot/views.py:195 chatbot/views.py:250 chatbot/views.py:338
+#: chatbot/views.py:427 faq/views.py:204 faq/views.py:229 faq/views.py:309
+#: faq/views.py:335 faq/views.py:413 paidtype/views.py:90 taskbot/views.py:79
+#: taskbot/views.py:112 taskbot/views.py:166
 msgid "No content"
 msgstr "无内容"
 
-#: account/views.py:404 account/views.py:594 chatbot/views.py:209
+#: account/views.py:436 account/views.py:629 chatbot/views.py:210
 #: taskbot/views.py:126
 msgid "Please confirm the deletion first"
 msgstr "请先确认是否删除"
 
-#: account/views.py:411 account/views.py:601
+#: account/views.py:443 account/views.py:636
 msgid "Deleting account failed"
 msgstr "删除帐号失败"
 
-#: account/views.py:433 account/views.py:633 chatbot/views.py:240
+#: account/views.py:465 account/views.py:668 chatbot/views.py:241
 #: taskbot/views.py:157
 msgid "Please enter the password"
 msgstr "请输入密码"
 
-#: account/views.py:439 account/views.py:639 chatbot/views.py:245
+#: account/views.py:471 account/views.py:674 chatbot/views.py:246
 #: taskbot/views.py:162
 msgid "Delete confirmed"
 msgstr "确认删除"
 
-#: account/views.py:441 account/views.py:641 chatbot/views.py:247
+#: account/views.py:473 account/views.py:676 chatbot/views.py:248
 #: taskbot/views.py:164
 msgid "Password is not correct"
 msgstr "密码不正确"
 
-#: account/views.py:462
+#: account/views.py:495
 msgid "User does not exist. Please contact admin."
 msgstr "帐号不存在，请联系客服人员"
 
-#: account/views.py:466
+#: account/views.py:499
 msgid "Only staff can login this page"
 msgstr "必须为管理员帐号"
 
-#: account/views.py:533
+#: account/views.py:568
 msgid "Create new agent succeeded"
 msgstr "创建管理员帐号成功"
 
-#: account/views.py:535 faq/views.py:202 faq/views.py:307 history/views.py:128
+#: account/views.py:570 faq/views.py:202 faq/views.py:307 history/views.py:128
 msgid "Create failed"
 msgstr "创建失败"
 
-#: account/views.py:565
+#: account/views.py:600
 msgid "User name existed"
 msgstr "使用者名称已存在"
 
-#: account/views.py:575
+#: account/views.py:610
 msgid "Do not support this language"
 msgstr "不支援此语言"
 
-#: account/views.py:586 account/views.py:623
+#: account/views.py:621 account/views.py:658
 msgid "Superuser cannot be deleted"
 msgstr "不能删除超级管理员帐号"
 
-#: account/views.py:690
+#: account/views.py:727
 msgid "Invalid type"
 msgstr "方案不正确"
 
-#: account/views.py:713
+#: account/views.py:749
 msgid "Update successed"
 msgstr "更新成功"
 
-#: account/views.py:715
+#: account/views.py:751
 msgid "paid_type cannot be empty"
 msgstr "方案不能为空"
 

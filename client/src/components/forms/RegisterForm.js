@@ -7,7 +7,8 @@ import {
   Segment,
   Message,
   Radio,
-  Image
+  Image,
+  Header
 } from 'semantic-ui-react';
 import Validator from 'validator';
 import propTypes from 'prop-types';
@@ -127,6 +128,7 @@ class RegisterForm extends React.Component {
       <div className='register-container'>
         <Segment loading={loading} textAlign='center'>
           <h2> <Image src={logo} inline size='mini' /> Lingtelli Chatbot </h2>
+          <Header as='h3'>{t('register.title')}</Header>
           {errors.api && (
             <Message negative>
               <p>{errors.api}</p>
@@ -199,7 +201,6 @@ class RegisterForm extends React.Component {
           <Message size='small'>
             {t('register.description.context')}
             <Link to='/login'>{t('register.description.title')}</Link>
-            ?
           </Message>
         </Segment>
       </div>

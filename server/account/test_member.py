@@ -119,7 +119,7 @@ class MemberRegisterTest(TestCase):
         self.assertEqual(user_obj.is_active, False)
 
 
-class ResendEmail(TestCase):
+class ResendEmailTest(TestCase):
     '''Resend email function
 
     To test if resend function works
@@ -195,7 +195,7 @@ class ResendEmail(TestCase):
         self.assertIn('errors', res_data)
 
 
-class ConfirmEmail(TestCase):
+class ConfirmEmailTest(TestCase):
     '''Confirmation email function
 
     Sending confirmation email after registering the new account
@@ -323,6 +323,61 @@ class ConfirmEmail(TestCase):
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
         self.assertIs(user.email, '')
+
+
+class ResetPasswordTest(TestCase):
+    '''For member to reset the password when they forgot it
+
+    Will send the random password to member's email
+    '''
+    def setUp(self):
+        # Initial paid type an third party
+        trial_data = {
+            'pk': 2,
+            'name': 'Trial',
+            'duration': '0_0',
+            'bot_amount': '1',
+            'faq_amount': '50',
+            'user_type': 'M'
+        }
+
+        demo_data = {
+            'pk': 4,
+            'name': 'demo'
+        }
+        trial_obj = PaidType.objects.create(**trial_data)
+        demo_obj = ThirdParty.objects.create(**demo_data)
+        trial_obj.third_party.add(demo_obj)
+
+        # Create new account
+        user_data = {'username': 'cosmo.hu@lingtelli.com',
+                     'password': 'thisispassword',
+                     'first_name': 'cosmo'}
+        user_obj = User.objects.create_user(**user_data)
+
+        # Create account info
+        acc_data = {'user': user_obj, 'paid_type': trial_obj,
+                    'confirmation_code': 'confirmationcode',
+                    'code_reset_time': '2019-12-12 00:00:00', }
+        AccountInfo.objects.create(**acc_data)
+
+    def test_reset_password(self):
+        c = Client()
+        response = c.post('/member/reset/',
+                          json.dumps({'username': 'cosmo.hu@lingtelli.com'}),
+                          content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        res_data = json.loads(response.content)
+        self.assertIn('success', res_data)
+
+    def test_reset_password_user_not_found(self):
+        c = Client()
+        response = c.post('/member/reset/',
+                          json.dumps({'username': 'tt@lingtelli.com'}),
+                          content_type='application/json')
+        self.assertEqual(response.status_code, 404)
+        res_data = json.loads(response.content)
+        self.assertIn('errors', res_data)
 
 
 class MemberAccessTest(TestCase):
