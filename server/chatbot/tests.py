@@ -54,7 +54,8 @@ class ChatbotTest(TestCase):
 
         # Initial bot
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
-                    'failed_msg': 'Cannot understand', 'user': self.user_obj}
+                    'failed_msg': 'Cannot understand', 'language': 'en',
+                    'user': self.user_obj}
         self.bot_obj = Chatbot.objects.create(**bot_data)
 
         # Initial uri
@@ -115,7 +116,7 @@ class ChatbotTest(TestCase):
 
     def test_create(self):
         bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
-                    'failed_msg': 'Cannot understand', 'language': 'tw',
+                    'failed_msg': 'Cannot understand', 'language': 'en',
                     'postback_title': 'postback'}
         bot_return_key = ['id', 'robot_name']
         c = Client()
@@ -276,7 +277,8 @@ class DeleteBotConfirmTest(TestCase):
         self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
 
         # Initial bot
-        bot_data = {'robot_name': 'test', 'user': self.user_obj}
+        bot_data = {'robot_name': 'test', 'language': 'en',
+                    'user': self.user_obj}
         self.bot_obj = Chatbot.objects.create(**bot_data)
 
         # Initial bot uri
@@ -361,7 +363,8 @@ class LineTest(TestCase):
         self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
 
         # Initial bot
-        bot_data = {'robot_name': 'test', 'user': self.user_obj}
+        bot_data = {'robot_name': 'test', 'language': 'en',
+                    'user': self.user_obj}
         bot_obj = Chatbot.objects.create(**bot_data)
 
         # Initial line
@@ -454,7 +457,8 @@ class FacebookTest(TestCase):
         self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
 
         # Initial bot
-        bot_data = {'robot_name': 'test', 'user': self.user_obj}
+        bot_data = {'robot_name': 'test', 'language': 'en',
+                    'user': self.user_obj}
         bot_obj = Chatbot.objects.create(**bot_data)
 
         # Initial facebook
