@@ -90,7 +90,7 @@ class FAQGroupTest(TestCase):
 
         # Initial bot uri
         self.bot_uri = '/chatbot/' + str(self.bot_obj.id) + '/faq/'
-    
+
     def test_no_auth(self):
         '''FAQ group no authorization
 
@@ -115,7 +115,7 @@ class FAQGroupTest(TestCase):
         # DELETE
         response = c.delete(faq_uri)
         self.assertEqual(response.status_code, 401)
-    
+
     def test_not_existed(self):
         '''FAQ group not existed
 
@@ -152,7 +152,7 @@ class FAQGroupTest(TestCase):
         # self.assertEqual(response.status_code, 201)
         # res_data = json.loads(response.content)
         # self.assertIn('id', res_data)
-    
+
     def test_create_over_limit_member(self):
         # Initial 49 groups
         for i in range(0,50):
@@ -163,7 +163,7 @@ class FAQGroupTest(TestCase):
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-    
+
     def test_read(self):
         c = Client()
         faq_obj = FAQGroup.objects.create(chatbot=self.bot_obj)
@@ -201,7 +201,7 @@ class CSVTest(TestCase):
     Including upload, export and train
     '''
     def setUp(self):
-       # Initial paid type an third party
+        # Initial paid type an third party
         trial_data = {
             'pk': 1,
             'name': 'Trail',
@@ -212,7 +212,7 @@ class CSVTest(TestCase):
         }
 
         staff_data = {
-            'pk' : 2,
+            'pk': 2,
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
@@ -237,7 +237,7 @@ class CSVTest(TestCase):
 
         # Create account info
         acc_data = {'user': self.user_obj, 'paid_type': trial_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00', }
         AccountInfo.objects.create(**acc_data)
 
@@ -277,7 +277,7 @@ class CSVTest(TestCase):
         # Initail uri
         self.bot_uri = '/chatbot/' + str(self.bot_obj.id)
         self.task_uri = '/agent/' + str(self.agent_obj.id) + '/chatbot/'\
-                       + str(self.taskbot_obj.id)
+                        + str(self.taskbot_obj.id)
 
         # Get sample csv files
         base_path = os.path.dirname(os.path.realpath(__file__))
@@ -330,7 +330,6 @@ class CSVTest(TestCase):
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-        
 
     def test_upload(self):
         '''Upload faq csv file.
@@ -347,11 +346,11 @@ class CSVTest(TestCase):
 
         # Normal bot
         response = c.post(bot_upload_uri, {'file': self.correct_csv},
-                         **self.header)
+                          **self.header)
         self.assertEqual(response.status_code, 201)
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
-        
+
         # TODO:Task bot
         # response = c.post(task_upload_uri, {'file': self.correct_csv},
         #                   **self.agent_header)
@@ -363,11 +362,11 @@ class CSVTest(TestCase):
         c = Client()
         bot_upload_uri = self.bot_uri + '/upload/'
         response = c.post(bot_upload_uri, {'file': self.over_limit_csv},
-                         **self.header)
+                          **self.header)
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-    
+
     # TODO: Currently we do not have wrong format file to test
     # def test_upload_wrong_format(self):
     #     c = Client()
@@ -400,7 +399,7 @@ class CSVTest(TestCase):
         # TODO:Task bot
         # response = c.get(task_export_uri, **self.agent_header)
         # self.assertEqual(response.status_code, 200)
-    
+
     def test_train(self):
         c = Client()
         bot_train_uri = self.bot_uri + '/train/'
@@ -436,7 +435,7 @@ class AnswerTest(TestCase):
         }
 
         staff_data = {
-            'pk' : 2,
+            'pk': 2,
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
@@ -461,7 +460,7 @@ class AnswerTest(TestCase):
 
         # Create account info
         acc_data = {'user': self.user_obj, 'paid_type': trial_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00', }
         AccountInfo.objects.create(**acc_data)
 
@@ -472,7 +471,7 @@ class AnswerTest(TestCase):
 
         # Create agent account info
         acc_data = {'user': self.agent_obj, 'paid_type': staff_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00'}
         AccountInfo.objects.create(**acc_data)
 
