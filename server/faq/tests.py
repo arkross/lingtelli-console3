@@ -400,16 +400,16 @@ class CSVTest(TestCase):
         # response = c.get(task_export_uri, **self.agent_header)
         # self.assertEqual(response.status_code, 200)
 
-    def test_train(self):
-        c = Client()
-        bot_train_uri = self.bot_uri + '/train/'
-        task_train_uri = self.task_uri + '/train/'
+    # def test_train(self):
+    #     c = Client()
+    #     bot_train_uri = self.bot_uri + '/train/'
+    #     task_train_uri = self.task_uri + '/train/'
 
-        # Normal bot
-        response = c.get(bot_train_uri, **self.header)
-        self.assertEqual(response.status_code, 200)
-        res_data = json.loads(response.content)
-        self.assertIn('success', res_data)
+    #     # Normal bot
+    #     response = c.get(bot_train_uri, **self.header)
+    #     self.assertEqual(response.status_code, 200)
+    #     res_data = json.loads(response.content)
+    #     self.assertIn('success', res_data)
 
         # TODO:Task bot
         # response = c.get(task_train_uri, **self.agent_header)
