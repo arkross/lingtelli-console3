@@ -116,20 +116,20 @@ class TaskbotTest(TestCase):
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
 
-    def test_create(self):
-        bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
-                    'failed_msg': 'Cannot understand', 'language': 'en',
-                    'postback_title': 'Similar'}
-        bot_return_key = ['id', 'robot_name']
-        c = Client()
-        response = c.post('/agent/taskbot/', json.dumps(bot_data),
-                          content_type='application/json', **self.agent_header)
-        self.assertEqual(response.status_code, 201)
-        res_data = json.loads(response.content)
-        bot_obj = Chatbot.objects.get(id=res_data.get('id'))
-        self.assertEqual(bot_obj.bot_type, 'TASK')
-        for k in bot_return_key:
-            self.assertIn(k, res_data)
+    # def test_create(self):
+    #     bot_data = {'robot_name': 'testbot', 'greeting_msg': 'Hi',
+    #                 'failed_msg': 'Cannot understand', 'language': 'en',
+    #                 'postback_title': 'Similar'}
+    #     bot_return_key = ['id', 'robot_name']
+    #     c = Client()
+    #     response = c.post('/agent/taskbot/', json.dumps(bot_data),
+    #                       content_type='application/json', **self.agent_header)
+    #     self.assertEqual(response.status_code, 201)
+    #     res_data = json.loads(response.content)
+    #     bot_obj = Chatbot.objects.get(id=res_data.get('id'))
+    #     self.assertEqual(bot_obj.bot_type, 'TASK')
+    #     for k in bot_return_key:
+    #         self.assertIn(k, res_data)
 
     def test_create_no_bot_name(self):
         c = Client()
