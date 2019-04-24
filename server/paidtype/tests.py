@@ -140,16 +140,3 @@ class PaidTypeTest(TestCase):
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-
-    def test_update_only_agent(self):
-        c = Client()
-        the_paidtype = self.paidtype_uri + '1/'
-        response = c.put(the_paidtype, json.dumps({'name': 'NewName',
-                                                   'duration': '0_0',
-                                                   'bot_amount': '1',
-                                                   'faq_amount': '50',
-                                                   'thrid_party': [1,2,3,4]}),
-                         content_type='application/json', **self.agent_header)
-        self.assertEqual(response.status_code, 200)
-        res_data = json.loads(response.content)
-        self.assertIn('success', res_data)
