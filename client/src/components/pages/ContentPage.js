@@ -161,8 +161,6 @@ class ContentPage extends React.Component {
 			{ text: t('chatbot.integration.web') , id: 'integration/web'},
 			{ text: t('chatbot.integration.api') , id: 'integration/api'},
 			{ text: t('chatbot.analysis.text'), id: 'analysis' },
-			{ text: t('chatbot.history.text'), id: 'history'},
-			{ text: t('chatbot.recommendations.text'), id: 'recommendations'},
 			{ text: t('chatbot.faq.text'), id: 'faq', hide: isTask },
 			{ text: t('chatbot.test.text'), id: 'test'}
 		]
@@ -232,8 +230,10 @@ class ContentPage extends React.Component {
 					<Route path={`${match.path}/`} exact render={props => <BotDashboard loading={loading} fetchData={this.onFetchReport} scale={scale} {...props} onChangeScale={this.changeScale} />} />
 					<Route path={`${match.path}/setting`} render={props => <Segment loading={loading}><BotConfigPage {...props} /></Segment>} />
 					<Route path={`${match.path}/faq`} render={props => <Segment loading={loading}><FAQConfigPage {...props} fetchData={this.onFetchGroups} deleteData={this.onDeleteGroup} /></Segment>} />
-					<Route path={`${match.path}/analysis`} render={props => <Segment loading={loading}><AnalysisPage fetchData={this.onFetchReport} loading={loading} scale={scale}  {...props} onChangeScale={this.changeScale} /></Segment>} />
+					<Route path={`${match.path}/analysis`} exact render={props => <Segment loading={loading}><AnalysisPage fetchData={this.onFetchReport} loading={loading} scale={scale}  {...props} onChangeScale={this.changeScale} /></Segment>} />
 					<Route path={`${match.path}/history`} render={props => <Segment loading={loading}><HistoryPage {...props} fetchData={this.onFetchHistory} /></Segment>} />
+					<Route path={`${match.path}/analysis/history`} render={props => <Segment loading={loading}><HistoryPage {...props} fetchData={this.onFetchHistory} /></Segment>} />
+					<Route path={`${match.path}/analysis/recommendations`} render={props => <Segment loading={loading}><RecomLogPage {...props} fetchData={this.onFetchMatching} /></Segment>} />
 					<Route path={`${match.path}/recommendations`} render={props => <Segment loading={loading}><RecomLogPage {...props} fetchData={this.onFetchMatching} /></Segment>} />
 					<Route path={`${match.path}/test`} render={props => <Segment loading={loading}><TestBotPage {...props} /></Segment>} />
 					<Route path={`${match.path}/batch`} render={props => <Segment loading={loading}><BatchTestPage {...props} /></Segment>} />

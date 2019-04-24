@@ -32,7 +32,9 @@
     "line": "LINE",
     "web": "網站",
     "task": "任務",
-    "thirdparty": "第三方"
+    "thirdparty": "第三方",
+    "recommendations": "推薦紀錄",
+    "history": "對話紀錄"
   },
   "chatbot": {
     "name": "機器人名稱",

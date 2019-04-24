@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import _ from 'lodash'
 import moment from 'moment'
 import PropTypes from 'prop-types'
@@ -6,6 +6,7 @@ import Chart from 'react-c3js'
 import * as d3 from 'd3'
 import 'c3/c3.css'
 import { compose } from 'recompose';
+import { NavLink } from 'react-router-dom'
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
 import { fetchReport } from 'actions/bot';
@@ -17,7 +18,8 @@ import {
 	Grid,
 	Statistic,
 	Dropdown,
-	Responsive
+	Responsive,
+	Menu
 } from 'semantic-ui-react';
 import toJS from 'components/utils/ToJS'
 
@@ -82,7 +84,7 @@ class Analysis extends React.Component {
 	}
 
 	render = () => {
-		const { t, report, scale, loading, reportStat: { question_count: questionCount } } = this.props;
+		const { t, activeBot, report, scale, loading, reportStat: { question_count: questionCount } } = this.props;
 		moment.locale(localStorage.i18nextLng.toLowerCase())
 		const dateOptions = [
 			{ key: 0, value: 7 , text: t('chatbot.analysis.options._7') },
@@ -128,8 +130,14 @@ class Analysis extends React.Component {
 
 		
 
-		return (
+		return (<Fragment>
+			<Menu secondary>
+				<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis`} exact>{t('chatbot.analysis.text')}</NavLink>
+				<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis/history`}>{t('chatbot.history.text')}</NavLink>
+				<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis/recommendations`}>{t('chatbot.recommendations.text')}</NavLink>
+			</Menu>
 			<div className='analysis-container'>
+				
 				<Dimmer inverted active={loading} />
 				<Loader active={loading} />
 				<Grid>
@@ -234,7 +242,7 @@ class Analysis extends React.Component {
 					</Grid.Row>
 				</Grid>
 			</div>
-		)
+		</Fragment>)
 	}
 }
 

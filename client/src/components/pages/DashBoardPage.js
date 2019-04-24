@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-import { Route, Switch, Redirect } from 'react-router-dom'
+import { Route, Switch, Redirect, NavLink } from 'react-router-dom'
 import { translate } from 'react-i18next';
 import _ from 'lodash'
 import { logout } from 'actions/auth';
@@ -114,18 +114,23 @@ class DashBoardPage extends React.Component {
 							<Responsive as={LingBreadcrumbs} t={t} pathname={location.pathname} />
 						</Menu.Item>
 						<Menu.Menu position='right'>
-							{user.paid_type &&
 							<Menu.Item>
-								<Label>{user.paid_type}</Label>
-							</Menu.Item> }
-							<Menu.Item>
-								<Dropdown
-									text={dropdownText.text}
-									onChange={this.onLanguageChanged}
-									defaultValue={localStorage.getItem('i18nextLng')}
-									options={options}
-								/>
+								<Dropdown text={user.username}>
+									<Dropdown.Menu>
+										<NavLink className='item' role='option' to='/dashboard/account'>
+											<span className='text'>{t('menu.account')}</span>
+											<span className='description'>{user.paid_type}</span>
+										</NavLink>
+										<Dropdown.Divider />
+										<Dropdown.Header content={t('chatbot.selectLanguage')} icon='world' />
+										{options.map(el => <Dropdown.Item key={el.key} content={el.text} onClick={this.onLanguageChanged.bind(null, null, { value: el.value })} active={el.value === localStorage.getItem('i18nextLng')} />)}
+										<Dropdown.Divider />
+										
+										<Dropdown.Item text={t('menu.logout')} onClick={this.logout} />
+									</Dropdown.Menu>
+								</Dropdown>
 							</Menu.Item>
+							
 						</Menu.Menu>
 					</Menu>
 					{messages.showing && <Message 

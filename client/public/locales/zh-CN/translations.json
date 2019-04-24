@@ -44,7 +44,9 @@
     "line": "LINE",
     "web": "网站",
     "task": "任务",
-    "thirdparty": "第三方"
+    "thirdparty": "第三方",
+    "recommendations": "推荐记录",
+    "history": "对话记录"
   },
   "chatbot": {
     "name": "机器人称呼",
