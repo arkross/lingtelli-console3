@@ -55,7 +55,9 @@ chatbot_router.register(r'(?P<id>\d+)/faq', faq_view.FAQGrouptViewset)
 chatbot_router.register(r'(?P<id>\d+)/answer', faq_view.AnswerViewset)
 chatbot_router.register(r'(?P<id>\d+)/question', faq_view.QuestionViewset)
 chatbot_router.register(r'(?P<id>\d+)/matching', his_view.QuestionMatchHistoryViewset)
+chatbot_router.register(r'(?P<id>\d+)/line/(?P<line_id>\d+)/ignore', bot_view.LineIgnoreViewset)
 chatbot_router.register(r'(?P<id>\d+)/line', bot_view.LineViewset)
+chatbot_router.register(r'(?P<id>\d+)/facebook/(?P<fb_id>\d+)/ignore', bot_view.FacebookIgnoreViewset)
 chatbot_router.register(r'(?P<id>\d+)/facebook', bot_view.FacebookViewset)
 
 # Agent page chatbot. Use for checking member analysis and creating task chatbot for member
