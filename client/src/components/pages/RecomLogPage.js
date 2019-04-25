@@ -1,10 +1,11 @@
-import React, {Component} from 'react'
+import React, {Component, Fragment} from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import { translate } from 'react-i18next'
 import toJS from 'components/utils/ToJS'
 import { fetchMatching } from 'actions/bot'
-import { Header, Table, Container, Dimmer, Loader, Icon } from 'semantic-ui-react'
+import { NavLink } from 'react-router-dom'
+import { Header, Table, Container, Dimmer, Loader, Icon, Menu } from 'semantic-ui-react'
 import LingPagination from '../utils/LingPagination'
 import qs from 'query-string'
 import _ from 'lodash'
@@ -46,13 +47,19 @@ class RecomLogPage extends Component {
 	}
 	
 	render() {
-		const { t, data, location, history } = this.props
+		const { t, data, location, history, activeBot } = this.props
 		const { loading, activePage } = this.state
 
 		const perPage = 10
 		const totalPages = Math.ceil(data.count / perPage)
 		
-		return <Container fluid textAlign='center'>
+		return <Fragment>
+			<Menu secondary>
+				<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis`} exact>{t('chatbot.analysis.text')}</NavLink>
+				<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis/history`}>{t('chatbot.history.text')}</NavLink>
+				<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis/recommendations`}>{t('chatbot.recommendations.text')}</NavLink>
+			</Menu>
+			<Container fluid textAlign='center'>
 			<Dimmer inverted active={loading} />
 			<Loader active={loading} />
 
@@ -88,6 +95,7 @@ class RecomLogPage extends Component {
 				}
 			</div> : <Header as='h4'>{t('chatbot.history.empty')}</Header>}
 		</Container>
+		</Fragment>
 	}
 }
 

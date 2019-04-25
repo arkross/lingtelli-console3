@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import _ from 'lodash'
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
@@ -9,8 +9,10 @@ import {
 	Container,
 	Dimmer,
 	Loader,
+	Menu,
 	Button
 } from 'semantic-ui-react';
+import { NavLink } from 'react-router-dom'
 import toJS from 'components/utils/ToJS'
 import qs from 'query-string'
 import LingPagination from '../utils/LingPagination'
@@ -80,7 +82,7 @@ class HistoryPage extends React.Component {
 
 	render = () => {
 		const { activePage, columnReversed } = this.state
-		const { histories, t, loading, location } = this.props
+		const { histories, t, loading, location, activeBot } = this.props
 
 		const centerStyle = {
 			width: '35%',
@@ -89,8 +91,14 @@ class HistoryPage extends React.Component {
 
 		const perPage = 50
 		const totalPage = Math.ceil(histories.count / perPage)
-		return (
+		return (<Fragment>
+			<Menu secondary>
+					<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis`} exact>{t('chatbot.analysis.text')}</NavLink>
+					<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis/history`}>{t('chatbot.history.text')}</NavLink>
+					<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis/recommendations`}>{t('chatbot.recommendations.text')}</NavLink>
+				</Menu>
 			<Container fluid textAlign='center' className='history-container'>
+				
 				<Loader active={loading} />
 				<Dimmer inverted active={loading} />
 				{(!histories.results || !histories.count) && <Header as='h4'>{t('chatbot.history.empty')}</Header>} 
@@ -124,6 +132,7 @@ class HistoryPage extends React.Component {
 					}
 				</div>}
 			</Container>
+			</Fragment>
 		);
 	};
 }

@@ -86,23 +86,9 @@ class SideMenuPage extends React.Component {
 							<Icon name='plus' onClick={this.onCreateBot} className='rightIconStyle clickable' />
 						</span>
 					</Menu.Header>
-					<Menu.Menu size='large'>
+					<Menu.Menu size='large' style={{height: 'calc(100vh - 100px)', overflowY: 'auto'}}>
 						{!!bots && this.items}
 					</Menu.Menu>
-				</Menu.Item>
-				<Menu.Item onClick={this.handleAccountClick}>
-					<span id='account'>
-						<span>
-							<Icon name='user' style={leftIconStyle} />
-							{t('menu.account')}
-						</span>
-					</span>
-				</Menu.Item>
-				<Menu.Item onClick={this.props.logout}>
-					<span>
-						<Icon name='power' style={leftIconStyle} />
-						{t('menu.logout')}
-					</span>
 				</Menu.Item>
 			</Menu>
 		)

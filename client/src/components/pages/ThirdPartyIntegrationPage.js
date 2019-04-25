@@ -1,14 +1,15 @@
 import React, {Component, Fragment} from 'react'
 import _ from 'lodash'
-import {List, Image, Icon, Grid, Form, Header, Button, Label} from 'semantic-ui-react'
+import {List, Image, Icon, Grid, Form, Header, Button, Label, Divider, Loader} from 'semantic-ui-react'
 import { compose } from 'recompose'
 import { translate, Trans} from 'react-i18next'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import toJS from '../utils/ToJS'
-import { lineRead, facebookRead } from 'actions/bot'
+import { lineRead, facebookRead, lineReadIgnore, facebookReadIgnore } from 'actions/bot'
 import botAPI from '../../apis/bot'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
+import EditableList from '../utils/EditableList'
 
 class LineIntegration extends Component {
 
@@ -95,7 +96,7 @@ class LineIntegration extends Component {
 		const { info: stateInfo } = this.state
 		const saveData = { ...info, [platformName]: stateInfo[platformName] }
 		this.setState({ facebookLoading: true})
-		botAPI.facebook.update(saveData.id, stateInfo[platformName].token, stateInfo[platformName].verify_str)
+		return botAPI.facebook.update(saveData.id, stateInfo[platformName].token, stateInfo[platformName].verify_str)
 			.then(data => facebookRead(saveData.id).then(() => this.finishLoading()))
 	}
 
@@ -104,8 +105,43 @@ class LineIntegration extends Component {
 		const { info: stateInfo } = this.state
 		const saveData = { ...info, [platformName]: stateInfo[platformName] }
 		this.setState({ lineLoading: true})
-		botAPI.line.update(saveData.id, stateInfo[platformName].secret, stateInfo[platformName].token)
+		return botAPI.line.update(saveData.id, stateInfo[platformName].secret, stateInfo[platformName].token)
 			.then(data => lineRead(saveData.id).then(() => this.finishLoading()))
+	}
+
+	handleIgnoreUpdate = (type = 'line', id, value) => {
+		this.setState({ [`${type}Loading`]: true })
+		return botAPI[type].updateIgnore(this.props.info.id, id, { display_name: value })
+			.then(() => this.props[`${type}ReadIgnore`](this.props.info.id))
+			.then(() => {
+				this.setState({ [`${type}Loading`]: false })
+				return this.props.info[`${type}Ignore`]
+			})
+	}
+
+	handleIgnoreDelete = (type = 'line', id) => {
+		return botAPI[type].deleteIgnore(this.props.info.id, id)
+			.then(() => this.props[`${type}ReadIgnore`](this.props.info.id))
+			.then(() => this.props.info[`${type}Ignore`])
+	}
+
+	handleIgnoreCreate = (type = 'line', value) => {
+		return botAPI[type].createIgnore(this.props.info.id, {
+			display_name: value
+		})
+			.then(() => this.props[`${type}ReadIgnore`](this.props.info.id))
+			.then(() => this.props.info[`${type}Ignore`])
+	}
+
+	handleIgnoreChange = (type, values) => {
+		const clone = _.clone(this.state.info)
+		if (type === 'line') {
+			clone.lineIgnore = values
+		} else if (type === 'facebook') {
+			clone.facebookIgnore = values
+		}
+		this.setState({ info: clone })
+		return this.handleLineSubmit('line')
 	}
 
 	getFBTutorial = () => {
@@ -163,7 +199,7 @@ class LineIntegration extends Component {
 
 	render() {
 		const { supportPlatforms, t, match, user, user: {packages} } = this.props
-		const { info, info: {third_party}, loading, show, facebookLoading, lineLoading} = this.state
+		const { info, info: {third_party, facebookIgnore, lineIgnore}, loading, show, facebookLoading, lineLoading} = this.state
 		const currentPlatforms = _.filter(supportPlatforms, plat => third_party.indexOf(plat.id) >= 0)
 		
 		const lineWebhook = `${process.env.REACT_APP_WEBHOOK_HOST}/line/${info.vendor_id}`
@@ -176,8 +212,88 @@ class LineIntegration extends Component {
 		const isActivable = currentPaidtype && currentPaidtype.third_party.find(el => el.name === 'Line')
 
 		return <Grid className='integration-page'>
+		
 		<Grid.Row columns='equal'>
-			<Grid.Column><Header>Facebook</Header></Grid.Column>
+			<Grid.Column><Header as='h1'>LINE</Header></Grid.Column>
+			<Grid.Column floated='right'>
+				{!lineActive ?
+				<Label basic color='grey' style={{ float: 'right' }}><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label> :
+				<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>}
+			</Grid.Column>
+		</Grid.Row>
+		<Grid.Row>
+			<Grid.Column>
+				<Form onSubmit={this.handleLineSubmit.bind(this, 'line')}>
+					<Form.Input
+						icon={
+							<CopyToClipboard text={lineWebhook}>
+								<Icon name='copy' link />
+							</CopyToClipboard>
+						}
+						type='text'
+						name='webhookURL'
+						id='webhook_line_url_field'
+						readOnly={true}
+						label={t('chatbot.setting.facebook.webhookURL')}
+						value={lineWebhook || ''}
+					/>
+					<Form.Input 
+						type='text'
+						name='secret'
+						id='secret_field'
+						label={t('chatbot.setting.line.secret')}
+						disabled={!lineActive}
+						value={info.line ? info.line.secret : ''}
+						onChange={this.handleChange.bind(this, 'line')}
+					/>
+					<Form.Input
+						type='text'
+						name='token'
+						id='token_field'
+						label={t('chatbot.setting.line.token')}
+						disabled={!lineActive}
+						value={info.line ? info.line.token : ''}
+						onChange={this.handleChange.bind(this, 'line')}
+					/>
+					<Button loading={lineLoading} primary disabled={!lineActive}>
+						<Icon name='save' />
+						{t('chatbot.update')}
+					</Button>
+				</Form>
+			</Grid.Column>
+		</Grid.Row>
+		<Grid.Row>
+			<Grid.Column>
+				<a onClick={this.toggleTutorial.bind(this, 'line')} href='#'>
+					{show.line ? t('chatbot.integration.hide_tutorial') : t('chatbot.integration.see_tutorial')}
+					{show.line ? <Icon name='caret up' /> : <Icon name='caret down' />}
+				</a>
+				{ show.line && this.getLineTutorial()}
+			</Grid.Column>
+		</Grid.Row>
+		<Grid.Row>
+			<Grid.Column>
+				<Header>{t('chatbot.setting.line.ignoreTitle')}</Header>
+				<p>{t('chatbot.setting.line.ignoreDescription')}</p>
+				{lineIgnore ?
+				<EditableList
+					values={lineIgnore}
+					onDelete={this.handleIgnoreDelete.bind(null, 'line')}
+					onCreate={this.handleIgnoreCreate.bind(null, 'line')}
+					onChange={this.handleIgnoreChange.bind(null, 'line')}
+					onUpdate={this.handleIgnoreUpdate.bind(null, 'line')}
+					idKey='id'
+					valueKey='display_name'
+				/>
+				: <Loader active={true} />
+				}
+			</Grid.Column>
+		</Grid.Row>
+
+		<Divider />
+
+		<Grid.Row columns='equal'>
+			<Grid.Column><Header as='h1'>Facebook</Header></Grid.Column>
 			<Grid.Column floated='right'>
 			{facebookActive ? 
 				<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>
@@ -234,66 +350,25 @@ class LineIntegration extends Component {
 				{ show.facebook && this.getFBTutorial()}
 			</Grid.Column>
 		</Grid.Row>
-
-
-		<Grid.Row columns='equal'>
-			<Grid.Column><Header>LINE</Header></Grid.Column>
-			<Grid.Column floated='right'>
-				{!lineActive ?
-				<Label basic color='grey' style={{ float: 'right' }}><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label> :
-				<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>}
-			</Grid.Column>
-		</Grid.Row>
 		<Grid.Row>
 			<Grid.Column>
-				<Form onSubmit={this.handleLineSubmit.bind(this, 'line')}>
-					<Form.Input
-						icon={
-							<CopyToClipboard text={lineWebhook}>
-								<Icon name='copy' link />
-							</CopyToClipboard>
-						}
-						type='text'
-						name='webhookURL'
-						id='webhook_line_url_field'
-						readOnly={true}
-						label={t('chatbot.setting.facebook.webhookURL')}
-						value={lineWebhook || ''}
-					/>
-					<Form.Input 
-						type='text'
-						name='secret'
-						id='secret_field'
-						label={t('chatbot.setting.line.secret')}
-						disabled={!lineActive}
-						value={info.line ? info.line.secret : ''}
-						onChange={this.handleChange.bind(this, 'line')}
-					/>
-					<Form.Input
-						type='text'
-						name='token'
-						id='token_field'
-						label={t('chatbot.setting.line.token')}
-						disabled={!lineActive}
-						value={info.line ? info.line.token : ''}
-						onChange={this.handleChange.bind(this, 'line')}
-					/>
-					<Button loading={lineLoading} primary disabled={!lineActive}>
-						<Icon name='save' />
-						{t('chatbot.update')}
-					</Button>
-				</Form>
+				<Header>{t('chatbot.setting.facebook.ignoreTitle')}</Header>
+				<p>{t('chatbot.setting.facebook.ignoreDescription')}</p>
+				{facebookIgnore ?
+				<EditableList
+					values={facebookIgnore}
+					onDelete={this.handleIgnoreDelete.bind(null, 'facebook')}
+					onCreate={this.handleIgnoreCreate.bind(null, 'facebook')}
+					onChange={this.handleIgnoreChange.bind(null, 'facebook')}
+					onUpdate={this.handleIgnoreUpdate.bind(null, 'facebook')}
+					idKey='id'
+					valueKey='display_name'
+				/>
+				: <Loader active={true} />
+				}
 			</Grid.Column>
 		</Grid.Row>
-		<Grid.Row>
-			<Grid.Column>
-				<a onClick={this.toggleTutorial.bind(this, 'line')} href='#'>
-					{show.line ? t('chatbot.integration.hide_tutorial') : t('chatbot.integration.see_tutorial')}
-					{show.line ? <Icon name='caret up' /> : <Icon name='caret down' />}
-				</a>
-				{ show.line && this.getLineTutorial()}
-			</Grid.Column>
-		</Grid.Row></Grid>
+	</Grid>
 	}
 }
 
@@ -305,7 +380,7 @@ const mapStateToProps = (state, props) => ({
 })
 export default compose(
 	withRouter,
-	connect(mapStateToProps, { facebookRead, lineRead }),
+	connect(mapStateToProps, { facebookRead, lineRead, facebookReadIgnore, lineReadIgnore }),
 	translate(),
 	toJS
 )(LineIntegration)
