@@ -89,6 +89,8 @@
         "secret": "Channel Secret",
         "webhookURL": "Webhook 网址",
         "token": "Channel Access Token",
+        "ignoreTitle": "忽略用户",
+        "ignoreDescription": "Add users by their display name. Bot will not respond to users in this list.",
         "description": "当你成功在我们平台建立好机器人之后，请按启用后再按照以下步骤将机器人连接到你的LINE平台。",
         "steps": {
           "_1": "如果你没有 LINE 帐号，请创建一个帐号。",
@@ -107,6 +109,8 @@
         "title": "脸书设定",
         "token": "脸书权杖",
         "verify": "验证权杖",
+        "ignoreTitle": "忽略用户",
+        "ignoreDescription": "Add users by their display name. Bot will not respond to users in this list.",
         "webhookURL": "Webhook 网址",
         "description": "当你成功在我们平台建立好机器人后，请按启用后再按照以下步骤将机器人连接到你的粉丝专页。",
         "steps": {

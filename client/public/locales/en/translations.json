@@ -77,6 +77,8 @@
         "title": "Line Setting",
         "token": "Channel Access Token",
         "secret": "Channel Secret",
+        "ignoreTitle": "Ignored Users",
+        "ignoreDescription": "Add users by their display name. Bot will not respond to users in this list.",
         "webhookURL": "Webhook URL",
         "description": "When you have already created a chatbot in our platform, activate it and follow the instructions to connect it to a LINE Channel.",
         "steps": {
@@ -96,6 +98,8 @@
         "title": "Facebook Setting",
         "token": "Access Token",
         "verify": "Verify Token",
+        "ignoreTitle": "Ignored Users",
+        "ignoreDescription": "Add users by their display name. Bot will not respond to users in this list.",
         "webhookURL": "Webhook URL",
         "description": "When you have already created a chatbot in our platform, activate it and follow the instructions to connect it to a Fans Page.",
         "steps": {

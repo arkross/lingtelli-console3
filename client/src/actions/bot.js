@@ -58,8 +58,20 @@ export const fetchFacebook = (botId, data) => ({
 	data
 })
 
+export const fetchFacebookIgnore = (botId, data) => ({
+	type: types.FETCH_FACEBOOK_IGNORE,
+	id: botId,
+	data
+})
+
 export const fetchLine = (botId, data) => ({
 	type: types.FETCH_LINE,
+	id: botId,
+	data
+})
+
+export const fetchLineIgnore = (botId, data) => ({
+	type: types.FETCH_LINE_IGNORE,
 	id: botId,
 	data
 })
@@ -115,6 +127,8 @@ export const fetchAllBotDetails = (paidtype) => async (dispatch) => {
 			if ( ! (data.assign_user && paidtype === 'Staff')) {
 				facebookRead(bot.id)(dispatch)
 				lineRead(bot.id)(dispatch)
+				facebookReadIgnore(bot.id)(dispatch)
+				lineReadIgnore(bot.id)(dispatch)
 			}
 			dispatch(fetchBotInfo(data))
 		})
@@ -175,6 +189,14 @@ export const facebookRead = botId => dispatch =>
 	api.facebook.read(botId)
 		.then(data => dispatch(fetchFacebook(botId, data)))
 
+export const facebookReadIgnore = botId => dispatch =>
+	api.facebook.readIgnore(botId)
+		.then(data => dispatch(fetchFacebookIgnore(botId, data)))
+
 export const lineRead = botId => dispatch =>
 	api.line.read(botId)
 		.then(data => dispatch(fetchLine(botId, data)))
+
+export const lineReadIgnore = botId => dispatch =>
+	api.line.readIgnore(botId)
+		.then(data => dispatch(fetchLineIgnore(botId, data)))
