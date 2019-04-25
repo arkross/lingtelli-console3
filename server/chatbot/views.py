@@ -19,12 +19,16 @@ from rest_framework.status import (
 )
 from chat_console_3 import utils, nlumodel
 
-from .serilalizers import ChatbotSerializer, LineSerializer, FacebookSerializer
+from .serilalizers import (ChatbotSerializer, LineSerializer,
+                           FacebookSerializer, LineIgnoreSerializer,
+                           FacebookIgnoreSerializer)
 
-from .models import Chatbot, Line, Facebook, BotThirdPartyGroup
+from .models import (Chatbot, Line, Facebook, BotThirdPartyGroup, LineIgnore,
+                     FacebookIgnore)
 from account.models import AccountInfo
 from faq.models import FAQGroup, Answer, Question
 from thirdparty.models import ThirdParty
+
 
 class ChatbotViewset(viewsets.ModelViewSet):
     '''Chatbot viewset
@@ -32,8 +36,8 @@ class ChatbotViewset(viewsets.ModelViewSet):
     Using CRUD with chatbot related data
 
     detail_route:
-        delete_confirm 
-    
+        delete_confirm
+
     Request format example:
     POST
     {
@@ -80,7 +84,7 @@ class ChatbotViewset(viewsets.ModelViewSet):
         "choose_answer": "1"
     }
     '''
-    
+
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     queryset = Chatbot.objects.all()
@@ -111,9 +115,9 @@ class ChatbotViewset(viewsets.ModelViewSet):
                 Chatbot.objects.filter(user=user_obj,
                                        hide_status=False).count()
             if acc_obj.paid_type.user_type != 'S' and\
-                bot_owned_amount >= int(bot_create_limit):
-                return Response({'errors':_('Reach bot create limitation')},
-                                 status=HTTP_403_FORBIDDEN)
+               bot_owned_amount >= int(bot_create_limit):
+                return Response({'errors': _('Reach bot create limitation')},
+                                status=HTTP_403_FORBIDDEN)
 
             # Check if faq creation is over upper limit
             faq_create_limit = acc_obj.paid_type.faq_amount
@@ -123,16 +127,16 @@ class ChatbotViewset(viewsets.ModelViewSet):
                 faq_count = FAQGroup.objects.filter(chatbot=bot).count()
                 faq_owned_amount += faq_count
             if acc_obj.paid_type.user_type != 'S' and\
-                (faq_owned_amount + 1) >= int(faq_create_limit):
-                return Response({'errors':_('Reach faq create limitation')},
-                                 status=HTTP_403_FORBIDDEN)
+               (faq_owned_amount + 1) >= int(faq_create_limit):
+                return Response({'errors': _('Reach faq create limitation')},
+                                status=HTTP_403_FORBIDDEN)
 
             bot_data = json.loads(request.body)
             bot_keys = ['robot_name', 'greeting_msg', 'failed_msg',
                         'postback_title', 'language']
             err_msg, key_status = utils.key_validator(bot_keys, bot_data)
             if not key_status:
-                return Response({'errors':_(err_msg)},
+                return Response({'errors': _(err_msg)},
                                 status=HTTP_403_FORBIDDEN)
             bot_data['user_id'] = user_obj.id
             bot_obj = Chatbot.objects.create(**bot_data)
@@ -155,16 +159,16 @@ class ChatbotViewset(viewsets.ModelViewSet):
                                                      bot_obj)
                 # create_bot_obj = bot_obj
                 if not create_bot_obj:
-                    return Response({'errors':_('Create bot failed. '+\
+                    return Response({'errors': _('Create bot failed. ' +
                                      'Cause by NLU error.' + err_msg)},
-                                     status=HTTP_400_BAD_REQUEST)
+                                    status=HTTP_400_BAD_REQUEST)
                 res = {}
                 res['id'] = create_bot_obj.id
                 res['robot_name'] = create_bot_obj.robot_name
                 return Response(res, status=HTTP_201_CREATED)
-            return Response({'errors':_('Create bot failed')},
-                             status=HTTP_400_BAD_REQUEST)
-        return Response({'errors':_('No content')},
+            return Response({'errors': _('Create bot failed')},
+                            status=HTTP_400_BAD_REQUEST)
+        return Response({'errors': _('No content')},
                         status=HTTP_400_BAD_REQUEST)
 
     def update(self, request, pk=None):
@@ -175,8 +179,8 @@ class ChatbotViewset(viewsets.ModelViewSet):
                                        Q(assign_user=user_obj),
                                        id=pk, hide_status=False,).first()
             if not bot_obj:
-                return Response({'errors':_('Not found')},
-                                 status=HTTP_404_NOT_FOUND)
+                return Response({'errors': _('Not found')},
+                                status=HTTP_404_NOT_FOUND)
             update_data = json.loads(request.body)
             valid_update_key = ['robot_name', 'greeting_msg', 'failed_msg',
                                 'postback_title', 'postback_activate',
@@ -184,14 +188,14 @@ class ChatbotViewset(viewsets.ModelViewSet):
             err_msg, key_status = utils.key_validator(valid_update_key,
                                                       update_data)
             if not key_status:
-                return Response({'errors':_(err_msg)},
-                                 status=HTTP_403_FORBIDDEN)
+                return Response({'errors': _(err_msg)},
+                                status=HTTP_403_FORBIDDEN)
             for k, v in update_data.items():
                 setattr(bot_obj, k, v)
             bot_obj.save()
-            return Response({'success':_('Update succeeded')},
+            return Response({'success': _('Update succeeded')},
                             status=HTTP_200_OK)
-        return Response({'errors':_('No content')},
+        return Response({'errors': _('No content')},
                         status=HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, pk=None):
@@ -203,10 +207,10 @@ class ChatbotViewset(viewsets.ModelViewSet):
         bot_obj = Chatbot.objects.filter(id=pk, hide_status=False,
                                          user=user_obj).first()
         if not bot_obj:
-            return Response({'errors':_('Not found')},
-                             status=HTTP_404_NOT_FOUND)
+            return Response({'errors': _('Not found')},
+                            status=HTTP_404_NOT_FOUND)
         if not bot_obj.delete_confirm:
-            return Response({'errors':_('Please confirm the deletion first')},
+            return Response({'errors': _('Please confirm the deletion first')},
                             status=HTTP_403_FORBIDDEN)
         nlumodel.delete_model(bot_obj)
         bot_obj.delete()
@@ -214,7 +218,7 @@ class ChatbotViewset(viewsets.ModelViewSet):
         if check_bot_delete:
             check_bot_delete.delete_confirm = False
             check_bot_delete.save()
-            return Response({'errors':_('Deleting bot failed')},
+            return Response({'errors': _('Deleting bot failed')},
                             status=HTTP_400_BAD_REQUEST)
         return Response(status=HTTP_204_NO_CONTENT)
 
@@ -233,20 +237,20 @@ class ChatbotViewset(viewsets.ModelViewSet):
             bot_obj = Chatbot.objects.filter(id=pk, hide_status=False,
                                              user=user_obj).first()
             if not bot_obj:
-                return Response({'errors':_('Not found')},
+                return Response({'errors': _('Not found')},
                                 status=HTTP_404_NOT_FOUND)
             request_data = json.loads(request.body)
             if not request_data.get('password'):
-                return Response({'errors':_('Please enter the password')},
+                return Response({'errors': _('Please enter the password')},
                                 status=HTTP_400_BAD_REQUEST)
             if user_obj.check_password(request_data.get('password')):
                 bot_obj.delete_confirm = True
                 bot_obj.save()
-                return Response({'success':_('Delete confirmed')},
+                return Response({'success': _('Delete confirmed')},
                                 status=HTTP_200_OK)
-            return Response({'errors':_('Password is not correct')},
+            return Response({'errors': _('Password is not correct')},
                             status=HTTP_403_FORBIDDEN)
-        return Response({'errors':_('No content')},
+        return Response({'errors': _('No content')},
                         status=HTTP_400_BAD_REQUEST)
 
 
@@ -286,8 +290,8 @@ class LineViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         if not bot:
             return Response({'errors': _('Not found')},
                             status=HTTP_404_NOT_FOUND)
-        if request.user.is_staff == True and bot.bot_type == 'TASK'\
-            and bot.assign_user != None:
+        if request.user.is_staff is True and bot.bot_type == 'TASK'\
+           and bot.assign_user is not None:
             return Response({'errors': _('Not allowed to get user line data')},
                             status=HTTP_403_FORBIDDEN)
         line_obj = Line.objects.filter(chatbot=id).first()
@@ -299,8 +303,8 @@ class LineViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         if not bot:
             return Response({'errors': _('Not found')},
                             status=HTTP_404_NOT_FOUND)
-        if request.user.is_staff == True and bot.bot_type == 'TASK'\
-            and bot.assign_user != None:
+        if request.user.is_staff is True and bot.bot_type == 'TASK'\
+           and bot.assign_user is not None:
             return Response({'errors': _('Not allowed to get user line data')},
                             status=HTTP_403_FORBIDDEN)
         line_obj = Line.objects.filter(chatbot=id).first()
@@ -318,23 +322,23 @@ class LineViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         if not bot:
             return Response({'errors': _('Not found')},
                             status=HTTP_404_NOT_FOUND)
-        if request.user.is_staff == True and bot.bot_type == 'TASK'\
-            and bot.assign_user != None:
+        if request.user.is_staff is True and bot.bot_type == 'TASK'\
+           and bot.assign_user is not None:
             return Response({'errors': _('Not allowed to get user line data')},
                             status=HTTP_403_FORBIDDEN)
         if request.body:
             user_obj = request.user
             line_obj = Line.objects.filter(id=pk, chatbot=id).first()
             if not line_obj:
-                return Response({'errors':_('Not found')},
+                return Response({'errors': _('Not found')},
                                 status=HTTP_404_NOT_FOUND)
             update_data = json.loads(request.body)
             for k, v in update_data.items():
                 setattr(line_obj, k, v)
             line_obj.save()
-            return Response({'success':_('Update succeeded')},
+            return Response({'success': _('Update succeeded')},
                             status=HTTP_200_OK)
-        return Response({'errors':_('No content')},
+        return Response({'errors': _('No content')},
                         status=HTTP_400_BAD_REQUEST)
 
 
@@ -375,8 +379,8 @@ class FacebookViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         if not bot:
             return Response({'errors': _('Not found')},
                             status=HTTP_404_NOT_FOUND)
-        if request.user.is_staff == True and bot.bot_type == 'TASK'\
-            and bot.assign_user != None:
+        if request.user.is_staff is True and bot.bot_type == 'TASK'\
+           and bot.assign_user is not None:
             return Response({'errors': _('Not allowed to get user fb data')},
                             status=HTTP_403_FORBIDDEN)
         fb_obj = Facebook.objects.filter(chatbot=id).first()
@@ -388,8 +392,8 @@ class FacebookViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         if not bot:
             return Response({'errors': _('Not found')},
                             status=HTTP_404_NOT_FOUND)
-        if request.user.is_staff == True and bot.bot_type == 'TASK'\
-            and bot.assign_user != None:
+        if request.user.is_staff is True and bot.bot_type == 'TASK'\
+           and bot.assign_user is not None:
             return Response({'errors': _('Not allowed to get user fb data')},
                             status=HTTP_403_FORBIDDEN)
         fb_obj = Facebook.objects.filter(chatbot=id).first()
@@ -407,21 +411,193 @@ class FacebookViewset(RetrieveModelMixin, ListModelMixin, UpdateModelMixin,
         if not bot:
             return Response({'errors': _('Not found')},
                             status=HTTP_404_NOT_FOUND)
-        if request.user.is_staff == True and bot.bot_type == 'TASK'\
-            and bot.assign_user != None:
+        if request.user.is_staff is True and bot.bot_type == 'TASK'\
+           and bot.assign_user is not None:
             return Response({'errors': _('Not allowed to get user fb data')},
                             status=HTTP_403_FORBIDDEN)
         if request.body:
             user_obj = request.user
             fb_obj = Facebook.objects.filter(id=pk, chatbot=id).first()
             if not fb_obj:
-                return Response({'errors':_('Not found')},
+                return Response({'errors': _('Not found')},
                                 status=HTTP_404_NOT_FOUND)
             update_data = json.loads(request.body)
             for k, v in update_data.items():
                 setattr(fb_obj, k, v)
             fb_obj.save()
-            return Response({'success':_('Update succeeded')},
+            return Response({'success': _('Update succeeded')},
                             status=HTTP_200_OK)
-        return Response({'errors':_('No content')},
+        return Response({'errors': _('No content')},
                         status=HTTP_400_BAD_REQUEST)
+
+
+class LineIgnoreViewset(viewsets.ModelViewSet):
+    '''Line ignore user viewset
+
+    User can only update display name. After first time sending msg, get the
+    user display name from profile by user_id. Check if the display is the
+    same. If it is the same update the user_id to that display name. Can check
+    for user_id after first time message send. Also can update display name if
+    the name has been changed in the future.
+
+    ##### WARNING #####
+    If there are users having the same display name would cause issue.
+    ###################
+    '''
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    queryset = LineIgnore.objects.all()
+    serializer_class = LineIgnoreSerializer
+
+    def get_queryset(self):
+        user_obj = self.request.user
+        bot_id = self.kwargs.get('id')
+        line_id = self.kwargs.get('line_id')
+        bot_obj = Chatbot.objects.filter(id=bot_id, user=user_obj).first()
+        line_obj = Line.objects.filter(id=line_id, chatbot=bot_obj).first()
+        ignore_users = LineIgnore.objects.filter(line=line_obj)
+        return ignore_users
+
+    def create(self, request, id, line_id):
+        user_obj = request.user
+        bot_obj = Chatbot.objects.filter(id=id, user=user_obj).first()
+        if not bot_obj:
+            return \
+                Response({'errors': _('Not found')}, status=HTTP_404_NOT_FOUND)
+        line_obj = Line.objects.filter(id=line_id, chatbot=bot_obj).first()
+        if not line_obj:
+            return \
+                Response({'errors': _('Not found')}, status=HTTP_404_NOT_FOUND)
+        if request.body:
+            req_data = json.loads(request.body)
+            req_data['line'] = line_obj
+            req_data['line_uid'] = ''
+            key_list = ['line', 'display_name', 'line_uid']
+            err_msg, status = utils.key_validator(key_list, req_data)
+            if status is True:
+                ignore_obj = LineIgnore.objects.create(**req_data)
+                ignore_json = LineIgnoreSerializer(ignore_obj).data
+                return Response(ignore_json, status=HTTP_201_CREATED)
+            else:
+                return Response({'errors': _(err_msg)},
+                                status=HTTP_400_BAD_REQUEST)
+        return \
+            Response({'errors': _('No content')}, status=HTTP_400_BAD_REQUEST)
+    
+    def update(self, request, id, line_id, pk):
+        user_obj = request.user
+        bot_obj = Chatbot.objects.filter(id=id, user=user_obj).first()
+        if not bot_obj:
+            return \
+                Response({'errors': _('Not found')}, status=HTTP_404_NOT_FOUND)
+        line_obj = Line.objects.filter(id=line_id, chatbot=bot_obj).first()
+        if not line_obj:
+            return \
+                Response({'errors': _('Not found')}, status=HTTP_404_NOT_FOUND)
+        ignore_obj = LineIgnore.objects.filter(line=line_obj, id=pk).first()
+        if not ignore_obj:
+            return \
+                Response({'errors': _('Not found')}, status=HTTP_404_NOT_FOUND)
+        if request.body:
+            req_data = json.loads(request.body)
+            req_data['line'] = line_obj
+            req_data['line_uid'] = ''
+            key_list = ['line', 'display_name', 'line_uid']
+            err_msg, status = utils.key_validator(key_list, req_data)
+            if status is True:
+                ignore_obj.display_name = req_data.get('display_name')
+                ignore_obj.save()
+                return Response({'success': _('Update succeeded')},
+                                status=HTTP_200_OK)
+            else:
+                return Response({'errors': _(err_msg)},
+                                status=HTTP_400_BAD_REQUEST)
+        return \
+            Response({'errors': _('No content')}, status=HTTP_400_BAD_REQUEST)
+
+
+class FacebookIgnoreViewset(viewsets.ModelViewSet):
+    '''Facebook ignore user viewset
+
+    User can only update display name. After first time sending msg, get the
+    user display name from profile by user_id. Check if the display is the
+    same. If it is the same update the user_id to that display name. Can check
+    for user_id after first time message send. Also can update display name if
+    the name has been changed in the future.
+
+    ##### WARNING #####
+    If there are users having the same display name would cause issue.
+    ###################
+    '''
+
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    queryset = FacebookIgnore.objects.all()
+    serializer_class = FacebookIgnoreSerializer
+
+    def get_queryset(self):
+        user_obj = self.request.user
+        bot_id = self.kwargs.get('id')
+        fb_id = self.kwargs.get('fb_id')
+        bot_obj = Chatbot.objects.filter(id=bot_id, user=user_obj).first()
+        fb_obj = Facebook.objects.filter(id=fb_id, chatbot=bot_obj).first()
+        ignore_users = FacebookIgnore.objects.filter(facebook=fb_obj)
+        return ignore_users
+
+    def create(self, request, id, fb_id):
+        user_obj = request.user
+        bot_obj = Chatbot.objects.filter(id=id, user=user_obj).first()
+        if not bot_obj:
+            return \
+                Response({'errors': _('Not found')}, status=HTTP_404_NOT_FOUND)
+        fb_obj = Facebook.objects.filter(id=fb_id, chatbot=bot_obj).first()
+        if not fb_obj:
+            return \
+                Response({'errors': _('Not found')}, status=HTTP_404_NOT_FOUND)
+        if request.body:
+            req_data = json.loads(request.body)
+            req_data['facebook'] = fb_obj
+            req_data['facebook_uid'] = ''
+            key_list = ['facebook', 'display_name', 'facebook_uid']
+            err_msg, status = utils.key_validator(key_list, req_data)
+            if status is True:
+                ignore_obj = FacebookIgnore.objects.create(**req_data)
+                ignore_json = FacebookIgnoreSerializer(ignore_obj).data
+                return Response(ignore_json, status=HTTP_201_CREATED)
+            else:
+                return Response({'errors': _(err_msg)},
+                                status=HTTP_400_BAD_REQUEST)
+        return \
+            Response({'errors': _('No content')}, status=HTTP_400_BAD_REQUEST)
+    
+    def update(self, request, id, fb_id, pk):
+        user_obj = request.user
+        bot_obj = Chatbot.objects.filter(id=id, user=user_obj).first()
+        if not bot_obj:
+            return \
+                Response({'errors': _('Not found')}, status=HTTP_404_NOT_FOUND)
+        fb_obj = Facebook.objects.filter(id=fb_id, chatbot=bot_obj).first()
+        if not fb_obj:
+            return \
+                Response({'errors': _('Not found')}, status=HTTP_404_NOT_FOUND)
+        ignore_obj = \
+            FacebookIgnore.objects.filter(facebook=fb_obj, id=pk).first()
+        if not ignore_obj:
+            return \
+                Response({'errors': _('Not found')}, status=HTTP_404_NOT_FOUND)
+        if request.body:
+            req_data = json.loads(request.body)
+            req_data['facebook'] = fb_obj
+            req_data['facebook_uid'] = ''
+            key_list = ['facebook', 'display_name', 'facebook_uid']
+            err_msg, status = utils.key_validator(key_list, req_data)
+            if status is True:
+                ignore_obj.display_name = req_data.get('display_name')
+                ignore_obj.save()
+                return Response({'success': _('Update succeeded')},
+                                status=HTTP_200_OK)
+            else:
+                return Response({'errors': _(err_msg)},
+                                status=HTTP_400_BAD_REQUEST)
+        return \
+            Response({'errors': _('No content')}, status=HTTP_400_BAD_REQUEST)

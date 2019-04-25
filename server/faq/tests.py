@@ -1,4 +1,5 @@
-import json, os
+import json
+import os
 from django.test import TestCase, Client
 
 from django.contrib.auth.models import User
@@ -8,6 +9,7 @@ from chatbot.models import Chatbot
 from paidtype.models import PaidType
 from thirdparty.models import ThirdParty
 from faq.models import FAQGroup, Answer, Question
+
 
 class FAQGroupTest(TestCase):
     '''FAQGroup basic testing
@@ -26,7 +28,7 @@ class FAQGroupTest(TestCase):
         }
 
         staff_data = {
-            'pk' : 2,
+            'pk': 2,
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
@@ -51,7 +53,7 @@ class FAQGroupTest(TestCase):
 
         # Create account info
         acc_data = {'user': self.user_obj, 'paid_type': trial_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00'}
         AccountInfo.objects.create(**acc_data)
 
@@ -62,7 +64,7 @@ class FAQGroupTest(TestCase):
 
         # Create agent account info
         acc_data = {'user': self.agent_obj, 'paid_type': staff_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00'}
         AccountInfo.objects.create(**acc_data)
 
@@ -155,7 +157,7 @@ class FAQGroupTest(TestCase):
 
     def test_create_over_limit_member(self):
         # Initial 49 groups
-        for i in range(0,50):
+        for i in range(0, 50):
             FAQGroup.objects.create(chatbot=self.bot_obj)
         c = Client()
         response = c.post(self.bot_uri, {},
@@ -248,7 +250,7 @@ class CSVTest(TestCase):
 
         # Create agent account info
         acc_data = {'user': self.agent_obj, 'paid_type': staff_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00'}
         AccountInfo.objects.create(**acc_data)
 
@@ -291,7 +293,7 @@ class CSVTest(TestCase):
         POST(upload), GET(export, train)
         '''
         c = Client()
-        
+
         # Upload
         upload_uri = self.bot_uri + '/upload/'
         response = c.post(upload_uri, {'file': self.correct_csv})
@@ -306,7 +308,7 @@ class CSVTest(TestCase):
         train_uri = self.bot_uri + '/train/'
         response = c.post(upload_uri, {'file': self.correct_csv})
         self.assertEqual(response.status_code, 401)
-    
+
     def test_not_existed(self):
         ''' CSV action with no file
 
@@ -506,7 +508,7 @@ class AnswerTest(TestCase):
         self.bot_uri = '/chatbot/' + str(self.bot_obj.id) + '/answer/'
         self.task_uri = '/agent/taskbot/' + str(self.taskbot_obj.id) +\
                         '/answer/'
-        
+
         # Initial answer obj
         self.bot_ans_obj = \
             Answer.objects.create(group=self.bot_faq,
@@ -533,10 +535,10 @@ class AnswerTest(TestCase):
         ans_uri = self.bot_uri + str(self.bot_ans_obj.id) + '/'
         response = c.get(ans_uri)
         self.assertEqual(response.status_code, 401)
-        
+
         # PUT
         response = c.put(ans_uri, json.dumps({'content': 'x'}),
-                             content_type='application/json')
+                         content_type='application/json')
         self.assertEqual(response.status_code, 401)
 
         # DELETE
@@ -549,11 +551,11 @@ class AnswerTest(TestCase):
         POST(FAQ group is not existed), GET, PUT, DELETE
         '''
         c = Client()
-        
+
         # POST
         response = c.post(self.bot_uri, json.dumps({'group': 123,
-                                                        'content': 'hi'}),
-                              content_type='application/json', **self.header)
+                                                    'content': 'hi'}),
+                          content_type='application/json', **self.header)
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
@@ -567,8 +569,8 @@ class AnswerTest(TestCase):
 
         # PUT
         response = c.put(self.bot_uri + '123/',
-                             json.dumps({'content': 'x'}),
-                             content_type='application/json', **self.header)
+                         json.dumps({'content': 'x'}),
+                         content_type='application/json', **self.header)
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
@@ -586,9 +588,9 @@ class AnswerTest(TestCase):
 
         # Normal bot
         response = c.post(self.bot_uri,
-                              json.dumps({'group': self.bot_faq.id,
-                                          'content': 'hi'}),
-                              content_type='application/json', **self.header)
+                          json.dumps({'group': self.bot_faq.id,
+                                      'content': 'hi'}),
+                          content_type='application/json', **self.header)
         self.assertEqual(response.status_code, 201)
         res_data = json.loads(response.content)
         self.assertEqual(len(ans_keys), len(res_data))
@@ -610,7 +612,7 @@ class AnswerTest(TestCase):
         ans_keys = ['id', 'content', 'group']
         bot_ans_uri = self.bot_uri + str(self.bot_ans_obj.id) + '/'
         task_ans_uri = self.task_uri + str(self.task_ans_obj.id) + '/'
-        
+
         # Normal bot
         response = c.get(bot_ans_uri, **self.header)
         self.assertEqual(response.status_code, 200)
@@ -678,7 +680,7 @@ class QuestionTest(TestCase):
         }
 
         staff_data = {
-            'pk' : 2,
+            'pk': 2,
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
@@ -703,7 +705,7 @@ class QuestionTest(TestCase):
 
         # Create account info
         acc_data = {'user': self.user_obj, 'paid_type': trial_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00', }
         AccountInfo.objects.create(**acc_data)
 
@@ -714,7 +716,7 @@ class QuestionTest(TestCase):
 
         # Create agent account info
         acc_data = {'user': self.agent_obj, 'paid_type': staff_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00'}
         AccountInfo.objects.create(**acc_data)
 
@@ -749,7 +751,7 @@ class QuestionTest(TestCase):
         self.bot_uri = '/chatbot/' + str(self.bot_obj.id) + '/question/'
         self.task_uri = '/agent/taskbot/' + str(self.taskbot_obj.id) +\
                         '/question/'
-        
+
         # Initial question obj
         self.bot_que_obj = \
             Question.objects.create(group=self.bot_faq,
@@ -777,7 +779,7 @@ class QuestionTest(TestCase):
 
         response = c.get(bot_que_uri)
         self.assertEqual(response.status_code, 401)
-        
+
         # PUT
         response = c.put(bot_que_uri, json.dumps({'content': 'x'}),
                          content_type='application/json')
@@ -793,11 +795,11 @@ class QuestionTest(TestCase):
         POST(FAQ group is not existed), GET, PUT, DELETE
         '''
         c = Client()
-        
+
         # POST
         response = c.post(self.bot_uri, json.dumps({'group': 123,
                                                     'content': 'hi'}),
-                              content_type='application/json', **self.header)
+                          content_type='application/json', **self.header)
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
@@ -811,8 +813,8 @@ class QuestionTest(TestCase):
 
         # PUT
         response = c.put(self.bot_uri + '123/',
-                             json.dumps({'content': 'x'}),
-                             content_type='application/json', **self.header)
+                         json.dumps({'content': 'x'}),
+                         content_type='application/json', **self.header)
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
@@ -830,9 +832,9 @@ class QuestionTest(TestCase):
 
         # Normal bot
         response = c.post(self.bot_uri,
-                              json.dumps({'group': self.bot_faq.id,
-                                          'content': 'hi'}),
-                              content_type='application/json', **self.header)
+                          json.dumps({'group': self.bot_faq.id,
+                                      'content': 'hi'}),
+                          content_type='application/json', **self.header)
         self.assertEqual(response.status_code, 201)
         res_data = json.loads(response.content)
         self.assertEqual(len(que_keys), len(res_data))
@@ -873,7 +875,6 @@ class QuestionTest(TestCase):
         for k in que_keys:
             self.assertIn(k, res_data)
 
-
     def test_update(self):
         c = Client()
         que_keys = ['content']
@@ -889,10 +890,10 @@ class QuestionTest(TestCase):
 
         # Task bot
         response_task = c.put(task_que_uri,
-                               json.dumps({'group': self.task_faq.id,
-                                           'content': 'hello'}),
-                               content_type='application/json',
-                               **self.agent_header)
+                              json.dumps({'group': self.task_faq.id,
+                                          'content': 'hello'}),
+                              content_type='application/json',
+                              **self.agent_header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)

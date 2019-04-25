@@ -56,3 +56,17 @@ class FacebookSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     token = serializers.CharField()
     verify_str = serializers.CharField()
+
+
+class LineIgnoreSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    line = serializers.PrimaryKeyRelatedField(read_only=True)
+    display_name = serializers.CharField()
+    line_uid = serializers.CharField()
+
+
+class FacebookIgnoreSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    facebook = serializers.PrimaryKeyRelatedField(read_only=True)
+    display_name = serializers.CharField()
+    facebook_uid = serializers.CharField()
