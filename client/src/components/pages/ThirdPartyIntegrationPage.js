@@ -295,7 +295,7 @@ class LineIntegration extends Component {
 		<Grid.Row columns='equal'>
 			<Grid.Column><Header as='h1'>Facebook</Header></Grid.Column>
 			<Grid.Column floated='right'>
-			{facebookActive ? 
+			{facebookActive ?
 				<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>
 			: <Label color='grey' basic style={{ float: 'right'}}><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label>}
 			</Grid.Column>

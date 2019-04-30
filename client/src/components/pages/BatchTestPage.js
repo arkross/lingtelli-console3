@@ -75,6 +75,10 @@ class BatchTestPage extends Component {
 		})
 	}
 
+	handleUploadClick = e => {
+		e.target.value = ''
+	}
+
 	handleUpload = e => {
 		e.preventDefault()
 		this.setState({ isParsingCSV: true })
@@ -82,7 +86,6 @@ class BatchTestPage extends Component {
 		if ( ! file) {
 			return false
 		}
-		e.target.value = ''
 		const fr = new FileReader
 		fr.onload = (evt) => {
 			const text = evt.target.result
@@ -210,7 +213,7 @@ class BatchTestPage extends Component {
 						<Form.Field>
 							<label>{t('chatbot.batch.uploadCsv')}</label>
 							<p>{t('chatbot.batch.popup')}. <a href="#" onClick={this.handleReadMoreClick}>{t('chatbot.batch.readMore')}</a></p>
-							<Input type='file' loading={isParsingCSV} onChange={this.handleUpload} placeholder={'CSV file'} action={<Button content={t('chatbot.batch.run')} onClick={this.handleRun} primary icon='play' disabled={!total} loading={isRunning} />} />
+							<Input type='file' accept='.csv' onClick={this.handleUploadClick} loading={isParsingCSV} onChange={this.handleUpload} placeholder={'CSV file'} action={<Button content={t('chatbot.batch.run')} onClick={this.handleRun} primary icon='play' disabled={!total} loading={isRunning} />} />
 							<p></p>
 						</Form.Field>
 						<Form.Field>
