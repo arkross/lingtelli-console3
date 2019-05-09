@@ -32,7 +32,9 @@
     "line": "LINE",
     "web": "網站",
     "task": "任務",
-    "thirdparty": "第三方"
+    "thirdparty": "第三方",
+    "recommendations": "推薦紀錄",
+    "history": "對話紀錄"
   },
   "chatbot": {
     "name": "機器人名稱",
@@ -73,6 +75,8 @@
       "line": {
         "title": "Line 設定",
         "secret": "Channel Secret",
+        "ignoreTitle": "忽略用戶",
+        "ignoreDescription": "Add users by their display name. Bot will not respond to users in this list.",
         "webhookURL": "Webhook 網址",
         "token": "Channel Access Token",
         "description": "當你成功在我們平台建立好機器人之後，請按啟用後按照以下步驟將機器人連接到你的 LINE 平台。",
@@ -93,6 +97,8 @@
         "title": "Facebook 設定",
         "token": "存取權杖",
         "verify": "驗證權杖",
+        "ignoreTitle": "忽略用戶",
+        "ignoreDescription": "Add users by their display name. Bot will not respond to users in this list.",
         "webhookURL": "Webhook 網址",
         "description": "當你成功在我們平台建立好機器人後，請按啟用後再按照以下步驟將機器人連接到你的粉絲專頁。",
         "steps": {

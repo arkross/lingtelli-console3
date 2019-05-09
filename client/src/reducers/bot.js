@@ -87,6 +87,10 @@ export default function bot(state = initState, action = {}) {
 		return state.setIn(['bots', action.id + '', 'facebook'], fromJS(action.data))
 	case types.FETCH_LINE:
 		return state.setIn(['bots', action.id + '', 'line'], fromJS(action.data))
+	case types.FETCH_FACEBOOK_IGNORE:
+		return state.setIn(['bots', action.id + '', 'facebookIgnore'], fromJS(action.data))
+	case types.FETCH_LINE_IGNORE:
+		return state.setIn(['bots', action.id + '', 'lineIgnore'], fromJS(action.data))
 	default:
 		// TODO: wired here: because close create bot page will
 		//       reset activebot.

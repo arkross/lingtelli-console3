@@ -203,7 +203,7 @@ Response structure depends on the following factors:
 ## History
 
 ```http
-GET {{{WEBHOOK_URL}}}/history
+POST {{{WEBHOOK_URL}}}/history
 ```
 Retrieves past chat messages. Please note that the API URL is slightly different with the previous ones.
 

@@ -53,18 +53,26 @@ export default {
 	})).data,
 
 	facebook: {
-		read: async botId => (await axios.get(`${API_HOST}/chatbot/${botId}/facebook/`)).data,
+		read: async botId => (await axios.get(`${API_HOST}/chatbot/${botId}/facebook/${botId}/`)).data,
 		update: async (botId, token, verify_str) => (await axios.put(`${API_HOST}/chatbot/${botId}/facebook/${botId}/`, {
 			token,
 			verify_str
-		})).data
+		})).data,
+		readIgnore: async botId => (await axios.get(`${API_HOST}/chatbot/${botId}/facebook/${botId}/ignore/`)).data,
+		createIgnore: async (botId, data) => (await axios.post(`${API_HOST}/chatbot/${botId}/facebook/${botId}/ignore/`, data)).data,
+		updateIgnore: async (botId, ignoreId, data) => (await axios.put(`${API_HOST}/chatbot/${botId}/facebook/${botId}/ignore/${ignoreId}/`, data)).data,
+		deleteIgnore: async (botId, ignoreId) => (await axios.delete(`${API_HOST}/chatbot/${botId}/facebook/${botId}/ignore/${ignoreId}/`))
 	},
 
 	line: {
-		read: async botId => (await axios.get(`${API_HOST}/chatbot/${botId}/line/`)).data,
+		read: async botId => (await axios.get(`${API_HOST}/chatbot/${botId}/line/${botId}/`)).data,
 		update: async (botId, secret, token) => (await axios.put(`${API_HOST}/chatbot/${botId}/line/${botId}/`, {
 			secret,
 			token
-		})).data
+		})).data,
+		readIgnore: async botId => (await axios.get(`${API_HOST}/chatbot/${botId}/line/${botId}/ignore/`)).data,
+		createIgnore: async (botId, data) => (await axios.post(`${API_HOST}/chatbot/${botId}/line/${botId}/ignore/`, data)).data,
+		updateIgnore: async (botId, ignoreId, data) => (await axios.put(`${API_HOST}/chatbot/${botId}/line/${botId}/ignore/${ignoreId}/`, data)).data,
+		deleteIgnore: async (botId, ignoreId) => (await axios.delete(`${API_HOST}/chatbot/${botId}/line/${botId}/ignore/${ignoreId}/`))
 	}
 }

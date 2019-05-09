@@ -118,7 +118,7 @@ class BotThirdPartyGroup(models.Model):
 
 
 class Line(models.Model):
-    '''Datat for line webhook
+    '''Data for line webhook
 
     Args:
         secret: Secret generated from line.
@@ -133,6 +133,24 @@ class Line(models.Model):
 
     class Meta:
         db_table = 'bot_line'
+
+
+class LineIgnore(models.Model):
+    '''Users to ignore in line
+
+    Args:
+        line: Connected Line object id
+        display_name: The user display name on line
+        line_uid: The user id in line
+    '''
+
+    line = models.ForeignKey(Line, related_name='ignore_line',
+                             on_delete=models.CASCADE)
+    display_name = models.CharField(max_length=255, blank=False, null=False)
+    line_uid = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        db_table = 'bot_line_ignore'
 
 
 class Facebook(models.Model):
@@ -151,3 +169,21 @@ class Facebook(models.Model):
 
     class Meta:
         db_table = 'bot_facebook'
+
+
+class FacebookIgnore(models.Model):
+    '''Users to ignore in fb
+
+    Args:
+        facebook: Connected Facebook object id
+        display_name: The user display name on facebook
+        facebook_uid: The user id in facebook
+    '''
+
+    facebook = models.ForeignKey(Facebook, related_name='ignore_facebook',
+                                 on_delete=models.CASCADE)
+    display_name = models.CharField(max_length=255, blank=False, null=False)
+    facebook_uid = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        db_table = 'bot_facebook_ignore'
