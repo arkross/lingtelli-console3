@@ -5,7 +5,7 @@ import { translate } from 'react-i18next'
 import toJS from 'components/utils/ToJS'
 import { fetchMatching } from 'actions/bot'
 import { NavLink } from 'react-router-dom'
-import { Header, Table, Container, Dimmer, Loader, Icon, Menu } from 'semantic-ui-react'
+import { Header, Table, Container, Dimmer, Loader, Icon, Menu, Form, Dropdown, Input } from 'semantic-ui-react'
 import LingPagination from '../utils/LingPagination'
 import qs from 'query-string'
 import _ from 'lodash'
@@ -15,6 +15,8 @@ class RecomLogPage extends Component {
 		super(props)
 		const params = props.location ? qs.parse(props.location.search) : {page: 1}
 		this.state = {
+			platform: '',
+			uid: '',
 			activePage: params.page || 1,
 			loading: true
 		}
@@ -32,8 +34,9 @@ class RecomLogPage extends Component {
 		this.fetchMatching()
 	}
 
-	fetchMatching = (activePage=null) => {
-		this.props.fetchMatching(this.props.activeBot, activePage || this.state.activePage)
+	fetchMatching = (platform='', uid='', activePage=null) => {
+		this.setState({ loading: true })
+		this.props.fetchMatching(this.props.activeBot, platform || this.state.platform, uid || this.state.uid, activePage || this.state.activePage)
 			.then(data => {
 				this.handleAfterFetch()
 			}, err => {
@@ -46,12 +49,37 @@ class RecomLogPage extends Component {
 		this.fetchMatching(activePage)
 	}
 	
+	onFilterChange = (e, { value }) => {
+		e.preventDefault()
+		this.setState({ platform: value })
+		this.fetchMatching(value, this.state.uid, this.state.activePage)
+	}
+
+	onInputUidChange = (e, { value }) => {
+		e.preventDefault()
+		this.setState({ uid: value })
+	}
+
+	onFilterSubmit = e => {
+		e.preventDefault()
+		this.fetchMatching()
+	}
+
 	render() {
 		const { t, data, location, history, activeBot } = this.props
-		const { loading, activePage } = this.state
+		const { loading, activePage, platform, uid } = this.state
 
 		const perPage = 10
 		const totalPages = Math.ceil(data.count / perPage)
+
+		const platformOptions = [
+			{value: '', text: t('chatbot.recommendations.platforms.all')},
+			{value: 'FB', text: t('chatbot.recommendations.platforms.fb')},
+			{value: 'LINE', text: t('chatbot.recommendations.platforms.line')},
+			{value: 'WEB', text: t('chatbot.recommendations.platforms.web')},
+			{value: 'API', text: t('chatbot.recommendations.platforms.api')},
+			{value: 'OTHER', text: t('chatbot.recommendations.platforms.other')}
+		]
 		
 		return <Fragment>
 			<Menu secondary>
@@ -65,6 +93,17 @@ class RecomLogPage extends Component {
 
 			{ (data && data.count) ? 
 			<div>
+				<Form onSubmit={this.onFilterSubmit}>
+					<Form.Group inline>
+						<Form.Field>
+							<label>{t('chatbot.recommendations.filter')}</label>
+							<Dropdown selection options={platformOptions} placeholder={t('chatbot.recommendations.platform')} value={platform} onChange={this.onFilterChange} />
+						</Form.Field>
+						<Form.Field>
+							<Input placeholder={t('chatbot.recommendations.uid')} value={uid} onChange={this.onInputUidChange} />
+						</Form.Field>
+					</Form.Group>
+				</Form>
 				<Table celled>
 					<Table.Header>
 						<Table.Row>
@@ -74,12 +113,20 @@ class RecomLogPage extends Component {
 							<Table.HeaderCell>
 								{t('chatbot.recommendations.selected_question')}
 							</Table.HeaderCell>
+							<Table.HeaderCell>
+								{t('chatbot.recommendations.platform')}
+							</Table.HeaderCell>
+							<Table.HeaderCell>
+								{t('chatbot.recommendations.uid')}
+							</Table.HeaderCell>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
 						{_.map(data.results, el => <Table.Row key={el.id}>
 							<Table.Cell>{el.ori_question}</Table.Cell>
 							<Table.Cell>{el.select_question}</Table.Cell>
+							<Table.Cell>{el.platform}</Table.Cell>
+							<Table.Cell>{el.user_id}</Table.Cell>
 						</Table.Row>)}
 					</Table.Body>
 				</Table>

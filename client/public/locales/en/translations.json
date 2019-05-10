@@ -137,7 +137,7 @@
           "description": "Protect Web Chat Plugin from being added to unauthorized sites. Web Chat Plugin will only work on the domains you listed below. If you want to enable Preview, please remember to add this site's domain into the list. You may disable this feature by leaving it empty.",
           "addDomain": "Add",
           "delete": "Delete",
-          "deleteDomain": "Delete Domain",
+          "deleteDomain": "Delete",
           "or": "or",
           "cancel": "Cancel",
           "save": "Save"
@@ -185,7 +185,18 @@
       "content": "Content",
       "datetime": "Date/Time",
       "empty": "No Data",
-      "toggle": "Toggle View"
+      "toggle": "Toggle View",
+      "platform": "Platform",
+      "uid": "User ID",
+      "filter": "Filter",
+      "platforms": {
+        "fb": "Facebook",
+        "line": "LINE",
+        "web": "Web",
+        "api": "API",
+        "other": "Other",
+        "all": "All"
+      }
     },
     "analysis": {
       "text": "Analysis",
@@ -229,7 +240,18 @@
       "text": "Postback",
       "ori_question": "Original Question",
       "selected_question": "Selected Question",
-      "group": "Group"
+      "group": "Group",
+      "platform": "Platform",
+      "uid": "User ID",
+      "filter": "Filter",
+      "platforms": {
+        "fb": "Facebook",
+        "line": "LINE",
+        "web": "Web",
+        "api": "API",
+        "other": "Other",
+        "all": "All"
+      }
     },
     "pricing": {
       "text": "Pricing",

@@ -196,7 +196,18 @@
       "content": "对话内容",
       "datetime": "对话时间",
       "empty": "无资料",
-      "toggle": "切换模式"
+      "toggle": "切换模式",
+      "platform": "平台",
+      "uid": "使用者ID",
+      "filter": "过滤",
+      "platforms": {
+        "fb": "Facebook",
+        "line": "LINE",
+        "web": "Web",
+        "api": "API",
+        "other": "其他",
+        "all": "全部"
+      }
     },
     "analysis": {
       "text": "统计分析",
@@ -240,7 +251,18 @@
       "text": "推荐记录",
       "ori_question": "原问题",
       "selected_question": "已选推荐问题",
-      "group": "群组"
+      "group": "群组",
+      "platform": "平台",
+      "uid": "使用者ID",
+      "filter": "过滤",
+      "platforms": {
+        "fb": "Facebook",
+        "line": "LINE",
+        "web": "Web",
+        "api": "API",
+        "other": "其他",
+        "all": "全部"
+      }
     },
     "pricing": {
       "text": "计价方案",

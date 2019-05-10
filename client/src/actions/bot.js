@@ -108,12 +108,12 @@ export const fetchBots = () => dispatch =>
 			return Promise.reject(err)
 		})
 
-export const fetchHistory = (activeBot, currentPage = 1) => dispatch =>
-	api.history(activeBot, currentPage)
+export const fetchHistory = (activeBot, platform = '', uid = '', currentPage = 1) => dispatch =>
+	api.history(activeBot, platform, uid, currentPage)
 		.then(histories => dispatch(fetchBotHistory(histories, activeBot, currentPage)))
 
-export const fetchMatching = (activeBot, currentPage = 1) => dispatch =>
-	api.matching(activeBot, currentPage)
+export const fetchMatching = (activeBot, platform = '', uid = '', currentPage = 1) => dispatch =>
+	api.matching(activeBot, platform, uid, currentPage)
 		.then(data => dispatch(fetchBotMatching(data, activeBot, currentPage)))
 
 export const fetchAllBotDetails = (paidtype) => async (dispatch) => {

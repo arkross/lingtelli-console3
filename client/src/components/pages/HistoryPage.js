@@ -10,7 +10,10 @@ import {
 	Dimmer,
 	Loader,
 	Menu,
-	Button
+	Button,
+	Input,
+	Form,
+	Dropdown
 } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom'
 import toJS from 'components/utils/ToJS'
@@ -23,18 +26,24 @@ class HistoryPage extends React.Component {
 		super(props)
 		const params = props.location ? qs.parse(props.location.search) : {page: 1}
 		this.state = {
+			platform: '',
+			uid: '',
 			activePage: params.page || 1,
 			columnReversed: false
 		}
 	}
 
+	fetchData = (platform, uid, activePage) => {
+		this.props.fetchData(platform || this.state.platform, uid || this.state.uid, activePage || this.state.activePage)
+	}
+
 	componentDidMount() {
-		this.props.fetchData(1)
+		this.fetchData()
 	}
 
 	onPageChanged = (e, { activePage }) => {
 		this.setState({ activePage })
-		this.props.fetchData(activePage)
+		this.fetchData(this.state.platform, this.state.uid, activePage)
 	}
 
 	createHistoryElements = () => {
@@ -69,6 +78,8 @@ class HistoryPage extends React.Component {
 					<Table.Cell>
 						{history.created_at}
 					</Table.Cell>
+					<Table.Cell>{history.platform}</Table.Cell>
+					<Table.Cell>{history.user_id}</Table.Cell>
 				</Table.Row>
 			)
 			.value()
@@ -80,9 +91,34 @@ class HistoryPage extends React.Component {
 		this.setState({ columnReversed: !this.state.columnReversed })
 	}
 
+	onFilterChange = (e, { value }) => {
+		e.preventDefault()
+		this.setState({ platform: value })
+		this.fetchData(value, this.state.uid, this.state.activePage)
+	}
+
+	onInputUidChange = (e, { value }) => {
+		e.preventDefault()
+		this.setState({ uid: value })
+	}
+
+	onFilterSubmit = e => {
+		e.preventDefault()
+		this.fetchData()
+	}
+
 	render = () => {
-		const { activePage, columnReversed } = this.state
+		const { activePage, columnReversed, platform, uid } = this.state
 		const { histories, t, loading, location, activeBot } = this.props
+
+		const platformOptions = [
+			{value: '', text: t('chatbot.history.platforms.all')},
+			{value: 'FB', text: t('chatbot.history.platforms.fb')},
+			{value: 'LINE', text: t('chatbot.history.platforms.line')},
+			{value: 'WEB', text: t('chatbot.history.platforms.web')},
+			{value: 'API', text: t('chatbot.history.platforms.api')},
+			{value: 'OTHER', text: t('chatbot.history.platforms.other')}
+		]
 
 		const centerStyle = {
 			width: '35%',
@@ -98,20 +134,32 @@ class HistoryPage extends React.Component {
 					<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis/recommendations`}>{t('chatbot.recommendations.text')}</NavLink>
 				</Menu>
 			<Container fluid textAlign='center' className='history-container'>
-				
 				<Loader active={loading} />
 				<Dimmer inverted active={loading} />
 				{(!histories.results || !histories.count) && <Header as='h4'>{t('chatbot.history.empty')}</Header>} 
 				{(!!histories.results && !!histories.count) &&
 				<div>
+					<Form onSubmit={this.onFilterSubmit}>
+						<Form.Group inline>
+							<Form.Field>
+								<label>{t('chatbot.history.filter')}</label>
+								<Dropdown selection options={platformOptions} placeholder={t('chatbot.history.platform')} value={platform} onChange={this.onFilterChange} />
+							</Form.Field>
+							<Form.Field>
+								<Input placeholder={t('chatbot.history.uid')} value={uid} onChange={this.onInputUidChange} />
+							</Form.Field>
+						</Form.Group>
+					</Form>
 					<Button icon='exchange' primary floated='right' content={t('chatbot.history.toggle')} onClick={this.onSwitchClick} />
 					<br /><br />
 					<Table celled>
 						<Table.Header>
 							<Table.Row>
-								<Table.HeaderCell style={{width: '40%'}}>{columnReversed ? t('chatbot.history.bot') : t('chatbot.history.user')}</Table.HeaderCell>
-								<Table.HeaderCell style={{width: '40%'}}>{columnReversed ? t('chatbot.history.user') : t('chatbot.history.bot')}</Table.HeaderCell>
+								<Table.HeaderCell style={{width: '30%'}}>{columnReversed ? t('chatbot.history.bot') : t('chatbot.history.user')}</Table.HeaderCell>
+								<Table.HeaderCell style={{width: '30%'}}>{columnReversed ? t('chatbot.history.user') : t('chatbot.history.bot')}</Table.HeaderCell>
 								<Table.HeaderCell style={{width: '20%'}}>{t('chatbot.history.datetime')}</Table.HeaderCell>
+								<Table.HeaderCell style={{width: '10%'}}>{t('chatbot.history.platform')}</Table.HeaderCell>
+								<Table.HeaderCell style={{width: '10%'}}>{t('chatbot.history.uid')}</Table.HeaderCell>
 							</Table.Row>
 						</Table.Header>
 						<Table.Body>
