@@ -196,7 +196,18 @@
       "content": "對話內容",
       "datetime": "對話時間",
       "empty": "無資料",
-      "toggle": "切換模式"
+      "toggle": "切換模式",
+      "platform": "平台",
+      "uid": "使用者ID",
+      "filter": "過濾",
+      "platforms": {
+        "fb": "Facebook",
+        "line": "LINE",
+        "web": "Web",
+        "api": "API",
+        "other": "其他",
+        "all": "全部"
+      }
     },
     "faq": {
       "text": "問答設定",
@@ -228,7 +239,18 @@
       "text": "推薦紀錄",
       "ori_question": "原問題",
       "selected_question": "已選問題",
-      "group": "群組"
+      "group": "群組",
+      "platform": "平台",
+      "uid": "使用者ID",
+      "filter": "過濾",
+      "platforms": {
+        "fb": "Facebook",
+        "line": "LINE",
+        "web": "Web",
+        "api": "API",
+        "other": "其他",
+        "all": "全部"
+      }
     },
     "pricing": {
       "text": "計費方案",

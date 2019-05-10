@@ -7,14 +7,20 @@ export default {
 
 	info: async activeBot => (await axios.get(`${API_HOST}/chatbot/${activeBot}/`)).data,
 
-	history: async (activeBot, page) => (await axios.get(`${API_HOST}/chatbot/${activeBot}/history/`, {
+	history: async (activeBot, platform, uid, page) => (await axios.get(`${API_HOST}/chatbot/${activeBot}/history/`, {
 		params: {
-			page
+			page,
+			platform,
+			uid
 		}
 	})).data,
 	
-	matching: async (activeBot, page) => (await axios.get(`${API_HOST}/chatbot/${activeBot}/matching/`, {
-		params: {page}
+	matching: async (activeBot, platform, uid, page) => (await axios.get(`${API_HOST}/chatbot/${activeBot}/matching/`, {
+		params: {
+			page,
+			platform,
+			uid
+		}
 	})).data,
 
 	platforms: async () => (await axios.get(`${API_HOST}/thirdparty/`)).data,
