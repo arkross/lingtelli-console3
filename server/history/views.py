@@ -21,6 +21,7 @@ from .models import History, QuestionMatchHistory
 from chatbot.models import Chatbot
 from faq.models import FAQGroup, Question
 
+
 class HistoryViewset(viewsets.ReadOnlyModelViewSet):
     '''History related features. List and retrieve methods only.
 
@@ -32,7 +33,9 @@ class HistoryViewset(viewsets.ReadOnlyModelViewSet):
     {
         "sender": "BOT",
         "created_at": "2010-10-10 00:00:00",
-        "content": "hi"
+        "content": "hi",
+        "platform": "LINE",
+        "user_id": "thisistheuseridfromclient"
     }
     '''
 
@@ -41,21 +44,24 @@ class HistoryViewset(viewsets.ReadOnlyModelViewSet):
     queryset = History.objects.all()
     serializer_class = HistorySerializer
     pagination_class = pagination.HistoryPagination
-    
-    def list(self, request, id=None):
-        user_obj = request.user
-        bot_id = id
-        bot_obj = Chatbot.objects.filter(Q(user=user_obj) | 
+
+    def get_queryset(self):
+        user_obj = self.request.user
+        bot_id = self.kwargs.get('id')
+        platform = self.request.GET.get('platform', None)
+        user_id = self.request.GET.get('uid', None)
+        bot_obj = Chatbot.objects.filter(Q(user=user_obj) |
                                          Q(assign_user=user_obj),
                                          id=bot_id).first()
+        history_query = []
         if bot_obj:
-            history_list = History.objects.filter(chatbot_id=bot_obj)\
-                        .order_by('-created_at')
-            page = self.paginate_queryset(history_list)
-            serializer = HistorySerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-        return Response({'errors':_('Not found')},
-                        status=HTTP_404_NOT_FOUND)
+            history_query = History.objects.filter(chatbot=bot_obj)\
+                    .order_by('-created_at')
+            if platform:
+                history_query = history_query.filter(platform=platform)
+            if user_id:
+                history_query = history_query.filter(user_id=user_id)
+        return history_query
 
 
 class QuestionMatchHistoryViewset(ListModelMixin, RetrieveModelMixin,
@@ -70,7 +76,9 @@ class QuestionMatchHistoryViewset(ListModelMixin, RetrieveModelMixin,
         "ori_question": "hi",
         "select_question": "hello",
         "group": 1,
-        "status": '0'
+        "status": "0"
+        "platform": "LINE",
+        "user_id": "thisistheuseridfromclient"
     }
     PUT:
     {
@@ -87,10 +95,19 @@ class QuestionMatchHistoryViewset(ListModelMixin, RetrieveModelMixin,
     def get_queryset(self):
         user_obj = self.request.user
         chatbot_id = self.kwargs.get('id')
+        platform = self.request.GET.get('platform', None)
+        user_id = self.request.GET.get('uid', None)
         bot_obj = Chatbot.objects.filter(user=user_obj, id=chatbot_id).first()
-        return QuestionMatchHistory.objects.filter(chatbot=bot_obj)\
-                                           .order_by('-id')
-    
+        match_query = []
+        if bot_obj:
+            match_query = QuestionMatchHistory.objects.filter(chatbot=bot_obj)\
+                                                      .order_by('-id')
+            if platform:
+                match_query = match_query.filter(platform=platform)
+            if user_id:
+                match_query = match_query.filter(user_id=user_id)
+        return match_query
+
     def update(self, request, id=None, pk=None):
         match_history_id = pk
         chatbot_id = id
@@ -99,7 +116,7 @@ class QuestionMatchHistoryViewset(ListModelMixin, RetrieveModelMixin,
         if not bot_obj:
             return Response({'errors': _('Chatbot not found')},
                             status=HTTP_404_NOT_FOUND)
-        
+
         match_history_obj = \
             QuestionMatchHistory.objects.filter(chatbot=bot_obj,
                                                 id=match_history_id).first()
