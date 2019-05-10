@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .models import FAQGroup, Answer, Question
 
+
 class FAQGrouptSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     chatbot = serializers.IntegerField()

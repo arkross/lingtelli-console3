@@ -54,10 +54,9 @@ class ReportViewset(viewsets.ReadOnlyModelViewSet):
                                       Q(assign_user=user_obj))
         bot_obj = bots.filter(id=bot_id).first()
         if bot_obj:
-            if not request.GET.get('days'):
-                day_range = 7
-            else:
-                day_range = int(request.GET.get('days'))
+            day_range = int(request.GET.get('days', 7))
+            platform = request.GET.get('platform', None)
+            user_id = request.GET.get('uid', None)
             report_list = []
             # Make today to become 00:00:00. Deal with specific time issue.
             today_day_str = datetime.today().strftime('%Y-%m-%d')
@@ -68,13 +67,17 @@ class ReportViewset(viewsets.ReadOnlyModelViewSet):
                 History.objects.filter(chatbot=bot_obj,
                                        created_at__gte=start_day,
                                        created_at__lte=last_day)
+            if platform:
+                histories = histories.filter(platform=platform)
+            if user_id:
+                histories = histories.filter(user_id=user_id)
             for day in range(0, day_range):
                 report_dict = {}
                 the_date = today_day.date() - timedelta(day)
                 the_history = \
                     histories.filter(created_at__contains=the_date)
-                total_chat_count = the_history.values('qa_pair').distinct().\
-                                               count()
+                total_chat_count = the_history.values('qa_pair').distinct()\
+                                                                .count()
                 report_dict['date'] = the_date.strftime('%Y/%m/%d')
                 report_dict['total_chat'] = total_chat_count
                 report_dict['success_count'] = \
@@ -82,21 +85,21 @@ class ReportViewset(viewsets.ReadOnlyModelViewSet):
                 report_list.append(report_dict)
             report_list.append(self._get_question_count(histories))
             return Response(report_list, status=HTTP_200_OK)
-        return Response({'errors':_('Not found')},
+        return Response({'errors': _('Not found')},
                         status=HTTP_404_NOT_FOUND)
-    
+
     def _get_total_success(self, history_query):
-        '''Get total success faq 
+        '''Get total success faq
         '''
 
         qa_pair_list = \
             history_query.values_list('qa_pair', flat=True).distinct()
         total_success = \
-                    FAQStatus.objects.filter(qa_pair__in=qa_pair_list)\
-                        .aggregate(success_count=Count(Case(When(success=True,
-                                                                 then=1))))
+            FAQStatus.objects.filter(qa_pair__in=qa_pair_list)\
+                     .aggregate(success_count=Count(Case(When(success=True,
+                                                              then=1))))
         return total_success.get('success_count')
-    
+
     def _get_question_count(self, history_query):
         '''Get question content and asked time
         '''
