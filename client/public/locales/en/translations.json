@@ -114,7 +114,7 @@
           "_9": "Back to Facebook. Find <0>Webhooks</0> and click on <1>Setup Webhooks</1>.",
           "_10": "Copy <0></0> from our platform and paste it to <1>Callback URL</1> in Facebook.",
           "_11": "In our platform page, make sure <0></0> is the same as in Facebook's <1>Verify Token</1>, and click on <2></2> button.",
-          "_12": "Back to Facebook. In <0>Subscription Fields</0> section, check <1>messages</1> and click on <2>Verify and Save</2>.",
+          "_12": "Back to Facebook. In <0>Subscription Fields</0> section, check <1>messages</1> and <2>messaging_postbacks</2> then click on <2>Verify and Save</2>.",
           "_13": "If no any errors from above, you can select your Fans Page in Webhooks field, and click on <0>Subscribe</0> button.",
           "_14": "Find <0>App Review for Messenger</0> section, click on <1>Add to Submission</1> for <2>page_messaging</2>.",
           "_15": "Now you can start chatting with your Fans Page."

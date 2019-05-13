@@ -168,7 +168,7 @@ class LineIntegration extends Component {
 			<List.Item><Trans i18nKey='chatbot.setting.facebook.steps._9'><strong>0</strong><strong>1</strong></Trans><br/><Image src={step9} centered rounded bordered /></List.Item>
 			<List.Item><Trans i18nKey='chatbot.setting.facebook.steps._10'><Label as='label' htmlFor='webhook_url_field' content={t('chatbot.setting.facebook.webhookURL')}></Label><strong>1</strong></Trans></List.Item>
 			<List.Item><Trans i18nKey='chatbot.setting.facebook.steps._11'><Label as='label' htmlFor='verify_token_field' content={t('chatbot.setting.facebook.verify')}></Label><strong>1</strong><Label color='blue' content={t('chatbot.update')} icon='check'></Label></Trans></List.Item>
-			<List.Item><Trans i18nKey='chatbot.setting.facebook.steps._12'><strong>0</strong><strong>1</strong><strong>2</strong></Trans><br/><Image src={step12} centered rounded bordered /></List.Item>
+			<List.Item><Trans i18nKey='chatbot.setting.facebook.steps._12'><strong>0</strong><strong>1</strong><strong>2</strong><strong>3</strong></Trans><br/><Image src={step12} centered rounded bordered /></List.Item>
 			<List.Item><Trans i18nKey='chatbot.setting.facebook.steps._13'><strong>0</strong><strong>1</strong></Trans><br/><Image src={step13} centered rounded bordered /></List.Item>
 			<List.Item><Trans i18nKey='chatbot.setting.facebook.steps._14'><strong>0</strong><strong>1</strong><strong>2</strong></Trans><br/><Image src={step14} centered rounded bordered /></List.Item>
 			<List.Item>{t('chatbot.setting.facebook.steps._15')}</List.Item>
