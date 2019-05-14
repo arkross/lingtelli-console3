@@ -78,7 +78,7 @@ class AgentCreateAgentTest(TestCase):
         self.assertEqual(response.status_code, 201)
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
-        
+
 
 class AgentAccessTest(TestCase):
     '''Agent access control to the website
@@ -99,7 +99,7 @@ class AgentAccessTest(TestCase):
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
-    
+
     def test_login_user_not_found(self):
         c = Client()
         not_regist_agent = {'username': 'newadmin',
@@ -109,7 +109,7 @@ class AgentAccessTest(TestCase):
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-    
+
     def test_login_wrong_password(self):
         c = Client()
         wrong_passwd_agent = {'username': 'admin', 'password': 'thisiswrong'}
@@ -118,7 +118,7 @@ class AgentAccessTest(TestCase):
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-    
+
     def test_logout(self):
         # Login to get token first
         user_obj = User.objects.get(username='admin')
@@ -181,7 +181,7 @@ class AgentProfileTest(TestCase):
         # Login agent
         token_obj = Token.objects.create(user=user_obj)
         self.accesstoken = token_obj.key
-        
+
         # Initial agent uri
         user_id = user_obj.id
         self.uri = '/agent/' + str(user_id) + '/'
@@ -205,7 +205,7 @@ class AgentProfileTest(TestCase):
         # Delete
         response = c.delete(self.uri)
         self.assertEqual(response.status_code, 401)
-    
+
     def test_not_existed(self):
         '''Agent account not existed
 
@@ -247,12 +247,12 @@ class AgentProfileTest(TestCase):
         self.assertEqual(len(res_data), len(agent_profile_key))
         for k in agent_profile_key:
             self.assertIn(k, res_data)
-    
+
     def test_update_username(self):
         new_agent_username = {'username': 'newadmin'}
         c = Client()
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
-        response = c.put(self.uri, json.dumps(new_agent_username), 
+        response = c.put(self.uri, json.dumps(new_agent_username),
                          content_type='application/json', **header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
@@ -267,7 +267,7 @@ class AgentProfileTest(TestCase):
         self.assertEqual(response.status_code, 400)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-    
+
     def test_update_password(self):
         new_agent_passwd = {'old_password': 'adminpassword',
                             'new_password': 'newadminpassword'}
@@ -277,8 +277,8 @@ class AgentProfileTest(TestCase):
                          content_type='application/json', **header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
-        self.assertIn('success',res_data)
-    
+        self.assertIn('success', res_data)
+
     def test_update_wrong_old_password(self):
         new_agent_passwd = {'old_password': 'thisiswrong',
                             'password': 'newagentpassword'}
@@ -299,7 +299,7 @@ class AgentProfileTest(TestCase):
         c = Client()
         response = c.delete(self.uri, **header)
         self.assertEqual(response.status_code, 204)
-    
+
     def test_delete_no_confirm(self):
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
         c = Client()
@@ -336,7 +336,7 @@ class DeleteAccountConfirmTest(TestCase):
         demo_obj = ThirdParty.objects.create(**demo_data)
         staff_obj.third_party.add(demo_obj)
 
-         # Initial agent account
+        # Initial agent account
         self.agent_data = {'username': 'admin', 'password': 'adminpassword',
                            'is_staff': True}
         user_obj = User.objects.create_user(**self.agent_data)
@@ -358,16 +358,16 @@ class DeleteAccountConfirmTest(TestCase):
     def test_update_confirm_no_auth(self):
         c = Client()
         correct_password = {'password': 'adminpassword'}
-        response = c.put(self.uri, json.dumps(correct_password), 
-                          content_type='application/json')
+        response = c.put(self.uri, json.dumps(correct_password),
+                         content_type='application/json')
         self.assertEqual(response.status_code, 401)
 
     def test_update_confirm_correct_password(self):
         c = Client()
         correct_password = {'password': 'adminpassword'}
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
-        response = c.put(self.uri, json.dumps(correct_password), 
-                          content_type='application/json', **header)
+        response = c.put(self.uri, json.dumps(correct_password),
+                         content_type='application/json', **header)
         user_obj = User.objects.get(username='admin')
         acc_info = AccountInfo.objects.get(user=user_obj)
         self.assertEqual(response.status_code, 200)
@@ -379,8 +379,8 @@ class DeleteAccountConfirmTest(TestCase):
         c = Client()
         correct_password = {'password': 'wrongpassword'}
         header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
-        response = c.put(self.uri, json.dumps(correct_password), 
-                          content_type='application/json', **header)
+        response = c.put(self.uri, json.dumps(correct_password),
+                         content_type='application/json', **header)
         self.assertEqual(response.status_code, 403)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
@@ -411,7 +411,7 @@ class AgentMemberTest(TestCase):
         }
 
         staff_data = {
-            'pk' : 2,
+            'pk': 2,
             'name': 'Staff',
             'duration': '0_0',
             'bot_amount': '0',
@@ -439,7 +439,7 @@ class AgentMemberTest(TestCase):
 
         # Create account info
         acc_data = {'user': self.user_obj, 'paid_type': trial_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00'}
         AccountInfo.objects.create(**acc_data)
 
@@ -450,7 +450,7 @@ class AgentMemberTest(TestCase):
 
         # Create agent account info
         acc_data = {'user': self.agent_obj, 'paid_type': staff_obj,
-                    'confirmation_code': 'confirmationcode', 
+                    'confirmation_code': 'confirmationcode',
                     'code_reset_time': '2019-12-12 00:00:00'}
         AccountInfo.objects.create(**acc_data)
 
@@ -465,8 +465,6 @@ class AgentMemberTest(TestCase):
         # Initial uri
         self.member_uri = '/agent/member/'
 
-        
-    
     def test_no_auth(self):
         '''Agent read and update member data
         GET PUT
@@ -480,7 +478,7 @@ class AgentMemberTest(TestCase):
         # PUT
         the_member_uri = self.member_uri + '1/'
         response = c.put(the_member_uri,
-                         json.dumps({'paidtype': 2}), 
+                         json.dumps({'paidtype': 2}),
                          content_type='application/json')
         self.assertEqual(response.status_code, 401)
 
@@ -493,7 +491,7 @@ class AgentMemberTest(TestCase):
         self.assertEqual(response.status_code, 404)
         res_data = json.loads(response.content)
         self.assertIn('errors', res_data)
-    
+
     def test_read(self):
         c = Client()
         member_keys = ['username', 'paid_type', 'start_date', 'expire_date']
@@ -514,7 +512,7 @@ class AgentMemberTest(TestCase):
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
         self.assertIn('success', res_data)
-    
+
     def test_update_other_key_not_allowed(self):
         c = Client()
         the_member_uri = self.member_uri + str(self.user_obj.id) + '/'
