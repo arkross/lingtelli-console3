@@ -3,8 +3,8 @@ import axios from 'axios'
 const API_HOST = process.env.REACT_APP_API_HOST
 
 export default {
-	login: async (username, password) => (await axios.post(`${API_HOST}/agent/login/`, {
-		username, password
+	login: async (username, password, kick = false) => (await axios.post(`${API_HOST}/agent/login/`, {
+		username, password, kick
 	})).data,
 
 	logout: async () => await axios.get(`${API_HOST}/agent/logout/`).data,

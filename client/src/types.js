@@ -2,6 +2,8 @@
 export const USER_LOGGED_IN = 'USER_LOGGED_IN'
 export const USER_LOGGED_OUT = 'USER_LOGGED_OUT'
 export const USER_REGISTED = 'USER_REGISTED'
+export const USER_CANCEL_LOGIN = 'USER_CANCEL_LOGIN'
+export const USER_KICKED = 'USER_KICKED'
 
 export const CONFIRM_EMAIL = 'CONFIRM_EMAIL'
 export const RESEND_EMAIL = 'RESEND_EMAIL'

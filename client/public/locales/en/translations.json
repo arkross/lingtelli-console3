@@ -4,7 +4,18 @@
     "description": "New to us? ",
     "forgotPassword": "Forgot your password?",
     "readDoc": "Read API Document",
-    "signUp": "Sign up"
+    "signUp": "Sign up",
+    "kickPrompt": {
+      "header": "Force Login Alert",
+      "content": "Account is already logged in on another device. The account on another device will be logged out.",
+      "confirm": "Continue",
+      "cancel": "Cancel"
+    },
+    "kickAlert": {
+      "header": "Session Expired",
+      "content": "You have been logged out. You will be redirected to login page.",
+      "ok": "OK"
+    }
   },
   "resetPass": {
     "title": "Reset Password",

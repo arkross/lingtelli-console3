@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { login } from 'actions/agent';
+import { cancelLogin } from 'actions/auth'
 import { hideAllMessages } from 'actions/message'
 import InlineError from 'components/messages/InlineError';
 import { Link } from 'react-router-dom';
@@ -16,13 +17,14 @@ import {
 	Button,
 	Segment,
 	Message,
-	Image
+	Image,
+	Modal
 } from 'semantic-ui-react';
 
 class LoginPage extends React.Component {
 	// react-router will pass history in components
-	submit = data =>
-		this.props.login(data)
+	submit = (data, kick = false) =>
+		this.props.login(data, kick)
 			.then(() => this.props.history.push('/agent/dashboard'))
 	
 	state = {
@@ -45,13 +47,13 @@ class LoginPage extends React.Component {
 		})
 	}
 
-	onSubmit = e => {
+	onSubmit = (kick = false, e) => {
 		const errors = this.validate(this.state.data);
 		const { dismissError } = this.props
 		this.setState({ errors })
 		if (Object.keys(errors).length === 0) {
 			this.setState({ loading: true })
-			this.submit(this.state.data)
+			this.submit(this.state.data, kick)
 				.then(data => {
 					dismissError()
 					this.removeLoading()
@@ -64,6 +66,16 @@ class LoginPage extends React.Component {
 				})
 		}
 		return false
+	}
+
+	onKick = e => {
+		e.preventDefault()
+		this.onSubmit(true, e)
+	}
+
+	onCancelKick = e => {
+		e.preventDefault()
+		this.props.cancelLogin()
 	}
 
 	validate = (data) => {
@@ -81,10 +93,30 @@ class LoginPage extends React.Component {
 
 	render() {
 		const { errors, loading} = this.state
-		const { t, messages } = this.props
+		const { t, messages, promptKick, kickMessage } = this.props
 		return (
 			<Container>
 				<div className='login-container'>
+					<Modal
+						open={promptKick}
+						onClose={this.onCancelKick}
+						header={t('login.kickPrompt.header')}
+						content={kickMessage}
+						actions={[
+							{
+								key: 'continue',
+								content: t('login.kickPrompt.confirm'),
+								positive: true,
+								autoFocus: true,
+								onClick: this.onKick
+							},
+							{
+								key: 'cancel',
+								content: t('login.kickPrompt.cancel'),
+								onClick: this.onCancelKick
+							}
+						]}
+					/>
 					<Segment textAlign='center'>
 						<h2> <Image src={logo} size='mini' inline /> Lingtelli Chatbot </h2>
 						<h3>Agent Login</h3>
@@ -98,7 +130,7 @@ class LoginPage extends React.Component {
 								<p>{messages.message}</p>
 							</Message>
 						)}
-						<Form size='small' onSubmit={this.onSubmit} loading={loading}>
+						<Form size='small' onSubmit={this.onSubmit.bind(null, false)} loading={loading}>
 							<Form.Field error={!!errors.username}>
 								<Input
 									icon='mail'
@@ -136,15 +168,17 @@ LoginPage.propTypes = {
 	history: PropTypes.shape({
 		push: PropTypes.func.isRequired
 	}).isRequired,
-	login: PropTypes.func.isRequired,
+	login: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state, props) => ({
-	messages: state.get('messages')
+	messages: state.get('messages'),
+	promptKick: state.getIn(['user', 'promptKick']),
+	kickMessage: state.getIn(['user', 'kickMessage'])
 })
 
 export default compose(
-	connect(mapStateToProps, { login, dismissError: hideAllMessages }),
+	connect(mapStateToProps, { login, cancelLogin, dismissError: hideAllMessages }),
 	toJS,
 	translate()
 )(LoginPage)

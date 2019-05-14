@@ -4,7 +4,18 @@
     "description": "還沒有帳號？ ",
     "forgotPassword": "忘記密碼?",
     "readDoc": "查看API文件",
-    "signUp": "註冊"
+    "signUp": "註冊",
+    "kickPrompt": {
+      "header": "強制登入",
+      "content": "Account is currently logged in on another device. The account will be logged out from the other device.",
+      "confirm": "繼續登入",
+      "cancel": "取消"
+    },
+    "kickAlert": {
+      "header": "Session 已過期",
+      "content": "您已被登出, 即將回到登入頁面.",
+      "ok": "好"
+    }
   },
   "resetPass": {
     "title": "重設密碼",
