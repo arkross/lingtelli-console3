@@ -13,6 +13,8 @@ import { fetchReport } from 'actions/bot';
 import {
 	Header,
 	Button,
+	Form,
+	Input,
 	Dimmer,
 	Loader,
 	Grid,
@@ -26,7 +28,22 @@ import toJS from 'components/utils/ToJS'
 class Analysis extends React.Component {
 	state = {
 		errors: {},
-		report: []
+		platform: 'ALL',
+		uid: '',
+		days: 7,
+		report: [],
+		loading: false
+	}
+
+	fetchData = (platform, uid, days) => {
+		this.setState({ loading: true })
+		this.props.fetchReport(
+			this.props.activeBot,
+			days || this.state.days,
+			platform || this.state.platform,
+			uid || this.state.uid).finally(() => {
+				this.setState({ loading: false })
+			})
 	}
 
 	componentWillReceiveProps = (nextProps) => {
@@ -79,12 +96,31 @@ class Analysis extends React.Component {
 	}
 
 	onChange = (e, { value }) => {
-		console.log(e.target)
-		this.props.onChangeScale(value)
+		e.preventDefault()
+		this.setState({ days: value })
+		this.fetchData(this.state.platform, this.state.uid, value)
+	}
+
+	onFilterChange = (e, { value }) => {
+		e.preventDefault()
+		this.setState({ platform: value })
+		this.fetchData(value, this.state.uid)
+	}
+
+	onInputUidChange = (e, { value }) => {
+		e.preventDefault()
+		this.setState({ uid: value })
+	}
+
+	onFilterSubmit = e => {
+		e.preventDefault()
+		this.fetchData()
 	}
 
 	render = () => {
-		const { t, activeBot, report, scale, loading, reportStat: { question_count: questionCount } } = this.props;
+		const { t, activeBot, report, scale, reportStat: { question_count: questionCount } } = this.props;
+		const { platform, uid, days, loading } = this.state
+		
 		moment.locale(localStorage.i18nextLng.toLowerCase())
 		const dateOptions = [
 			{ key: 0, value: 7 , text: t('chatbot.analysis.options._7') },
@@ -92,7 +128,16 @@ class Analysis extends React.Component {
 			{ key: 2, value: 30 , text: t('chatbot.analysis.options._30') }
 		]
 
-		const dateLimit = moment().subtract(scale, 'day')
+		const platformOptions = [
+			{value: 'ALL', text: t('chatbot.history.platforms.all')},
+			{value: 'FB', text: t('chatbot.history.platforms.fb')},
+			{value: 'LINE', text: t('chatbot.history.platforms.line')},
+			{value: 'WEB', text: t('chatbot.history.platforms.web')},
+			{value: 'API', text: t('chatbot.history.platforms.api')},
+			{value: 'OTHER', text: t('chatbot.history.platforms.other')}
+		]
+
+		const dateLimit = moment().subtract(days, 'day')
 		const chartData = _.chain(report)
 			.filter(el => moment(el.date, 'YYYY/MM/DD').isAfter(dateLimit, 'day'))
 			.map(item => _.assign({ unhandled_count: item.total_chat - item.success_count }, item))
@@ -143,19 +188,22 @@ class Analysis extends React.Component {
 				<Grid>
 					<Grid.Row>
 						<Grid.Column>
-							<Responsive as={Button.Group} minWidth={Responsive.onlyTablet.minWidth} className='scale-button-group'>
-								{_.map(dateOptions, el =>
-									<Button
-										color='blue'
-										basic={scale !== el.value}
-										key={el.key}
-										active={scale === el.value}
-										onClick={this.onChange.bind(this, this, {value: el.value})}>
-										{el.text}
-									</Button>)
-								}
-							</Responsive>
-							<Responsive as={Dropdown} maxWidth={Responsive.onlyMobile.maxWidth} options={dateOptions} onChange={this.onChange} value={scale} selection></Responsive>
+							<Form onSubmit={this.onFilterSubmit}>
+								<Form.Group>
+									<Form.Field>
+										<label>{t('chatbot.history.filter')}</label>
+										<Dropdown selection options={platformOptions} placeholder={t('chatbot.history.platform')} value={platform} onChange={this.onFilterChange} />
+									</Form.Field>
+									<Form.Field>
+										<label>{t('chatbot.history.uid')}</label>
+										<Input placeholder={t('chatbot.history.uid')} value={uid} onChange={this.onInputUidChange} />
+									</Form.Field>
+									<Form.Field>
+										<label>{t('chatbot.analysis.timeRange')}</label>
+										<Dropdown maxWidth={Responsive.onlyMobile.maxWidth} options={dateOptions} onChange={this.onChange} value={days} selection />
+									</Form.Field>
+								</Form.Group>
+							</Form>
 						</Grid.Column>
 					</Grid.Row>
 					<Grid.Row columns={2}>

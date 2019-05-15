@@ -4,7 +4,7 @@ import { Switch, Route, Redirect, Link, matchPath } from 'react-router-dom'
 import { compose } from 'recompose'
 import { connect } from 'react-redux'
 import { translate } from 'react-i18next'
-import { Dimmer, Loader, Dropdown, Menu, Divider, Container, Message, Icon, Label, Header} from 'semantic-ui-react'
+import { Dimmer, Loader, Dropdown, Menu, Divider, Container, Message, Icon, Label, Header, Modal} from 'semantic-ui-react'
 import LingBreadcrumbs from 'components/utils/LingBreadcrumbs'
 import setAuthorizationHeader from 'utils/setAuthorizationHeader'
 import SideMenuPage from '../SideMenuPage'
@@ -95,7 +95,7 @@ class Dashboard extends React.Component {
 	}
 
 	render() {
-		const {location, match, user, messages, t, history, hideAllMessages} = this.props
+		const {location, match, user, messages, t, history, hideAllMessages, showLoggedOut} = this.props
 		const {loading, openDemoModal, openSideMenu} = this.state
 		let dropdownText = _.find(options, el => el.value === localStorage.getItem('i18nextLng'))
 		if ( ! dropdownText) {
@@ -113,6 +113,20 @@ class Dashboard extends React.Component {
 
 		return <Container>
 			<Dimmer active={openSideMenu} onClick={this.closeSidebar} className='sidemenu-dimmer' />
+			<Modal
+					open={showLoggedOut}
+					header={t('login.kickAlert.header')}
+					content={t('login.kickAlert.content')}
+					actions={[
+						{
+							key: 'ok',
+							content: t('login.kickAlert.ok'),
+							positive: true,
+							autoFocus: true,
+							onClick: () => {this.props.history.push('/agent/login')}
+						}
+					]}
+				/>
 			<Menu secondary>
 				<Menu.Item header>
 					Lingtelli Agent Console
@@ -172,7 +186,8 @@ class Dashboard extends React.Component {
 
 const mapStateToProps = (state, props) => ({
 	messages: state.get('messages'),
-	user: state.getIn(['agent', 'profile'])
+	user: state.getIn(['agent', 'profile']),
+	showLoggedOut: state.getIn(['user', 'showLoggedOut'])
 })
 
 export default compose(

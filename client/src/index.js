@@ -12,6 +12,7 @@ import { BrowserRouter, Route } from 'react-router-dom'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import axios from 'axios'
 import { showNetworkErrorRaw, showErrorRaw } from 'actions/message'
+import { showKickedOut } from 'actions/auth'
 
 import App from './App'
 //import registerServiceWorker from './registerServiceWorker';
@@ -69,13 +70,14 @@ axios.interceptors.response.use(response => {
 }, err => {
 	if (err.response) {
 		const message = err.response.data.errors || err.response.data.detail
-		showErrorRaw(message, store.dispatch)
 		if (err.response.status === 401) {
 			// User logged out or session expired
 			localStorage.removeItem('token')
 			localStorage.removeItem('agent_token')
 			setAuthorizationHeader()
-			document.location.reload()
+			showKickedOut(store.dispatch)
+		} else {
+			showErrorRaw(message, store.dispatch)
 		}
 		return Promise.reject({
 			message,

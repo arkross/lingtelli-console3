@@ -4,7 +4,18 @@
     "description": "没有帐户? ",
     "forgotPassword": "忘记密码",
     "readDoc": "查看API文件",
-    "signUp": "注册"
+    "signUp": "注册",
+    "kickPrompt": {
+      "header": "Force Login Alert",
+      "content": "Account is already logged in on another device. The account on another device will be logged out.",
+      "confirm": "继续登陆",
+      "cancel": "取消"
+    },
+    "kickAlert": {
+      "header": "Session 已过期",
+      "content": "您已被登出。稍微回到登录页面。",
+      "ok": "好"
+    }
   },
   "resetPass": {
     "title": "重设密码",
@@ -206,7 +217,7 @@
         "web": "Web",
         "api": "API",
         "other": "其他",
-        "all": "全部"
+        "all": "全平台"
       }
     },
     "analysis": {
@@ -215,6 +226,7 @@
       "unhandled": "无法处理的问题",
       "label": "问答数",
       "top_5": "最常见的5个问题",
+      "timeRange": "时间",
       "options": {
         "_7": "7天内对话",
         "_14": "14天内对话",

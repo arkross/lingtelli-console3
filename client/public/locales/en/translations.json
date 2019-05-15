@@ -4,7 +4,18 @@
     "description": "New to us? ",
     "forgotPassword": "Forgot your password?",
     "readDoc": "Read API Document",
-    "signUp": "Sign up"
+    "signUp": "Sign up",
+    "kickPrompt": {
+      "header": "Force Login Alert",
+      "content": "Account is already logged in on another device. The account on another device will be logged out.",
+      "confirm": "Continue",
+      "cancel": "Cancel"
+    },
+    "kickAlert": {
+      "header": "Session Expired",
+      "content": "You have been logged out. You will be redirected to login page.",
+      "ok": "OK"
+    }
   },
   "resetPass": {
     "title": "Reset Password",
@@ -195,7 +206,7 @@
         "web": "Web",
         "api": "API",
         "other": "Other",
-        "all": "All"
+        "all": "All Platforms"
       }
     },
     "analysis": {
@@ -204,10 +215,11 @@
       "unhandled": "Unhandled Questions",
       "label": "#Questions",
       "top_5": "Top 5 Questions",
+      "timeRange": "Time Range",
       "options": {
-        "_7": "in 7 days",
-        "_14": "in 14 days",
-        "_30": "in 30 days"
+        "_7": "Last 7 days",
+        "_14": "Last 14 days",
+        "_30": "Last 30 days"
       }
     },
     "faq": {

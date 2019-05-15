@@ -3,9 +3,11 @@ import api from '../apis/agent'
 import userApi from '../apis/user'
 import setAuthorizationHeader from '../utils/setAuthorizationHeader';
 
-export const agentLoggedIn = auth => ({
+export const agentLoggedIn = (auth, promptKick) => ({
 	type: types.AGENT_LOGGED_IN,
-	auth: auth.success
+	auth: auth.success,
+	warning: auth.warning,
+	promptKick
 })
 
 export const agentLoggedOut = () => ({
@@ -44,12 +46,16 @@ export const agentUpdate = data => ({
 	data
 })
 
-export const login = creds => dispatch => {
-	return api.login(creds.username, creds.password)
+export const login = (creds, kick) => dispatch => {
+	return api.login(creds.username, creds.password, kick)
 		.then(auth => {
-			localStorage.setItem('agent_token', auth.success)
-			setAuthorizationHeader()
-			return dispatch(agentLoggedIn(auth))
+			if (auth.success) {
+				localStorage.setItem('agent_token', auth.success)
+				setAuthorizationHeader()
+				return dispatch(agentLoggedIn(auth, false))
+			}
+			dispatch(agentLoggedIn(auth, true))
+			return Promise.reject('Force Login')
 		})
 }
 

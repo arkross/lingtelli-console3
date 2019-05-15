@@ -4,7 +4,18 @@
     "description": "還沒有帳號？ ",
     "forgotPassword": "忘記密碼?",
     "readDoc": "查看API文件",
-    "signUp": "註冊"
+    "signUp": "註冊",
+    "kickPrompt": {
+      "header": "強制登入",
+      "content": "Account is currently logged in on another device. The account will be logged out from the other device.",
+      "confirm": "繼續登入",
+      "cancel": "取消"
+    },
+    "kickAlert": {
+      "header": "Session 已過期",
+      "content": "您已被登出, 即將回到登入頁面.",
+      "ok": "好"
+    }
   },
   "resetPass": {
     "title": "重設密碼",
@@ -182,6 +193,7 @@
       "unhandled": "無法處理的問題",
       "label": "問題數",
       "top_5": "最常見的5個問題",
+      "timeRange": "時間",
       "options": {
         "_7": "7天內對話",
         "_14": "14內對話",
@@ -206,7 +218,7 @@
         "web": "Web",
         "api": "API",
         "other": "其他",
-        "all": "全部"
+        "all": "全平台"
       }
     },
     "faq": {

@@ -27,9 +27,11 @@ export const fetchBotMatching = (data, id, page) => ({
 	id
 })
 
-export const fetchBotReport = (report, id) => ({
+export const fetchBotReport = (report, id, platform, uid) => ({
 	type: types.FETCH_BOT_REPORT,
 	report,
+	platform,
+	uid,
 	id
 })
 
@@ -132,13 +134,13 @@ export const fetchAllBotDetails = (paidtype) => async (dispatch) => {
 			}
 			dispatch(fetchBotInfo(data))
 		})
-		return api.report(bot.id).then(data => dispatch(fetchBotReport(data, bot.id)))
+		return api.report(bot.id, 7, '', '').then(data => dispatch(fetchBotReport(data, bot.id)))
 	}))
 }
 
-export const fetchReport = (activeBot, days) => dispatch =>
-	api.report(activeBot, days)
-		.then(report => dispatch(fetchBotReport(report, activeBot)))
+export const fetchReport = (activeBot, days, platform = '', uid = '') => dispatch =>
+	api.report(activeBot, days, (platform === 'ALL' ? '' : platform), uid)
+		.then(report => dispatch(fetchBotReport(report, activeBot, platform, uid)))
 
 /**
  * @typedef BotInfo

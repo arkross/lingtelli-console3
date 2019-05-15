@@ -18,9 +18,10 @@ export default {
 	 * @param {string} credentials.data.password
 	 * @returns {Promise<LoginResponse>}
 	 */
-	login: async credentials => (await axios.post(`${API_HOST}/member/login/`, {
+	login: async (credentials, kick=false) => (await axios.post(`${API_HOST}/member/login/`, {
 		username: credentials.data.email,
 		password: credentials.data.password,
+		kick
 	})).data,
 
 	/**

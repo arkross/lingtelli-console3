@@ -128,9 +128,9 @@ class ContentPage extends React.Component {
 		this.setState({ openDemoModal: false })
 	}
 
-	changeScale = (scale) => {
+	changeScale = (scale, platform = '', uid = '') => {
 		this.setState({scale, loading: true})
-		this.props.fetchReport(this.props.match.params.id, scale)
+		this.props.fetchReport(this.props.match.params.id, scale, platform, uid)
 		.then( () => {
 			this.setState({ loading: false })
 		}, () => {

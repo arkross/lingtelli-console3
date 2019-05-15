@@ -5,17 +5,29 @@ const initState = fromJS({
 	info: {},
 	access_token: '',
 	agent_token: '',
+	kickMessage: '',
+	showLoggedOut: false,
+	promptKick: false,
 	packages: []
 })
 
 export default function user(state = initState, action = {}) {
 	switch (action.type) {
 	case types.USER_LOGGED_IN:
-		return fromJS(action.auth)
+		return state.withMutations(s => s
+			.set('access_token', action.auth.access_token || '')
+			.set('kickMessage', action.warning)
+			.set('showLoggedOut', false)
+			.set('promptKick', action.promptKick || false)
+		)
+	case types.USER_KICKED:
+		return state.set('showLoggedOut', true)
 	case types.USER_LOGGED_OUT:
-		return {}
+		return state
 	case types.USER_REGISTED:
-		return {}
+		return state
+	case types.USER_CANCEL_LOGIN:
+		return state.set('promptKick', false)
 	case types.FETCH_USER_INFO:
 		return state.set('info', fromJS(action.info))
 	case types.FETCH_USER_DETAIL:
@@ -32,7 +44,11 @@ export default function user(state = initState, action = {}) {
 	case types.FETCH_USER_PACKAGES:
 		return state.set('packages', fromJS(action.packages))
 	case types.AGENT_LOGGED_IN:
-		return state.set('agent_token', action.auth)
+		return state.withMutations(s => s
+			.set('agent_token', action.auth)
+			.set('kickMessage', action.warning)
+			.set('showLoggedOut', false)
+			.set('promptKick', action.promptKick || false))
 	case types.AGENT_LOGGED_OUT:
 		return state.set('agent_token', '')
 	default:
