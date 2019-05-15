@@ -25,8 +25,8 @@ export default {
 
 	platforms: async () => (await axios.get(`${API_HOST}/thirdparty/`)).data,
 
-	report: async (activeBot, days) => (await axios.get(`${API_HOST}/chatbot/${activeBot}/report/`, {
-		params: { days },
+	report: async (activeBot, days, platform, uid) => (await axios.get(`${API_HOST}/chatbot/${activeBot}/report/`, {
+		params: { days, platform, uid }
 	})).data,
 
 	delete: async activeBot => (await axios.delete(`${API_HOST}/chatbot/${activeBot}/`)).data,

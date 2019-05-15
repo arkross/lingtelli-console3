@@ -87,19 +87,20 @@ class RecomLogPage extends Component {
 				<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis/history`}>{t('chatbot.history.text')}</NavLink>
 				<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis/recommendations`}>{t('chatbot.recommendations.text')}</NavLink>
 			</Menu>
-			<Container fluid textAlign='center'>
+			<Container fluid>
 			<Dimmer inverted active={loading} />
 			<Loader active={loading} />
 
 			{ (data && data.count) ? 
 			<div>
 				<Form onSubmit={this.onFilterSubmit}>
-					<Form.Group inline>
+					<Form.Group>
 						<Form.Field>
 							<label>{t('chatbot.recommendations.filter')}</label>
 							<Dropdown selection options={platformOptions} placeholder={t('chatbot.recommendations.platform')} value={platform} onChange={this.onFilterChange} />
 						</Form.Field>
 						<Form.Field>
+							<label>{t('chatbot.history.uid')}</label>
 							<Input placeholder={t('chatbot.recommendations.uid')} value={uid} onChange={this.onInputUidChange} />
 						</Form.Field>
 					</Form.Group>
@@ -140,7 +141,7 @@ class RecomLogPage extends Component {
 							totalPages={totalPages}
 						/>
 				}
-			</div> : <Header as='h4'>{t('chatbot.history.empty')}</Header>}
+			</div> : <Header as='h4' textAlign='center'>{t('chatbot.history.empty')}</Header>}
 		</Container>
 		</Fragment>
 	}

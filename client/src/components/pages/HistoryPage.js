@@ -133,19 +133,20 @@ class HistoryPage extends React.Component {
 					<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis/history`}>{t('chatbot.history.text')}</NavLink>
 					<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis/recommendations`}>{t('chatbot.recommendations.text')}</NavLink>
 				</Menu>
-			<Container fluid textAlign='center' className='history-container'>
+			<Container fluid className='history-container'>
 				<Loader active={loading} />
 				<Dimmer inverted active={loading} />
-				{(!histories.results || !histories.count) && <Header as='h4'>{t('chatbot.history.empty')}</Header>} 
+				{(!histories.results || !histories.count) && <Header as='h4' textAlign='center'>{t('chatbot.history.empty')}</Header>} 
 				{(!!histories.results && !!histories.count) &&
 				<div>
 					<Form onSubmit={this.onFilterSubmit}>
-						<Form.Group inline>
+						<Form.Group>
 							<Form.Field>
 								<label>{t('chatbot.history.filter')}</label>
 								<Dropdown selection options={platformOptions} placeholder={t('chatbot.history.platform')} value={platform} onChange={this.onFilterChange} />
 							</Form.Field>
 							<Form.Field>
+								<label>{t('chatbot.history.uid')}</label>
 								<Input placeholder={t('chatbot.history.uid')} value={uid} onChange={this.onInputUidChange} />
 							</Form.Field>
 						</Form.Group>
