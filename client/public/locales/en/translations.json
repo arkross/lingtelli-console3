@@ -31,7 +31,7 @@
     "dashboard": "Dashboard",
     "account": "Account",
     "logout": "Logout",
-    "bot": "ChatBots",
+    "bot": "Chatbots",
     "create": "Create",
     "facebook": "Facebook",
     "line": "LINE",
@@ -82,7 +82,7 @@
     "copied": "Copied",
     "success": "Chatbot settings saved successfully!",
     "setting": {
-      "text": "Basic Setting",
+      "text": "Settings",
       "unavailable": "Unavailable in your current subscription.",
       "line": {
         "title": "Line Setting",
