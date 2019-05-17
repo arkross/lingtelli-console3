@@ -138,21 +138,21 @@ class HistoryPage extends React.Component {
 			<Container fluid className='history-container'>
 				<Loader active={loading} />
 				<Dimmer inverted active={loading} />
+				<Form onSubmit={this.onFilterSubmit}>
+					<Form.Group>
+						<Form.Field>
+							<label>{t('chatbot.history.filter')}</label>
+							<Dropdown selection options={platformOptions} placeholder={t('chatbot.history.platform')} value={platform} onChange={this.onFilterChange} />
+						</Form.Field>
+						<Form.Field>
+							<label>{t('chatbot.history.uid')}</label>
+							<Input placeholder={t('chatbot.history.uid')} value={uid} onChange={this.onInputUidChange} />
+						</Form.Field>
+					</Form.Group>
+				</Form>
 				{(!histories.results || !histories.count) && <Header as='h4' textAlign='center'>{t('chatbot.history.empty')}</Header>} 
 				{(!!histories.results && !!histories.count) &&
 				<div>
-					<Form onSubmit={this.onFilterSubmit}>
-						<Form.Group>
-							<Form.Field>
-								<label>{t('chatbot.history.filter')}</label>
-								<Dropdown selection options={platformOptions} placeholder={t('chatbot.history.platform')} value={platform} onChange={this.onFilterChange} />
-							</Form.Field>
-							<Form.Field>
-								<label>{t('chatbot.history.uid')}</label>
-								<Input placeholder={t('chatbot.history.uid')} value={uid} onChange={this.onInputUidChange} />
-							</Form.Field>
-						</Form.Group>
-					</Form>
 					<Button icon='exchange' primary floated='right' content={t('chatbot.history.toggle')} onClick={this.onSwitchClick} />
 					<br /><br />
 					<Table celled>
