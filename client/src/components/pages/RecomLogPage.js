@@ -15,7 +15,7 @@ class RecomLogPage extends Component {
 		super(props)
 		const params = props.location ? qs.parse(props.location.search) : {page: 1}
 		this.state = {
-			platform: '',
+			platform: 'ALL',
 			uid: '',
 			activePage: params.page || 1,
 			loading: true
@@ -73,7 +73,7 @@ class RecomLogPage extends Component {
 		const totalPages = Math.ceil(data.count / perPage)
 
 		const platformOptions = [
-			{value: '', text: t('chatbot.recommendations.platforms.all')},
+			{value: 'ALL', text: t('chatbot.recommendations.platforms.all')},
 			{value: 'FB', text: t('chatbot.recommendations.platforms.fb')},
 			{value: 'LINE', text: t('chatbot.recommendations.platforms.line')},
 			{value: 'WEB', text: t('chatbot.recommendations.platforms.web')},
