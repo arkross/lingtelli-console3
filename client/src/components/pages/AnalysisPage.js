@@ -92,7 +92,7 @@ class Analysis extends React.Component {
 	}
 
 	componentWillMount = () => {
-		this.props.onChangeScale(7)
+		this.fetchData(this.state.platform, this.state.uid, 7)
 	}
 
 	onChange = (e, { value }) => {

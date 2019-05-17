@@ -15,7 +15,7 @@ class RecomLogPage extends Component {
 		super(props)
 		const params = props.location ? qs.parse(props.location.search) : {page: 1}
 		this.state = {
-			platform: '',
+			platform: 'ALL',
 			uid: '',
 			activePage: params.page || 1,
 			loading: true
@@ -73,12 +73,12 @@ class RecomLogPage extends Component {
 		const totalPages = Math.ceil(data.count / perPage)
 
 		const platformOptions = [
-			{value: '', text: t('chatbot.recommendations.platforms.all')},
-			{value: 'FB', text: t('chatbot.recommendations.platforms.fb')},
-			{value: 'LINE', text: t('chatbot.recommendations.platforms.line')},
-			{value: 'WEB', text: t('chatbot.recommendations.platforms.web')},
-			{value: 'API', text: t('chatbot.recommendations.platforms.api')},
-			{value: 'OTHER', text: t('chatbot.recommendations.platforms.other')}
+			{value: 'ALL', text: t('chatbot.history.platforms.all')},
+			{value: 'FB', text: t('chatbot.history.platforms.fb')},
+			{value: 'LINE', text: t('chatbot.history.platforms.line')},
+			{value: 'WEB', text: t('chatbot.history.platforms.web')},
+			{value: 'API', text: t('chatbot.history.platforms.api')},
+			{value: 'OTHER', text: t('chatbot.history.platforms.other')}
 		]
 		
 		return <Fragment>
@@ -88,11 +88,8 @@ class RecomLogPage extends Component {
 				<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis/recommendations`}>{t('chatbot.recommendations.text')}</NavLink>
 			</Menu>
 			<Container fluid>
-			<Dimmer inverted active={loading} />
-			<Loader active={loading} />
-
-			{ (data && data.count) ? 
-			<div>
+				<Dimmer inverted active={loading} />
+				<Loader active={loading} />
 				<Form onSubmit={this.onFilterSubmit}>
 					<Form.Group>
 						<Form.Field>
@@ -105,44 +102,46 @@ class RecomLogPage extends Component {
 						</Form.Field>
 					</Form.Group>
 				</Form>
-				<Table celled>
-					<Table.Header>
-						<Table.Row>
-							<Table.HeaderCell>
-								{t('chatbot.recommendations.ori_question')}
-							</Table.HeaderCell>
-							<Table.HeaderCell>
-								{t('chatbot.recommendations.selected_question')}
-							</Table.HeaderCell>
-							<Table.HeaderCell>
-								{t('chatbot.recommendations.platform')}
-							</Table.HeaderCell>
-							<Table.HeaderCell>
-								{t('chatbot.recommendations.uid')}
-							</Table.HeaderCell>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{_.map(data.results, el => <Table.Row key={el.id}>
-							<Table.Cell>{el.ori_question}</Table.Cell>
-							<Table.Cell>{el.select_question}</Table.Cell>
-							<Table.Cell>{el.platform}</Table.Cell>
-							<Table.Cell>{el.user_id}</Table.Cell>
-						</Table.Row>)}
-					</Table.Body>
-				</Table>
-				{
-					totalPages > 0 &&
-						<LingPagination
-							history={history}
-							location={location}
-							activePage={activePage}
-							onPageChange={this.onPageChanged}
-							totalPages={totalPages}
-						/>
-				}
-			</div> : <Header as='h4' textAlign='center'>{t('chatbot.history.empty')}</Header>}
-		</Container>
+				{ (data && data.count) ? 
+				<div>
+					<Table celled>
+						<Table.Header>
+							<Table.Row>
+								<Table.HeaderCell>
+									{t('chatbot.recommendations.ori_question')}
+								</Table.HeaderCell>
+								<Table.HeaderCell>
+									{t('chatbot.recommendations.selected_question')}
+								</Table.HeaderCell>
+								<Table.HeaderCell>
+									{t('chatbot.recommendations.platform')}
+								</Table.HeaderCell>
+								<Table.HeaderCell>
+									{t('chatbot.recommendations.uid')}
+								</Table.HeaderCell>
+							</Table.Row>
+						</Table.Header>
+						<Table.Body>
+							{_.map(data.results, el => <Table.Row key={el.id}>
+								<Table.Cell>{el.ori_question}</Table.Cell>
+								<Table.Cell>{el.select_question}</Table.Cell>
+								<Table.Cell>{el.platform}</Table.Cell>
+								<Table.Cell>{el.user_id}</Table.Cell>
+							</Table.Row>)}
+						</Table.Body>
+					</Table>
+					{
+						totalPages > 0 &&
+							<LingPagination
+								history={history}
+								location={location}
+								activePage={activePage}
+								onPageChange={this.onPageChanged}
+								totalPages={totalPages}
+							/>
+					}
+				</div> : <Header as='h4' textAlign='center'>{t('chatbot.history.empty')}</Header>}
+			</Container>
 		</Fragment>
 	}
 }

@@ -39,7 +39,7 @@ export const login = (credentials, kick = false) => dispatch =>
 		.then(auth => {
 			if (auth.success) {
 				localStorage.setItem('token', auth.success)
-				setAuthorizationHeader()
+				setAuthorizationHeader(auth.success)
 				return dispatch(userLoggedIn(auth, false))
 			}
 			// Account is already logged in on another platform

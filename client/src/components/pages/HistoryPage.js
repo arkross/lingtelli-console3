@@ -19,14 +19,14 @@ import { NavLink } from 'react-router-dom'
 import toJS from 'components/utils/ToJS'
 import qs from 'query-string'
 import LingPagination from '../utils/LingPagination'
-import { fetchHistory } from 'actions/bot'
+import { fetchHistory } from '../../actions/bot'
 
 class HistoryPage extends React.Component {
 	constructor(props) {
 		super(props)
 		const params = props.location ? qs.parse(props.location.search) : {page: 1}
 		this.state = {
-			platform: '',
+			platform: 'ALL',
 			uid: '',
 			activePage: params.page || 1,
 			columnReversed: false
@@ -34,7 +34,7 @@ class HistoryPage extends React.Component {
 	}
 
 	fetchData = (platform, uid, activePage) => {
-		this.props.fetchData(platform || this.state.platform, uid || this.state.uid, activePage || this.state.activePage)
+		this.props.fetchHistory(this.props.activeBot, platform || this.state.platform, uid || this.state.uid, activePage || this.state.activePage)
 	}
 
 	componentDidMount() {
@@ -64,7 +64,9 @@ class HistoryPage extends React.Component {
 				return {
 					user: userContent.join(' | '),
 					bot: botContent.join(' | '),
-					created_at: pair[0].created_at
+					created_at: pair[0].created_at,
+					platform: pair[0].platform,
+					user_id: pair[0].user_id
 				}
 			})
 			.map((history, index) => 
@@ -112,7 +114,7 @@ class HistoryPage extends React.Component {
 		const { histories, t, loading, location, activeBot } = this.props
 
 		const platformOptions = [
-			{value: '', text: t('chatbot.history.platforms.all')},
+			{value: 'ALL', text: t('chatbot.history.platforms.all')},
 			{value: 'FB', text: t('chatbot.history.platforms.fb')},
 			{value: 'LINE', text: t('chatbot.history.platforms.line')},
 			{value: 'WEB', text: t('chatbot.history.platforms.web')},
@@ -136,21 +138,21 @@ class HistoryPage extends React.Component {
 			<Container fluid className='history-container'>
 				<Loader active={loading} />
 				<Dimmer inverted active={loading} />
+				<Form onSubmit={this.onFilterSubmit}>
+					<Form.Group>
+						<Form.Field>
+							<label>{t('chatbot.history.filter')}</label>
+							<Dropdown selection options={platformOptions} placeholder={t('chatbot.history.platform')} value={platform} onChange={this.onFilterChange} />
+						</Form.Field>
+						<Form.Field>
+							<label>{t('chatbot.history.uid')}</label>
+							<Input placeholder={t('chatbot.history.uid')} value={uid} onChange={this.onInputUidChange} />
+						</Form.Field>
+					</Form.Group>
+				</Form>
 				{(!histories.results || !histories.count) && <Header as='h4' textAlign='center'>{t('chatbot.history.empty')}</Header>} 
 				{(!!histories.results && !!histories.count) &&
 				<div>
-					<Form onSubmit={this.onFilterSubmit}>
-						<Form.Group>
-							<Form.Field>
-								<label>{t('chatbot.history.filter')}</label>
-								<Dropdown selection options={platformOptions} placeholder={t('chatbot.history.platform')} value={platform} onChange={this.onFilterChange} />
-							</Form.Field>
-							<Form.Field>
-								<label>{t('chatbot.history.uid')}</label>
-								<Input placeholder={t('chatbot.history.uid')} value={uid} onChange={this.onInputUidChange} />
-							</Form.Field>
-						</Form.Group>
-					</Form>
 					<Button icon='exchange' primary floated='right' content={t('chatbot.history.toggle')} onClick={this.onSwitchClick} />
 					<br /><br />
 					<Table celled>
@@ -193,6 +195,6 @@ const mapStateToProps = (state, ownProps) => ({
 
 export default compose(
 	translate('translations'),
-	connect(mapStateToProps),
+	connect(mapStateToProps, {fetchHistory}),
 	toJS
 )(HistoryPage);
