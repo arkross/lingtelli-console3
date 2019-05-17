@@ -61,7 +61,7 @@ class ReportViewset(viewsets.ReadOnlyModelViewSet):
             # Make today to become 00:00:00. Deal with specific time issue.
             today_day_str = datetime.today().strftime('%Y-%m-%d')
             today_day = datetime.strptime(today_day_str, '%Y-%m-%d')
-            last_day = today_day + timedelta(1)
+            last_day = today_day + timedelta(2)
             start_day = today_day - timedelta(day_range-1)
             histories = \
                 History.objects.filter(chatbot=bot_obj,
