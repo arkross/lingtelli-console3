@@ -15,8 +15,8 @@ class RecomLogPage extends Component {
 		super(props)
 		const params = props.location ? qs.parse(props.location.search) : {page: 1}
 		this.state = {
-			platform: 'ALL',
-			uid: '',
+			platform: params.platform || 'ALL',
+			uid: params.uid || '',
 			activePage: params.page || 1,
 			loading: true
 		}
@@ -34,7 +34,7 @@ class RecomLogPage extends Component {
 		this.fetchMatching()
 	}
 
-	fetchMatching = (platform='', uid='', activePage=null) => {
+	fetchMatching = (platform='ALL', uid='', activePage=null) => {
 		this.setState({ loading: true })
 		this.props.fetchMatching(this.props.activeBot, platform || this.state.platform, uid || this.state.uid, activePage || this.state.activePage)
 			.then(data => {
@@ -44,15 +44,25 @@ class RecomLogPage extends Component {
 			})
 	}
 
+	changeUrlQuery = data => {
+		const params = this.props.location ? qs.parse(this.props.location.search) : {}
+		params.platform = data.platform || params.platform || 'ALL'
+		params.uid= data.uid || ''
+		this.props.history.push({
+			search: `?${qs.stringify(params)}`
+		})
+	}
+
 	onPageChanged = (e, {activePage}) => {
 		this.setState({ activePage })
-		this.fetchMatching(activePage)
+		this.fetchMatching(this.state.platform, this.state.uid, activePage)
 	}
 	
 	onFilterChange = (e, { value }) => {
 		e.preventDefault()
-		this.setState({ platform: value })
-		this.fetchMatching(value, this.state.uid, this.state.activePage)
+		this.setState({ platform: value, activePage: 1 })
+		this.changeUrlQuery({ platform: value })
+		this.fetchMatching(value, this.state.uid, 1)
 	}
 
 	onInputUidChange = (e, { value }) => {
@@ -62,7 +72,9 @@ class RecomLogPage extends Component {
 
 	onFilterSubmit = e => {
 		e.preventDefault()
-		this.fetchMatching()
+		this.setState({ activePage: 1 })
+		this.changeUrlQuery({ uid: this.state.uid })
+		this.fetchMatching(this.state.platform, this.state.uid, 1)
 	}
 
 	render() {
