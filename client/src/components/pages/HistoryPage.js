@@ -26,8 +26,8 @@ class HistoryPage extends React.Component {
 		super(props)
 		const params = props.location ? qs.parse(props.location.search) : {page: 1}
 		this.state = {
-			platform: 'ALL',
-			uid: '',
+			platform: params.platform || 'ALL',
+			uid: params.uid || '',
 			activePage: params.page || 1,
 			columnReversed: false
 		}
@@ -93,10 +93,20 @@ class HistoryPage extends React.Component {
 		this.setState({ columnReversed: !this.state.columnReversed })
 	}
 
+	changeUrlQuery = data => {
+		const params = this.props.location ? qs.parse(this.props.location.search) : {}
+		params.platform = data.platform || params.platform || 'ALL'
+		params.uid= data.uid || ''
+		this.props.history.push({
+			search: `?${qs.stringify(params)}`
+		})
+	}
+
 	onFilterChange = (e, { value }) => {
 		e.preventDefault()
-		this.setState({ platform: value })
-		this.fetchData(value, this.state.uid, this.state.activePage)
+		this.setState({ platform: value, activePage: 1 })
+		this.changeUrlQuery({ platform: value })
+		this.fetchData(value, this.state.uid, 1)
 	}
 
 	onInputUidChange = (e, { value }) => {
@@ -106,7 +116,9 @@ class HistoryPage extends React.Component {
 
 	onFilterSubmit = e => {
 		e.preventDefault()
-		this.fetchData()
+		this.setState({ activePage: 1 })
+		this.changeUrlQuery({ uid: this.state.uid })
+		this.fetchData(this.state.platform, this.state.uid, 1)
 	}
 
 	render = () => {
