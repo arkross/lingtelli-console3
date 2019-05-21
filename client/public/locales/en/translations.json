@@ -306,6 +306,7 @@
       "question": "Question",
       "expected": "Expected Answer",
       "actual": "Actual Answer",
+      "accuracy": "Accuracy",
       "showExpected": "Show Expected Answer",
       "showPostback": "Show Postback Choices",
       "total": "Total",

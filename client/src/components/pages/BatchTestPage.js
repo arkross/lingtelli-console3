@@ -7,6 +7,7 @@ import { NavLink } from 'react-router-dom'
 import api from 'apis/demo'
 import toJS from 'components/utils/ToJS'
 import _ from 'lodash'
+import * as d3 from 'd3'
 import moment from 'moment'
 
 class BatchTestPage extends Component {
@@ -90,7 +91,7 @@ class BatchTestPage extends Component {
 		fr.onload = (evt) => {
 			const text = evt.target.result
 			this.readCsv(text)
-			this.setState({ isParsingCSV: false })
+			this.setState({ isParsingCSV: false, file: file.name })
 		}
 		fr.readAsText(file)
 	}
@@ -102,13 +103,15 @@ class BatchTestPage extends Component {
 			isRunning: true
 		})
 		for(let i = 0; i < records.length; i++) {
-			await this.handleIndividualRun(i, e)
+			await this.handleIndividualRun(i)
 		}
 		this.setState({ isRunning: false })
 	}
 
 	handleIndividualRun = async (index, e) => {
-		e.preventDefault()
+		if (e) {
+			e.preventDefault()
+		}
 		const records = _.cloneDeep(this.state.records)
 		_.set(records, [index, 'isRunning'], true)
 		const record = records[index]
@@ -128,7 +131,7 @@ class BatchTestPage extends Component {
 		this.setState({ records })
 	}
 
-	responseToString = resObj => {
+	responseToComponent = resObj => {
 		const { t } = this.props
 		if (resObj.data && resObj.data.buttons) {
 			return <Fragment>
@@ -155,6 +158,17 @@ class BatchTestPage extends Component {
 		return false
 	}
 
+	responseToString = resObj => {
+		if (resObj.data && resObj.data.buttons) {
+			let i = 1
+			const choices = resObj.data.buttons.map(button => ` (${i++}) ${button.text}`).join (' ')
+			return `${resObj.data.title} ${choices}`
+		} else if (resObj.data && resObj.data.text) {
+			return resObj.data.text
+		}
+		return ''
+	}
+
 	handleChangeEditing = (index, toState = true, e) => {
 		const records = _.clone(this.state.records)
 		_.set(records, [index, 'isEditing'], toState)
@@ -175,6 +189,23 @@ class BatchTestPage extends Component {
 		this.setState({
 			records
 		})
+	}
+
+	handleExportClick = e => {
+		e.preventDefault()
+		const csv = this.createCSV()
+		const uri = encodeURI(`data:text/csv;charset=utf-8,${csv}`)
+		const link = document.createElement('a')
+		link.setAttribute('href', uri)
+		link.setAttribute('download', `${this.state.file.replace(/\.[\w]+$/, '')}_TestResult.csv`)
+		document.body.appendChild(link)
+		link.click()
+		document.body.removeChild(link)
+	}
+
+	createCSV = () => {
+		const { records } = this.state
+		return records.map(rec => [`"${rec.question}"`, `"${rec.response ? this.responseToString(rec.response) : ''}"`].join(',')).join('\n')
 	}
 
 	sendMessage = message => {
@@ -199,6 +230,7 @@ class BatchTestPage extends Component {
 		const errors = records.filter(record => (record.isRun && record.response.type === 'error')).length
 		const run = records.filter(record => record.isRun).length
 		const exact = records.filter(record => (record.isRun && record.isExactMatch)).length
+		const accuracy = total ? exact / total : 0
 
 		return <Grid>
 			<Grid.Row>
@@ -227,8 +259,15 @@ class BatchTestPage extends Component {
 			</Grid.Row>
 			<Grid.Row>
 				<Grid.Column>
-					<Header>{t('chatbot.batch.result')}</Header>
-					<Label content={t('chatbot.batch.total')} detail={total} /><Label content={t('chatbot.batch.executed')} detail={run} color='teal' /><Label content={t('chatbot.batch.errors')} detail={errors} color='red' /><Label content={t('chatbot.batch.matches')} detail={exact} color='green' />
+					<Header>
+						{t('chatbot.batch.result')} 
+					</Header>
+					<Button icon='download' as='a' content={t('chatbot.faq.export')} onClick={this.handleExportClick} floated='right' />
+					<Label content={t('chatbot.batch.total')} detail={total} />
+					<Label content={t('chatbot.batch.executed')} detail={run} color='teal' />
+					<Label content={t('chatbot.batch.errors')} detail={errors} color='red' />
+					<Label content={t('chatbot.batch.matches')} detail={exact} color='green' />
+					<Label content={t('chatbot.batch.accuracy')} detail={d3.format('.1%')(accuracy)} color='green' />
 					<Table celled compact='very'>
 						<Table.Header>
 							<Table.Row>
@@ -248,7 +287,7 @@ class BatchTestPage extends Component {
 									{record.isEditing ?
 									<Input fluid type='text' value={record.question} onBlur={this.handleChangeEditing.bind(null, idx, false)} onChange={this.handleQuestionChange.bind(null, idx)} /> : record.question}
 								</Table.Cell>
-								<Table.Cell negative={record.response.type === 'error'}>{record.response ? this.responseToString(record.response) : ''}</Table.Cell>
+								<Table.Cell negative={record.response.type === 'error'}>{record.response ? this.responseToComponent(record.response) : ''}</Table.Cell>
 								{showExpected && <Table.Cell positive={record.isExactMatch}>{record.expected}</Table.Cell>}
 							</Table.Row>)}
 						</Table.Body>

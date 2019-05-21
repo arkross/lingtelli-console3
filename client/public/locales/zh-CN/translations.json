@@ -316,6 +316,7 @@
       "question": "问题",
       "expected": "预期答案",
       "actual": "实际答案",
+      "accuracy": "正确率",
       "showExpected": "显示预期答案",
       "showPostback": "显示选项",
       "total": "总共",
