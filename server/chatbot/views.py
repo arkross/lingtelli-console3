@@ -483,7 +483,7 @@ class LineIgnoreViewset(viewsets.ModelViewSet):
                                 status=HTTP_400_BAD_REQUEST)
         return \
             Response({'errors': _('No content')}, status=HTTP_400_BAD_REQUEST)
-    
+
     def update(self, request, id, line_id, pk):
         user_obj = request.user
         bot_obj = Chatbot.objects.filter(id=id, user=user_obj).first()
@@ -569,7 +569,7 @@ class FacebookIgnoreViewset(viewsets.ModelViewSet):
                                 status=HTTP_400_BAD_REQUEST)
         return \
             Response({'errors': _('No content')}, status=HTTP_400_BAD_REQUEST)
-    
+
     def update(self, request, id, fb_id, pk):
         user_obj = request.user
         bot_obj = Chatbot.objects.filter(id=id, user=user_obj).first()

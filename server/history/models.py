@@ -34,7 +34,7 @@ class History(models.Model):
         user_id: Created by line and facebook. For website created by us inside
             script.
         sender: Message send by bot or user.
-        create_at: Message created time.
+        created_at: Message created time.
         session_id: Session id.
         content: Message content.
         qa_pair: For pairing the complete conversation.
