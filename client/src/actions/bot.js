@@ -27,8 +27,9 @@ export const fetchBotMatching = (data, id, page) => ({
 	id
 })
 
-export const fetchBotReport = (report, id, platform, uid) => ({
+export const fetchBotReport = (days, report, id, platform, uid) => ({
 	type: types.FETCH_BOT_REPORT,
+	days,
 	report,
 	platform,
 	uid,
@@ -114,6 +115,9 @@ export const fetchHistory = (activeBot, platform = '', uid = '', currentPage = 1
 	api.history(activeBot, (platform === 'ALL' ? '' : platform), uid, currentPage)
 		.then(histories => dispatch(fetchBotHistory(histories, activeBot, currentPage)))
 
+export const fetchExportHistory = (activeBot, platform, uid, start_date, end_date) => dispatch =>
+	api.exportHistory(activeBot, platform, uid, start_date, end_date).then(data => data)
+
 export const fetchMatching = (activeBot, platform = '', uid = '', currentPage = 1) => dispatch =>
 	api.matching(activeBot, (platform === 'ALL' ? '' : platform), uid, currentPage)
 		.then(data => dispatch(fetchBotMatching(data, activeBot, currentPage)))
@@ -134,13 +138,13 @@ export const fetchAllBotDetails = (paidtype) => async (dispatch) => {
 			}
 			dispatch(fetchBotInfo(data))
 		})
-		return api.report(bot.id, 7, '', '').then(data => dispatch(fetchBotReport(data, bot.id)))
+		return api.report(bot.id, 7, '', '').then(data => dispatch(fetchBotReport(7, data, bot.id)))
 	}))
 }
 
 export const fetchReport = (activeBot, days, platform = '', uid = '') => dispatch =>
 	api.report(activeBot, days, (platform === 'ALL' ? '' : platform), uid)
-		.then(report => dispatch(fetchBotReport(report, activeBot, platform, uid)))
+		.then(report => dispatch(fetchBotReport(days, report, activeBot, platform, uid)))
 
 /**
  * @typedef BotInfo

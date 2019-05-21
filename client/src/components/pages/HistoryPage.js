@@ -3,6 +3,7 @@ import _ from 'lodash'
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
+import FileDownload from 'react-file-download'
 import {
 	Header,
 	Table,
@@ -19,7 +20,7 @@ import { NavLink } from 'react-router-dom'
 import toJS from 'components/utils/ToJS'
 import qs from 'query-string'
 import LingPagination from '../utils/LingPagination'
-import { fetchHistory } from '../../actions/bot'
+import { fetchHistory, fetchExportHistory } from '../../actions/bot'
 
 class HistoryPage extends React.Component {
 	constructor(props) {
@@ -91,6 +92,13 @@ class HistoryPage extends React.Component {
 	onSwitchClick = e => {
 		e.preventDefault()
 		this.setState({ columnReversed: !this.state.columnReversed })
+	}
+
+	onExportClick = e => {
+		e.preventDefault()
+		this.props.fetchExportHistory(this.props.activeBot, this.state.platform, this.state.uid).then(data => {
+			FileDownload(data, `${this.props.info.robot_name}_history.csv`)
+		})
 	}
 
 	changeUrlQuery = data => {
@@ -165,6 +173,7 @@ class HistoryPage extends React.Component {
 				{(!histories.results || !histories.count) && <Header as='h4' textAlign='center'>{t('chatbot.history.empty')}</Header>} 
 				{(!!histories.results && !!histories.count) &&
 				<div>
+					<Button icon='download' floated='right' content={t('chatbot.faq.export')} onClick={this.onExportClick} />
 					<Button icon='exchange' primary floated='right' content={t('chatbot.history.toggle')} onClick={this.onSwitchClick} />
 					<br /><br />
 					<Table celled>
@@ -202,11 +211,12 @@ class HistoryPage extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
 	activeBot: ownProps.match.params.id,
+	info: state.getIn(['bot', 'bots', ownProps.match.params.id]),
 	histories: state.getIn(['bot', 'bots', ownProps.match.params.id, 'history']) || {}
 });
 
 export default compose(
 	translate('translations'),
-	connect(mapStateToProps, {fetchHistory}),
+	connect(mapStateToProps, {fetchHistory, fetchExportHistory}),
 	toJS
 )(HistoryPage);

@@ -14,6 +14,15 @@ export default {
 			uid
 		}
 	})).data,
+
+	exportHistory: async (activeBot, platform, uid, start_date, end_date) => (await axios.get(`${API_HOST}/chatbot/${activeBot}/history/export/`, {
+		params: {
+			platform: platform === 'ALL' ? '' : platform,
+			uid,
+			start_date,
+			end_date
+		}
+	})).data,
 	
 	matching: async (activeBot, platform, uid, page) => (await axios.get(`${API_HOST}/chatbot/${activeBot}/matching/`, {
 		params: {
