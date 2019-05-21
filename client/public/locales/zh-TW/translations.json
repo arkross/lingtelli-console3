@@ -304,6 +304,7 @@
       "question": "問題",
       "expected": "預期答案",
       "actual": "實際答案",
+      "accuracy": "正確率",
       "showExpected": "顯示預期答案",
       "showPostback": "顯示選項",
       "total": "總共",
