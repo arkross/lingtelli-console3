@@ -103,7 +103,11 @@ class HistoryViewset(viewsets.ReadOnlyModelViewSet):
                     history_query.filter(created_at__lte=end_date_utc)
             rows = [['User Content', 'Bot Content', 'Datetime', 'Platform',
                     'User ID']]
-            qa_pairs = set(history_query.values_list('qa_pair', flat=True))
+            qa_pair_list = history_query.values_list('qa_pair', flat=True)
+            existed = set()
+            # Remove duplicate data but still have the order
+            qa_pairs = [x for x in qa_pair_list if not (x in existed or
+                                                        existed.add(x))]
             for qa_pair in qa_pairs:
                 history_pairs = \
                     history_query.filter(qa_pair=qa_pair)
