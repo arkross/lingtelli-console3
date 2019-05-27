@@ -8,7 +8,8 @@ import { hideAllMessages} from './actions/message'
 import PropTypes from 'prop-types';
 import LoginPage from 'components/pages/LoginPage';
 import RegisterPage from 'components/pages/RegisterPage';
-import DashBoardPage from 'components/pages/DashBoardPage';
+// import DashboardPage from 'components/pages/DashBoardPage';
+import DashboardPage from 'components/pages/member/DashboardPage'
 import ValidationPage from 'components/pages/ValidationPage';
 import ConfirmationPage from 'components/pages/ConfirmationPage';
 import NotFoundPage from 'components/pages/NotFoundPage'
@@ -102,7 +103,7 @@ class App extends React.Component {
         <UserRoute
           location={location}
           path='/dashboard'
-          component={DashBoardPage}
+          component={DashboardPage}
         />
         <Route location={location} path='/agent*' component={AgentApp} />
         <Route component={NotFoundPage} />
