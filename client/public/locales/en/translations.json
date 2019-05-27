@@ -82,7 +82,9 @@
     "copied": "Copied",
     "success": "Chatbot settings saved successfully!",
     "setting": {
-      "text": "Settings",
+      "title": "Settings",
+      "general": "General",
+      "text": "Basic Settings",
       "unavailable": "Unavailable in your current subscription.",
       "line": {
         "title": "Line Setting",
@@ -210,12 +212,14 @@
       }
     },
     "analysis": {
+      "title": "Overview",
       "text": "Analysis",
       "questions": "Total Questions",
       "unhandled": "Unhandled Questions",
       "label": "#Questions",
       "top_5": "Top 5 Questions",
       "timeRange": "Time Range",
+      "statistics_30": "Statistics for 30 days",
       "options": {
         "_7": "Last 7 days",
         "_14": "Last 14 days",
@@ -223,11 +227,12 @@
       }
     },
     "faq": {
-      "text": "FAQ",
+      "title": "Q&A",
+      "text": "Q&A List",
       "export": "Export CSV",
       "import": "Import CSV",
       "train": "Train Model",
-      "add": "Add New FAQ",
+      "add": "Add New Q&A",
       "question": "Add Question",
       "answer": "Add Answer",
       "search": "Search Answer",

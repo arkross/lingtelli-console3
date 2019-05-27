@@ -43,7 +43,7 @@ class FAQConfigPage extends React.Component {
 	}
 
 	_fetchGroups = (page=1, keyword='') => {
-		return this.props.fetchData(page, keyword)
+		return this.props.fetchGroups(this.props.activeBot, page, keyword)
 	}
 
 	componentDidMount = () => {

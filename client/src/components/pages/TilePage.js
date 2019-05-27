@@ -60,7 +60,7 @@ class TilePage extends Component {
 			}, el)
 		})
 
-		return <Responsive as={Card.Group} className='tile-dashboard' centered>
+		return <Card.Group className='tile-dashboard' centered>
 			{_.map(botData, el => <Card key={`${el.id}bot`} href={`${baseUrl}/bot/${el.id}`} onClick={e => {
 				e.preventDefault()
 				return onCardClick(`${baseUrl}/bot/${el.id}`)
@@ -107,7 +107,7 @@ class TilePage extends Component {
 					</Header>
 				</Card.Content>
 			</Card>
-		</Responsive>
+		</Card.Group>
 	}
 }
 

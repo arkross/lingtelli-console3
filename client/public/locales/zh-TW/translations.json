@@ -81,6 +81,8 @@
     "copied": "已複製",
     "success": "機器人資料儲存成功!",
     "setting": {
+      "title": "設定",
+      "general": "基本",
       "text": "基本設定",
       "unavailable": "您的方案無法啟用此服務",
       "line": {
@@ -188,12 +190,14 @@
       "inactive": "未啟用"
     },
     "analysis": {
+      "title": "總覽",
       "text": "統計分析",
       "questions": "每日問題的數量",
       "unhandled": "無法處理的問題",
       "label": "問題數",
       "top_5": "最常見的5個問題",
       "timeRange": "時間",
+      "statistics_30": "最近30天的統計",
       "options": {
         "_7": "7天內對話",
         "_14": "14內對話",
@@ -222,6 +226,7 @@
       }
     },
     "faq": {
+      "title": "問答",
       "text": "問答設定",
       "export": "下載 CSV",
       "import": "上傳 CSV",

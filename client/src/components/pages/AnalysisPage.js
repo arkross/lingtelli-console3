@@ -47,7 +47,9 @@ class Analysis extends React.Component {
 	}
 
 	componentWillReceiveProps = (nextProps) => {
-		const { report, t } = nextProps;
+		const { days } = this.state || 7
+		const { report: reportAll, t } = nextProps;
+		const report = (reportAll && reportAll[days]) ? reportAll[days] : []
 		const labels  = report.map(item => item.date);
 		this.setState({
 			maximum: Math.max(...report.map(item => item.total_chat)),
@@ -118,15 +120,17 @@ class Analysis extends React.Component {
 	}
 
 	render = () => {
-		const { t, activeBot, report, scale, reportStat: { question_count: questionCount } } = this.props;
+		const { t, activeBot, report, scale, reportStat: reportStatAll } = this.props;
 		const { platform, uid, days, loading } = this.state
 		
 		moment.locale(localStorage.i18nextLng.toLowerCase())
 		const dateOptions = [
 			{ key: 0, value: 7 , text: t('chatbot.analysis.options._7') },
-			{ key: 1, value: 14 , text: t('chatbot.analysis.options._14') },
-			{ key: 2, value: 30 , text: t('chatbot.analysis.options._30') }
+			{ key: 1, value: 30 , text: t('chatbot.analysis.options._30') }
 		]
+
+		const currentDateOption = dateOptions.find(el => el.value === days)
+		const questionCount = (reportStatAll && reportStatAll[days]) ? reportStatAll[days].question_count : []
 
 		const platformOptions = [
 			{value: 'ALL', text: t('chatbot.history.platforms.all')},
@@ -138,7 +142,7 @@ class Analysis extends React.Component {
 		]
 
 		const dateLimit = moment().subtract(days, 'day')
-		const chartData = _.chain(report)
+		const chartData = _.chain(report[days])
 			.filter(el => moment(el.date, 'YYYY/MM/DD').isAfter(dateLimit, 'day'))
 			.map(item => _.assign({ unhandled_count: item.total_chat - item.success_count }, item))
 			.value()
