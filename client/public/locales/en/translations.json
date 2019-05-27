@@ -4,7 +4,18 @@
     "description": "New to us? ",
     "forgotPassword": "Forgot your password?",
     "readDoc": "Read API Document",
-    "signUp": "Sign up"
+    "signUp": "Sign up",
+    "kickPrompt": {
+      "header": "Force Login Alert",
+      "content": "Account is already logged in on another device. The account on another device will be logged out.",
+      "confirm": "Continue",
+      "cancel": "Cancel"
+    },
+    "kickAlert": {
+      "header": "Session Expired",
+      "content": "You have been logged out. You will be redirected to login page.",
+      "ok": "OK"
+    }
   },
   "resetPass": {
     "title": "Reset Password",
@@ -20,7 +31,7 @@
     "dashboard": "Dashboard",
     "account": "Account",
     "logout": "Logout",
-    "bot": "ChatBots",
+    "bot": "Chatbots",
     "create": "Create",
     "facebook": "Facebook",
     "line": "LINE",
@@ -71,7 +82,7 @@
     "copied": "Copied",
     "success": "Chatbot settings saved successfully!",
     "setting": {
-      "text": "Basic Setting",
+      "text": "Settings",
       "unavailable": "Unavailable in your current subscription.",
       "line": {
         "title": "Line Setting",
@@ -114,7 +125,7 @@
           "_9": "Back to Facebook. Find <0>Webhooks</0> and click on <1>Setup Webhooks</1>.",
           "_10": "Copy <0></0> from our platform and paste it to <1>Callback URL</1> in Facebook.",
           "_11": "In our platform page, make sure <0></0> is the same as in Facebook's <1>Verify Token</1>, and click on <2></2> button.",
-          "_12": "Back to Facebook. In <0>Subscription Fields</0> section, check <1>messages</1> and click on <2>Verify and Save</2>.",
+          "_12": "Back to Facebook. In <0>Subscription Fields</0> section, check <1>messages</1> and <2>messaging_postbacks</2> then click on <2>Verify and Save</2>.",
           "_13": "If no any errors from above, you can select your Fans Page in Webhooks field, and click on <0>Subscribe</0> button.",
           "_14": "Find <0>App Review for Messenger</0> section, click on <1>Add to Submission</1> for <2>page_messaging</2>.",
           "_15": "Now you can start chatting with your Fans Page."
@@ -137,7 +148,7 @@
           "description": "Protect Web Chat Plugin from being added to unauthorized sites. Web Chat Plugin will only work on the domains you listed below. If you want to enable Preview, please remember to add this site's domain into the list. You may disable this feature by leaving it empty.",
           "addDomain": "Add",
           "delete": "Delete",
-          "deleteDomain": "Delete Domain",
+          "deleteDomain": "Delete",
           "or": "or",
           "cancel": "Cancel",
           "save": "Save"
@@ -185,7 +196,18 @@
       "content": "Content",
       "datetime": "Date/Time",
       "empty": "No Data",
-      "toggle": "Toggle View"
+      "toggle": "Toggle View",
+      "platform": "Platform",
+      "uid": "User ID",
+      "filter": "Filter",
+      "platforms": {
+        "fb": "Facebook",
+        "line": "LINE",
+        "web": "Web",
+        "api": "API",
+        "other": "Other",
+        "all": "All Platforms"
+      }
     },
     "analysis": {
       "text": "Analysis",
@@ -193,10 +215,11 @@
       "unhandled": "Unhandled Questions",
       "label": "#Questions",
       "top_5": "Top 5 Questions",
+      "timeRange": "Time Range",
       "options": {
-        "_7": "in 7 days",
-        "_14": "in 14 days",
-        "_30": "in 30 days"
+        "_7": "Last 7 days",
+        "_14": "Last 14 days",
+        "_30": "Last 30 days"
       }
     },
     "faq": {
@@ -229,7 +252,18 @@
       "text": "Postback",
       "ori_question": "Original Question",
       "selected_question": "Selected Question",
-      "group": "Group"
+      "group": "Group",
+      "platform": "Platform",
+      "uid": "User ID",
+      "filter": "Filter",
+      "platforms": {
+        "fb": "Facebook",
+        "line": "LINE",
+        "web": "Web",
+        "api": "API",
+        "other": "Other",
+        "all": "All"
+      }
     },
     "pricing": {
       "text": "Pricing",
@@ -272,6 +306,7 @@
       "question": "Question",
       "expected": "Expected Answer",
       "actual": "Actual Answer",
+      "accuracy": "Accuracy",
       "showExpected": "Show Expected Answer",
       "showPostback": "Show Postback Choices",
       "total": "Total",

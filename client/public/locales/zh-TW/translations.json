@@ -4,7 +4,18 @@
     "description": "還沒有帳號？ ",
     "forgotPassword": "忘記密碼?",
     "readDoc": "查看API文件",
-    "signUp": "註冊"
+    "signUp": "註冊",
+    "kickPrompt": {
+      "header": "強制登入",
+      "content": "Account is currently logged in on another device. The account will be logged out from the other device.",
+      "confirm": "繼續登入",
+      "cancel": "取消"
+    },
+    "kickAlert": {
+      "header": "Session 已過期",
+      "content": "您已被登出, 即將回到登入頁面.",
+      "ok": "好"
+    }
   },
   "resetPass": {
     "title": "重設密碼",
@@ -113,7 +124,7 @@
           "_9": "回到 Facebook 設定頁面，找到 <0>Webhooks</0>，點選<1>設定 Webhooks</1>。",
           "_10": "將我們平台上的 <0><0>，複製貼上至Facebook設定頁面的<1>回呼網址</1>。",
           "_11": "請在 Facebook 設定頁面，填入 Hello 至 <1>驗證權杖</1>, 最後確認兩平台的驗證權杖是相同的。",
-          "_12": "回到 Facebook 設定頁面，在<0>訂閱欄位</0>中勾選 <1>messages</1> 服務，最後點擊<2>驗證並儲存</2>。",
+          "_12": "回到 Facebook 設定頁面，在<0>訂閱欄位</0>中勾選 <1>messages</1>, <2>messaging_postbacks</2> 服務，最後點擊<3>驗證並儲存</3>。",
           "_13": "若以上沒有任何問題，在 Webhooks 內選擇<0>訂閱</0>你的粉絲專頁。",
           "_14": "最後移動到 <0>Messenger應用程式審查</0>，在 <2>page_messaging</2> 欄位點擊<1>新增提交內容</1>。",
           "_15": "成功後你將可以在粉絲專頁上使用我們的聊天機器人，若有任何問題請聯繫我們。"
@@ -182,6 +193,7 @@
       "unhandled": "無法處理的問題",
       "label": "問題數",
       "top_5": "最常見的5個問題",
+      "timeRange": "時間",
       "options": {
         "_7": "7天內對話",
         "_14": "14內對話",
@@ -196,7 +208,18 @@
       "content": "對話內容",
       "datetime": "對話時間",
       "empty": "無資料",
-      "toggle": "切換模式"
+      "toggle": "切換模式",
+      "platform": "平台",
+      "uid": "使用者ID",
+      "filter": "過濾",
+      "platforms": {
+        "fb": "Facebook",
+        "line": "LINE",
+        "web": "Web",
+        "api": "API",
+        "other": "其他",
+        "all": "全平台"
+      }
     },
     "faq": {
       "text": "問答設定",
@@ -228,7 +251,18 @@
       "text": "推薦紀錄",
       "ori_question": "原問題",
       "selected_question": "已選問題",
-      "group": "群組"
+      "group": "群組",
+      "platform": "平台",
+      "uid": "使用者ID",
+      "filter": "過濾",
+      "platforms": {
+        "fb": "Facebook",
+        "line": "LINE",
+        "web": "Web",
+        "api": "API",
+        "other": "其他",
+        "all": "全部"
+      }
     },
     "pricing": {
       "text": "計費方案",
@@ -270,6 +304,7 @@
       "question": "問題",
       "expected": "預期答案",
       "actual": "實際答案",
+      "accuracy": "正確率",
       "showExpected": "顯示預期答案",
       "showPostback": "顯示選項",
       "total": "總共",

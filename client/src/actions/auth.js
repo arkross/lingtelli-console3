@@ -3,12 +3,19 @@ import api from '../apis/auth'
 import setAuthorizationHeader from '../utils/setAuthorizationHeader'
 
 // login action function
-export const userLoggedIn = auth => ({
+export const userLoggedIn = (auth, promptKick = false) => ({
 	type: types.USER_LOGGED_IN,
 	auth: {
 		access_token: auth.success || auth.access_token
-	}
+	},
+	warning: auth.warning,
+	promptKick
 })
+
+export const userCancelLogin = () => ({
+	type: types.USER_CANCEL_LOGIN
+})
+
 // logout action function
 export const userLoggedOut = () => ({
 	type: types.USER_LOGGED_OUT,
@@ -22,14 +29,32 @@ export const resendEmail = () => ({
 	type: types.RESEND_EMAIL,
 })
 
+export const userKickedOut = () => ({
+	type: types.USER_KICKED
+})
+
 // a login function return a function
-export const login = credentials => dispatch =>
-	api.login(credentials)
-		.then((auth) => {
-			localStorage.setItem('token', auth.success)
-			setAuthorizationHeader()
-			return dispatch(userLoggedIn(auth))
+export const login = (credentials, kick = false) => dispatch =>
+	api.login(credentials, kick)
+		.then(auth => {
+			if (auth.success) {
+				localStorage.setItem('token', auth.success)
+				setAuthorizationHeader(auth.success)
+				return dispatch(userLoggedIn(auth, false))
+			}
+			// Account is already logged in on another platform
+			dispatch(userLoggedIn(auth, true))
+			return Promise.reject('Force Login')
 		})
+
+export const cancelLogin = () => dispatch =>
+	dispatch(userCancelLogin())
+
+export const kickedOut = () => dispatch =>
+	dispatch(userKickedOut())
+
+export const showKickedOut = dispatch =>
+	dispatch(userKickedOut())
 
 export const logout = () => dispatch =>
 	api.logout()

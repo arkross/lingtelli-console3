@@ -14,7 +14,8 @@ import {
 	Button,
 	Segment,
 	Message,
-	Image
+	Image,
+	Modal
 } from 'semantic-ui-react';
 
 
@@ -39,14 +40,15 @@ class LoginForm extends React.Component {
 		});
 	}
 
-	onSubmit = e => {
+	onSubmit = (kick, e) => {
+		e.preventDefault()
 		const errors = this.validate(this.state.data);
 		const { dismissError } = this.props
 		this.setState({ errors })
 		if (Object.keys(errors).length === 0) {
 			this.setState({ loading: true })
 			this.props
-				.submit(this.state)
+				.submit(this.state, kick)
 				.then(data => {
 					dismissError()
 					this.removeLoading()
@@ -59,6 +61,16 @@ class LoginForm extends React.Component {
 				})
 		}
 		return false
+	}
+
+	onKick = e => {
+		e.preventDefault()
+		this.onSubmit(true, e)
+	}
+
+	onCancelKick = e => {
+		e.preventDefault()
+		this.props.cancelLogin()
 	}
 
 	validate = (data) => {
@@ -75,11 +87,31 @@ class LoginForm extends React.Component {
 	};
 
 	render() {
-		const { t, messages }  = this.props;
+		const { t, messages, promptKick, kickMessage }  = this.props;
 		const { errors, loading } = this.state;
 
 		return (
 			<div className='login-container'>
+				<Modal
+					open={promptKick}
+					onClose={this.onCancelKick}
+					header={t('login.kickPrompt.header')}
+					content={kickMessage}
+					actions={[
+						{
+							key: 'continue',
+							content: t('login.kickPrompt.confirm'),
+							positive: true,
+							autoFocus: true,
+							onClick: this.onKick
+						},
+						{
+							key: 'cancel',
+							content: t('login.kickPrompt.cancel'),
+							onClick: this.onCancelKick
+						}
+					]}
+				/>
 				<Segment textAlign='center'>
 					<h2> <Image src={logo} size='mini' inline /> Lingtelli Chatbot</h2>
 					<h3>{t('login.loginBtn')}</h3>
@@ -93,7 +125,7 @@ class LoginForm extends React.Component {
 							<p>{messages.message}</p>
 						</Message>
 					)}
-					<Form size='small' onSubmit={this.onSubmit} loading={loading}>
+					<Form size='small' onSubmit={this.onSubmit.bind(null, false)} loading={loading}>
 						<Form.Field error={!!errors.email}>
 							<Input
 								icon='mail'
@@ -135,7 +167,9 @@ LoginForm.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-	messages: state.get('messages')
+	messages: state.get('messages'),
+	promptKick: state.getIn(['user', 'promptKick']),
+	kickMessage: state.getIn(['user', 'kickMessage'])
 })
 
 export default compose(

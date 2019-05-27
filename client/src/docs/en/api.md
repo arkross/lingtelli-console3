@@ -203,7 +203,7 @@ Response structure depends on the following factors:
 ## History
 
 ```http
-POST {{{WEBHOOK_URL}}}/history
+GET {{{WEBHOOK_URL}}}/history
 ```
 Retrieves past chat messages. Please note that the API URL is slightly different with the previous ones.
 
@@ -212,10 +212,10 @@ Retrieves past chat messages. Please note that the API URL is slightly different
 |----- |---|
 | `Content-Type` | `application/json` |
 
-###### Request Body
+###### Query String Parameters
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `userId` | string | User ID |
+| `user` | string | User ID |
 
 ###### Response Body
 List of [HistoryRecord](#historyrecord-structure) objects.

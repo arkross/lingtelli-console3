@@ -1,11 +1,14 @@
 from rest_framework import serializers
 
+
 class HistorySerializer(serializers.Serializer):
 
     sender = serializers.CharField(max_length=10, read_only=True)
     created_at = serializers.DateTimeField(read_only=True)
     content = serializers.CharField(read_only=True)
     qa_pair = serializers.CharField(read_only=True)
+    platform = serializers.CharField(read_only=True)
+    user_id = serializers.CharField(read_only=True)
 
     def to_representation(self, obj):
         obj.created_at = obj.created_at.strftime('%Y/%m/%d %H:%M:%S')
@@ -20,3 +23,5 @@ class QuestionMatchHistorySerializer(serializers.Serializer):
     select_question = serializers.CharField(read_only=True)
     group = serializers.CharField(read_only=True)
     status = serializers.CharField(read_only=True)
+    platform = serializers.CharField(read_only=True)
+    user_id = serializers.CharField(read_only=True)

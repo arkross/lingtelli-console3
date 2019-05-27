@@ -10,6 +10,7 @@ from account.models import AccountInfo
 from chatbot.models import Chatbot
 from history.models import History
 
+
 class ReportTest(TestCase):
     '''Report basic testing
 
@@ -73,7 +74,7 @@ class ReportTest(TestCase):
         c = Client()
         response = c.get(self.report_uri)
         self.assertEqual(response.status_code, 401)
-    
+
     def test_not_existed(self):
         c = Client()
         not_found_uri = '/chatbot/200/report/'

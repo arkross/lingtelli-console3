@@ -7,20 +7,35 @@ export default {
 
 	info: async activeBot => (await axios.get(`${API_HOST}/chatbot/${activeBot}/`)).data,
 
-	history: async (activeBot, page) => (await axios.get(`${API_HOST}/chatbot/${activeBot}/history/`, {
+	history: async (activeBot, platform, uid, page) => (await axios.get(`${API_HOST}/chatbot/${activeBot}/history/`, {
 		params: {
-			page
+			page,
+			platform,
+			uid
+		}
+	})).data,
+
+	exportHistory: async (activeBot, platform, uid, start_date, end_date) => (await axios.get(`${API_HOST}/chatbot/${activeBot}/history/export/`, {
+		params: {
+			platform: platform === 'ALL' ? '' : platform,
+			uid,
+			start_date,
+			end_date
 		}
 	})).data,
 	
-	matching: async (activeBot, page) => (await axios.get(`${API_HOST}/chatbot/${activeBot}/matching/`, {
-		params: {page}
+	matching: async (activeBot, platform, uid, page) => (await axios.get(`${API_HOST}/chatbot/${activeBot}/matching/`, {
+		params: {
+			page,
+			platform,
+			uid
+		}
 	})).data,
 
 	platforms: async () => (await axios.get(`${API_HOST}/thirdparty/`)).data,
 
-	report: async (activeBot, days) => (await axios.get(`${API_HOST}/chatbot/${activeBot}/report/`, {
-		params: { days },
+	report: async (activeBot, days, platform, uid) => (await axios.get(`${API_HOST}/chatbot/${activeBot}/report/`, {
+		params: { days, platform, uid }
 	})).data,
 
 	delete: async activeBot => (await axios.delete(`${API_HOST}/chatbot/${activeBot}/`)).data,

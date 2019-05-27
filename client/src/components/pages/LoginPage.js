@@ -2,20 +2,22 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import LoginForm from 'components/forms/LoginForm';
-import { login } from 'actions/auth';
+import { login, cancelLogin } from 'actions/auth';
 import { hideAllMessages } from 'actions/message'
 import { Container } from 'semantic-ui-react';
 
 class LoginPage extends React.Component {
 	// react-router will pass history in components
-	submit = data =>
-		this.props.login(data)
+	submit = (data, kick = false) =>
+		this.props.login(data, kick)
 			.then(() => this.props.history.push('/dashboard'))
+
+	cancelLogin = () => this.props.cancelLogin()
 
 	render() {
 		return (
 			<Container>
-				<LoginForm submit={this.submit} dismissError={this.props.dismissError} />
+				<LoginForm submit={this.submit} dismissError={this.props.dismissError} cancelLogin={this.cancelLogin} />
 			</Container>
 		)
 	}
@@ -28,4 +30,4 @@ LoginPage.propTypes = {
 	login: PropTypes.func.isRequired
 }
 
-export default connect(null, { login, dismissError: hideAllMessages })(LoginPage);
+export default connect(null, { login, cancelLogin, dismissError: hideAllMessages })(LoginPage);

@@ -8,7 +8,7 @@ import { logout } from 'actions/auth';
 import { fetchDetail, fetchPackages } from 'actions/user'
 import { fetchAllBotDetails, fetchBot, fetchHistory, fetchPlatforms } from 'actions/bot';
 import { hideAllMessages } from 'actions/message'
-import { Dimmer, Loader, Dropdown, Menu, Divider, Container, Message, Icon, Label, Responsive} from 'semantic-ui-react';
+import { Dimmer, Loader, Dropdown, Menu, Divider, Container, Message, Icon, Label, Responsive, Modal} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import LingBreadcrumbs from 'components/utils/LingBreadcrumbs'
 import SideMenuPage from './SideMenuPage';
@@ -101,6 +101,20 @@ class DashBoardPage extends React.Component {
 
 		return (
 			<div className='dashboard-container'>
+				<Modal
+					open={user.showLoggedOut}
+					header={t('login.kickAlert.header')}
+					content={t('login.kickAlert.content')}
+					actions={[
+						{
+							key: 'ok',
+							content: t('login.kickAlert.ok'),
+							positive: true,
+							autoFocus: true,
+							onClick: this.onResetPassword
+						}
+					]}
+				/>
 				<div className={`leftmenu-container ${openSideMenu ? 'active' : ''}`}>
 					<SideMenuPage match={match} history={history} logout={this.logout} onItemClick={this.handleItemClick} />
 				</div>

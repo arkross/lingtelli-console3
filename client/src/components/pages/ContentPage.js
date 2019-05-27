@@ -90,9 +90,9 @@ class ContentPage extends React.Component {
 		return Promise.reject(err)
 	}
 
-	onFetchHistory = (page = 1) => {
+	onFetchHistory = (platform = '', uid = '', page = 1) => {
 		this.setState({ loading: true })
-		return this.props.fetchHistory(this.props.match.params.id, page)
+		return this.props.fetchHistory(this.props.match.params.id, platform, uid, page)
 			.then(this.handleAfterFetch, this.handleErrorFetch)
 	}
 
@@ -128,9 +128,9 @@ class ContentPage extends React.Component {
 		this.setState({ openDemoModal: false })
 	}
 
-	changeScale = (scale) => {
+	changeScale = (scale, platform = '', uid = '') => {
 		this.setState({scale, loading: true})
-		this.props.fetchReport(this.props.match.params.id, scale)
+		this.props.fetchReport(this.props.match.params.id, scale, platform, uid)
 		.then( () => {
 			this.setState({ loading: false })
 		}, () => {

@@ -66,9 +66,8 @@ class HistoryTest(TestCase):
                         'user_id': self.user_obj, 'sender': 'USER',
                         'created_at': '2010-10-10 00:00:00',
                         'session_id': 'thisissession', 'content': 'hi',
-                        'qa_pair': 'thisispair'}
+                        'qa_pair': 'thisispair', 'platform': 'LINE'}
         self.history_obj = History.objects.create(**history_data)
-
 
     def test_no_auth(self):
         '''History action no authorization
@@ -78,28 +77,30 @@ class HistoryTest(TestCase):
         c = Client()
         response = c.get(self.bot_uri)
         self.assertEqual(response.status_code, 401)
-    
+
     def test_not_existed(self):
         '''History data is not existed
 
         GET
         '''
         c = Client()
-        history_uri = self.bot_uri + '123/'
+        history_uri = '/chatbot/1234/history/'
         response = c.get(history_uri, **self.header)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
-        self.assertIn('errors', res_data)
+        self.assertEqual(res_data.get('results'), [])
 
     def test_read(self):
         c = Client()
-        history_keys = ['sender', 'created_at', 'content']
+        history_keys = ['sender', 'created_at', 'content', 'qa_pair',
+                        'platform', 'user_id']
         history_uri = self.bot_uri + str(self.history_obj.id) + '/'
         response = c.get(history_uri, **self.header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
         for k in history_keys:
             self.assertIn(k, res_data)
+
 
 class MatchingQuestionTest(TestCase):
     '''Matching question basic testing
@@ -159,10 +160,9 @@ class MatchingQuestionTest(TestCase):
         matching_data = {'ori_question': 'original question',
                          'select_question': 'selected question',
                          'group': self.bot_faq.id, 'chatbot': self.bot_obj, 
-                         'status': '0'}
+                         'status': '0', 'platform': 'LINE'}
         self.matching_obj = \
             QuestionMatchHistory.objects.create(**matching_data)
-        
 
     def test_no_auth(self):
         '''Matching action no authorization
@@ -172,23 +172,23 @@ class MatchingQuestionTest(TestCase):
         c = Client()
         response = c.get(self.bot_uri)
         self.assertEqual(response.status_code, 401)
-    
+
     def test_not_existed(self):
         '''Matching data is not existed
 
         GET
         '''
         c = Client()
-        matching_uri = self.bot_uri + '1234/'
+        matching_uri = '/chatbot/1234/matching/'
         response = c.get(matching_uri, **self.header)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
-        self.assertIn('errors', res_data)
+        self.assertEqual(res_data.get('results'), [])
 
     def test_read(self):
         c = Client()
         matching_keys = ['id', 'ori_question', 'select_question', 'group',
-                         'status']
+                         'status', 'platform', 'user_id']
         matching_uri = self.bot_uri + str(self.matching_obj.id) + '/'
         response = c.get(matching_uri, **self.header)
         self.assertEqual(response.status_code, 200)

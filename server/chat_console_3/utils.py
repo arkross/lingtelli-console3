@@ -8,6 +8,7 @@ import zlib
 import zipfile
 import io
 import csv
+import pytz
 from datetime import datetime, timedelta, timezone, date
 from Crypto.Cipher import AES
 
@@ -504,3 +505,15 @@ def send_task_downgrade_email(user, acc, new_paidtype, to_send_file=False):
                 msg.send()
             except Exception as e:
                 print('Sending inform mail with file failed: ' + str(e))
+
+
+def no_tz_gmt_to_utc(date_string):
+    '''Transfer string datetime gmt to utc datetime obj
+
+    Input time string format: %Y-%m-%d
+    '''
+    gmt_tz = pytz.timezone('Asia/Taipei')
+    date_no_tz = datetime.strptime(date_string, '%Y-%m-%d')
+    date_gmt = gmt_tz.localize(date_no_tz, is_dst=None)
+    date_utc = date_gmt.astimezone(pytz.utc)
+    return date_utc

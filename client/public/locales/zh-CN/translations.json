@@ -4,7 +4,18 @@
     "description": "没有帐户? ",
     "forgotPassword": "忘记密码",
     "readDoc": "查看API文件",
-    "signUp": "注册"
+    "signUp": "注册",
+    "kickPrompt": {
+      "header": "Force Login Alert",
+      "content": "Account is already logged in on another device. The account on another device will be logged out.",
+      "confirm": "继续登陆",
+      "cancel": "取消"
+    },
+    "kickAlert": {
+      "header": "Session 已过期",
+      "content": "您已被登出。稍微回到登录页面。",
+      "ok": "好"
+    }
   },
   "resetPass": {
     "title": "重设密码",
@@ -125,7 +136,7 @@
           "_9": "回到脸书设定页面，找到 <0>Webhooks</0>，点选<1>设置 Webhooks</1>。",
           "_10": "将我们平台上的 <0></0>，复制贴上至Facebook设定页面的<1>回呼网址</1>。",
           "_11": "回到我们平台后，也将 Hello 填入<1>验证权杖</1>，按下储存，最后确认两平台的验证权杖是相同的。",
-          "_12": "回到脸书设定页面，在<0>订阅栏位</0>中勾选 <1>messages</1> 服务，最后点击 <2>验证并储存</2>。",
+          "_12": "回到脸书设定页面，在<0>订阅栏位</0>中勾选 <1>messages</1>, <2>messaging_postbacks</2> 服务，最后点击 <3>验证并储存</3>。",
           "_13": "若以上没有任何问题，在 Webhooks 内选择<0>订阅</0>你的粉丝专页。",
           "_14": "最后移动到 <0>Messenger应用程式审查</0>，在 <2>page_messaging</2> 栏位点击<1>新增提交内容</1>。",
           "_15": "成功后你将可以在粉丝专页上使用我们的聊天机器人，若有任何问题请联系我们。"
@@ -196,7 +207,18 @@
       "content": "对话内容",
       "datetime": "对话时间",
       "empty": "无资料",
-      "toggle": "切换模式"
+      "toggle": "切换模式",
+      "platform": "平台",
+      "uid": "使用者ID",
+      "filter": "过滤",
+      "platforms": {
+        "fb": "Facebook",
+        "line": "LINE",
+        "web": "Web",
+        "api": "API",
+        "other": "其他",
+        "all": "全平台"
+      }
     },
     "analysis": {
       "text": "统计分析",
@@ -204,6 +226,7 @@
       "unhandled": "无法处理的问题",
       "label": "问答数",
       "top_5": "最常见的5个问题",
+      "timeRange": "时间",
       "options": {
         "_7": "7天内对话",
         "_14": "14天内对话",
@@ -240,7 +263,18 @@
       "text": "推荐记录",
       "ori_question": "原问题",
       "selected_question": "已选推荐问题",
-      "group": "群组"
+      "group": "群组",
+      "platform": "平台",
+      "uid": "使用者ID",
+      "filter": "过滤",
+      "platforms": {
+        "fb": "Facebook",
+        "line": "LINE",
+        "web": "Web",
+        "api": "API",
+        "other": "其他",
+        "all": "全部"
+      }
     },
     "pricing": {
       "text": "计价方案",
@@ -282,6 +316,7 @@
       "question": "问题",
       "expected": "预期答案",
       "actual": "实际答案",
+      "accuracy": "正确率",
       "showExpected": "显示预期答案",
       "showPostback": "显示选项",
       "total": "总共",

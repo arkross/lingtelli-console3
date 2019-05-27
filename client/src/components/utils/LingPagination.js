@@ -20,6 +20,10 @@ class LingPagination extends React.Component {
 				this.setState({ pageInput: params.page })
 			}
 		}
+		if (prevProps.activePage !== this.props.activePage) {
+			this.setState({ pageInput: this.props.activePage })
+			this.changeUrlQuery(this.props.activePage)
+		}
 	}
 
 	onInputPageChanged = (e, { value }) => {
@@ -40,14 +44,18 @@ class LingPagination extends React.Component {
 		return false
 	}
 
+	changeUrlQuery = page => {
+		const params = this.props.location ? qs.parse(this.props.location.search) : {page}
+		params.page = page
+		this.props.history.push({
+			search: `?${qs.stringify(params)}`
+		})
+	}
+
 	onPageChange = (e, data) => {
 		this.setState({ pageInput: data.activePage })
 		if (this.props.history) {
-			const params = this.props.location ? qs.parse(this.props.location.search) : {page: data.activePage}
-			params.page = data.activePage
-			this.props.history.push({
-				search: `?${qs.stringify(params)}`
-			})
+			this.changeUrlQuery(data.activePage)
 		}
 		this.props.onPageChange(e, data)
 	}

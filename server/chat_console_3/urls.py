@@ -49,6 +49,8 @@ agent_member_router.register('', acc_view.AgentMemberViewset)
 chatbot_router = routers.DefaultRouter(trailing_slash=True)
 chatbot_router.register('', bot_view.ChatbotViewset)
 #XXX /chatbot/pk/delete_confirm/ for delete confirmation api(detail_route)
+#XXX /chatbot/pk/history/export?start_date=2010-10-12&end_date=2019-10-12
+# &platform=LINE&uid=userid for export history data
 chatbot_router.register(r'(?P<id>\d+)/history', his_view.HistoryViewset)
 chatbot_router.register(r'(?P<id>\d+)/report', rep_view.ReportViewset)
 chatbot_router.register(r'(?P<id>\d+)/faq', faq_view.FAQGrouptViewset)

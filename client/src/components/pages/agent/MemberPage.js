@@ -119,10 +119,10 @@ class Member extends React.Component {
 		}))
 
 		return <div>
-			<Form onSubmit={this.onSearchSubmit}>
+			{/* <Form onSubmit={this.onSearchSubmit}>
 				<Input type='text' icon='search' value={search} onChange={this.onSearchChange} name='username' placeholder='Search Username' style={{float: 'left'}} />
 				<Button style={{display: 'none'}} />
-			</Form>
+			</Form> */}
 			<Button content='Save Changes' color='blue' icon='save' floated='right' disabled={changes.length === 0} onClick={this.onSaveButtonClick} loading={loading} />
 			<br /><br />
 			<Segment basic loading={loading}>
