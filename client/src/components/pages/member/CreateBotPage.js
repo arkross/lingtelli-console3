@@ -202,9 +202,7 @@ class CreateBotPage extends React.Component {
 				<Responsive as={Grid} minWidth={Responsive.onlyTablet.minWidth}>
 					<Grid.Row columns='equal'>
 						<Grid.Column>
-							<Label color={botCount < bot_limit ? 'green' : 'red'} size='large' basic>
-								{t('chatbot.create.bot_count')} : {botCount} / {botLimitText}
-							</Label>
+							{t('chatbot.create.bot_count')}: {botCount}/{botLimitText}
 						</Grid.Column>
 						<Grid.Column>
 							<Button
@@ -222,9 +220,7 @@ class CreateBotPage extends React.Component {
 				<Responsive as={Grid} maxWidth={Responsive.onlyMobile.maxWidth}>
 					<Grid.Row>
 						<Grid.Column>
-							<Label color={botCount < bot_limit ? 'green' : 'red'} size='large' basic>
-								{t('chatbot.create.bot_count')} : {botCount} / {botLimitText}
-							</Label>
+							{t('chatbot.create.bot_count')}: {botCount}/{botLimitText}
 							<br /><br />
 							<Button
 								disabled={botCount >= bot_limit}

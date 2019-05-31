@@ -196,7 +196,7 @@ class RegisterForm extends React.Component {
                 />
               )}
             </Form.Group>
-            <Button fluid color='teal'>{t('register.registerBtn')}</Button>
+            <Button fluid primary>{t('register.registerBtn')}</Button>
           </Form>
           <Message size='small'>
             {t('register.description.context')}

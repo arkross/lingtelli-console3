@@ -43,6 +43,9 @@
     "history": "History"
   },
   "demo": {
+    "you": "You",
+    "bot": "Bot",
+    "error": "This is an error response",
     "button": "Test Bot",
     "title": "Demo Bot",
     "input": "message...",

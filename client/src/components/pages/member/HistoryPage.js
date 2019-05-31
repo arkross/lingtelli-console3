@@ -29,12 +29,16 @@ class HistoryPage extends React.Component {
 			uid: params.uid || '',
 			activePage: params.page || 1,
 			exportLoading: false,
+			loading: false,
 			columnReversed: false
 		}
 	}
 
 	fetchData = (platform, uid, activePage) => {
-		this.props.fetchHistory(this.props.activeBot, platform || this.state.platform, uid || this.state.uid, activePage || this.state.activePage)
+		this.setState({ loading: true })
+		this.props.fetchHistory(this.props.activeBot, platform || this.state.platform, uid || this.state.uid, activePage || this.state.activePage).finally(() => {
+			this.setState({ loading: false })
+		})
 	}
 
 	componentDidMount() {
@@ -131,8 +135,8 @@ class HistoryPage extends React.Component {
 	}
 
 	render = () => {
-		const { activePage, columnReversed, platform, uid, exportLoading } = this.state
-		const { histories, t, loading, location, activeBot } = this.props
+		const { activePage, columnReversed, platform, uid, exportLoading, loading } = this.state
+		const { histories, t, location, activeBot } = this.props
 
 		const platformOptions = [
 			{value: 'ALL', text: t('chatbot.history.platforms.all')},
@@ -169,8 +173,8 @@ class HistoryPage extends React.Component {
 			{(!histories.results || !histories.count) && <Header as='h4' textAlign='center'>{t('chatbot.history.empty')}</Header>} 
 			{(!!histories.results && !!histories.count) &&
 			<div>
-				<Button icon='download' loading={exportLoading} floated='right' content={t('chatbot.faq.export')} onClick={this.onExportClick} />
-				<Button icon='exchange' primary floated='right' content={t('chatbot.history.toggle')} onClick={this.onSwitchClick} />
+				<Button icon='download' primary loading={exportLoading} floated='right' content={t('chatbot.faq.export')} onClick={this.onExportClick} />
+				<Button icon='exchange' floated='right' content={t('chatbot.history.toggle')} onClick={this.onSwitchClick} />
 				<br /><br />
 				<Table celled>
 					<Table.Header>

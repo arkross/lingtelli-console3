@@ -117,7 +117,7 @@ class APIIntegration extends Component {
 			<Grid.Row>
 				<Grid.Column>
 					<Header as='h4'>Vendor ID</Header>
-					<Input type='text' readOnly value={vendor_id}>
+					<Input type='text' readOnly value={vendor_id || ''}>
 						<input size={40} />
 					</Input>
 				</Grid.Column>

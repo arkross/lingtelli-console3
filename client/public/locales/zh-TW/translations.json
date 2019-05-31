@@ -14,7 +14,7 @@
     "kickAlert": {
       "header": "Session 已過期",
       "content": "您已被登出, 即將回到登入頁面.",
-      "ok": "好"
+      "ok": "好的"
     }
   },
   "resetPass": {
@@ -28,6 +28,9 @@
     }
   },
   "demo": {
+    "you": "您",
+    "bot": "機器人",
+    "error": "這是錯誤反應",
     "button": "測試聊天機器人",
     "title": "測試機器人",
     "input": "請輸入訊息 ",

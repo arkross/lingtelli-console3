@@ -302,7 +302,7 @@ ${str}</script>
 						<FormField control={Input} label={t('chatbot.setting.web.headerBackgroundColor')} type='text' onChange={this.handlePreviewFormChange.bind(null, 'headerBackgroundColor')} value={headerBackgroundColor} placeholder={'#0084FF'} />
 						<FormField control={Input} label={t('chatbot.setting.web.headerTextColor')} type='text' onChange={this.handlePreviewFormChange.bind(null, 'headerTextColor')} value={headerTextColor} placeholder={'#FFFFFF'} />
 						<FormField control={Input} label={t('chatbot.setting.web.chatLabel')} type='text' onChange={this.handlePreviewFormChange.bind(null, 'chatLabel')} value={chatLabel} />
-						<Button content={t('chatbot.setting.web.preview')} icon='eye' color='green' onClick={this.handlePreview} />
+						<Button content={t('chatbot.setting.web.preview')} icon='eye' primary onClick={this.handlePreview} />
 					</Form>
 				</Grid.Column>
 				<Grid.Column>

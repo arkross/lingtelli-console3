@@ -130,12 +130,12 @@ class ToolComponent extends React.Component {
 			<div>
 				{/* errors && <Message error={!!errors} header={errors} /> */}
 				{/* success && <Message success={!!success} header={success} /> */}
-				<Button disabled={faqCount >= faqLimit && faqLimit > 0} onClick={onCreateGroup} color='green'>
+				<Button disabled={faqCount >= faqLimit && faqLimit > 0} onClick={onCreateGroup} primary>
 					<Icon name="plus" />
 					<span>{t("chatbot.faq.add")}&nbsp;
 					{'(' + faqCount + ' / ' + faqLimitText + ')'}</span>
 				</Button>
-				<Button onClick={this.onExport} color='orange'>
+				<Button onClick={this.onExport} secondary>
 					<Icon name="download"/>
 					{t("chatbot.faq.export")}
 				</Button>
@@ -146,15 +146,14 @@ class ToolComponent extends React.Component {
 				>
 				</Dropzone>
 				<Button
+					secondary
 					loading={loading.upload}
-					color='purple'
 					onClick={ () => { this.dropzoneRef.open() }}
 				>
 					<Icon name="upload"/>
 					{t("chatbot.faq.import")}
 				</Button>
 				<Button
-					color='brown'
 					loading={loading.train}
 					onClick={this.onTrain}
 				>

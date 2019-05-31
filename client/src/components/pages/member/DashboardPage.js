@@ -11,10 +11,7 @@ import { fetchDetail, fetchPackages } from '../../../actions/user'
 import { logout } from '../../../actions/auth'
 import logo from 'styles/img/logo.png'
 import NoSidePage from './NoSidePage'
-import TilePage from '../TilePage'
-import AboutPage from '../AboutPage'
 import ContentPage from './ContentPage'
-import CreateBotPage from '../CreateBotPage'
 
 class DashboardPage extends Component {
 	constructor(props) {
@@ -92,7 +89,7 @@ class DashboardPage extends Component {
 					}
 				]}
 			/>
-			<Menu fixed='top' inverted color='brown' style={{ zIndex: '1003' }}>
+			<Menu fixed='top' inverted style={{ zIndex: '1003' }}>
 				<Menu.Item header onClick={this.handleDashboardClick}>
 					<Image src={logo} size='mini' inline /> LingBot Console
 				</Menu.Item>

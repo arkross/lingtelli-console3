@@ -211,7 +211,7 @@ class Analysis extends React.Component {
 								}
 							}}
 							transition={{
-								duration: 0 
+								duration: 0
 							}}
 							data={{
 								json: data.data,

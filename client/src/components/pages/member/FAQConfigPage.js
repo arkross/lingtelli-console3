@@ -43,7 +43,10 @@ class FAQConfigPage extends React.Component {
 	}
 
 	_fetchGroups = (page=1, keyword='') => {
-		return this.props.fetchGroups(this.props.activeBot, page, keyword)
+		this.setState({ loading: true })
+		return this.props.fetchGroups(this.props.activeBot, page, keyword).finally(() => {
+			this.setState({ loading: false })
+		})
 	}
 
 	componentDidMount = () => {
@@ -100,8 +103,8 @@ class FAQConfigPage extends React.Component {
 	}
 
 	render = () => {
-		const { length, loading, activeBot, t, history, location } = this.props
-		const { groups, activePage, keyword, openDeleteModal, pageInput } = this.state
+		const { length, activeBot, t, history, location } = this.props
+		const { groups, activePage, keyword, openDeleteModal, pageInput, loading } = this.state
 
 		const totalPages = Math.ceil(length / PER_PAGE)
 		const displayGroups = groups

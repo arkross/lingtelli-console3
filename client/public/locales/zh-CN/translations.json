@@ -14,7 +14,7 @@
     "kickAlert": {
       "header": "Session 已过期",
       "content": "您已被登出。稍微回到登录页面。",
-      "ok": "好"
+      "ok": "好的"
     }
   },
   "resetPass": {
@@ -40,6 +40,9 @@
     }
   },
   "demo": {
+    "you": "您",
+    "bot":"机器人",
+    "error": "这是错误反应",
     "button": "测试聊天机器人",
     "title": "测试机器人",
     "input": "请输入讯息 ",

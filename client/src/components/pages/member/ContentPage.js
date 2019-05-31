@@ -29,7 +29,6 @@ import FAQConfigPage from './FAQConfigPage';
 import toJS from 'components/utils/ToJS'
 import TestBotPage from './TestBotPage';
 import BatchTestPage from './BatchTestPage'
-import ThirdPartyIntegrationPage from '../ThirdPartyIntegrationPage'
 import FBIntegrationPage from './FBIntegrationPage'
 import LineIntegrationPage from './LineIntegrationPage'
 import WebIntegrationPage from './WebIntegrationPage'
@@ -118,10 +117,10 @@ class ContentPage extends Component {
 
 		return <Container fluid className='bot-page new-bot-page'>
 			<Responsive as={Fragment} minWidth={Responsive.onlyComputer.minWidth}>
-				<Sidebar direction='left' as={Menu} vertical color='black' fixed='left' className='sidebar-menu' inverted visible={true} animation='overlay' children={menuChildren} />
+				<Sidebar direction='left' as={Menu} vertical fixed='left' className='sidebar-menu' visible={true} animation='overlay' children={menuChildren} />
 			</Responsive>
 			<Responsive as={Fragment} maxWidth={Responsive.onlyTablet.maxWidth}>
-				<Sidebar direction='left' visible={openSideMenu} animation='overlay' className='sidebar-menu' fixed='left' as={Menu} vertical color='black' inverted onHide={this.closeSidebar} children={menuChildren} />
+				<Sidebar direction='left' visible={openSideMenu} animation='overlay' className='sidebar-menu' fixed='left' as={Menu} vertical onHide={this.closeSidebar} children={menuChildren} />
 			</Responsive>
 			
 			{/* <Menu vertical fixed='left' color='black' inverted className={`sidebar-menu ${openSideMenu ? 'active' : ''}`}> */}
@@ -157,7 +156,6 @@ class ContentPage extends Component {
 					<Route path={`${match.path}/recommendations`} render={props => <RecomLogPage className='content-container large' {...props} />} />
 					<Route path={`${match.path}/test`} render={props => <TestBotPage {...props} />} />
 					<Route path={`${match.path}/batch`} render={props => <BatchTestPage {...props} />} />
-					<Route path={`${match.path}/integration/thirdparty`} render={props => <ThirdPartyIntegrationPage {...props} />} />
 					<Route path={`${match.path}/integration/facebook`} render={props => <FBIntegrationPage {...props} />} />
 					<Route path={`${match.path}/integration/line`} render={props => <LineIntegrationPage {...props} />} />
 					<Route path={`${match.path}/integration/web`} render={props => <WebIntegrationPage {...props} />} />

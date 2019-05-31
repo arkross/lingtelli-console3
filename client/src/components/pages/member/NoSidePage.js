@@ -52,9 +52,11 @@ class NoSidePage extends Component {
 				onDismiss={hideAllMessages}>
 				<Message.Content>{t(messages.message)}</Message.Content>
 			</Message>}
-			<div className='content-top'>
-				<LingBreadcrumbs t={t} pathname={location.pathname} />
-			</div>
+			<Menu secondary className='content-top'>
+				<Menu.Item>
+					<LingBreadcrumbs t={t} pathname={location.pathname} />
+				</Menu.Item>
+			</Menu>
 			<Divider />
 			<Switch>
 				<Route path={`/dashboard`} exact render={props => <TilePage {...props} onUpdate={this.updateBots} isUpdate={this.isUpdate} />} />

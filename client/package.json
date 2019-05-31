@@ -38,7 +38,6 @@
     "redux-devtools-extension": "^2.13.2",
     "redux-immutable": "^4.0.0",
     "redux-thunk": "^2.2.0",
-    "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "0.81.3",
     "validator": "^9.2.0"
   },
@@ -53,11 +52,13 @@
     "eject": "react-scripts eject",
     "build-css": "node-sass-chokidar --output-style compressed src/styles/style.scss -o public/css",
     "watch-css": "node-sass-chokidar src/styles/style.scss -o public/css/ --source-map true --watch --recursive --usePolling",
-    "start": "npm-run-all -p watch-css start-js",
+    "build-less": "node-less-chokidar node_modules/semantic-ui-less/semantic.less",
+    "watch-less": "node-less-chokidar node_modules/semantic-ui-less/semantic.less --watch",
+    "start": "npm-run-all -p build-less watch-css start-js",
     "start-alone": "npm-run-all -p watch-css start-js-alone",
-    "build": "npm-run-all build-css build-js",
-    "build:jarvis": "npm-run-all build-css build-jarvis",
-    "build:standalone": "npm-run-all build-css build-alone"
+    "build": "npm-run-all -s build-css build-less build-js",
+    "build:jarvis": "npm-run-all build-css build-less build-jarvis",
+    "build:standalone": "npm-run-all build-css build-less build-alone"
   },
   "devDependencies": {
     "babel-polyfill": "^6.26.0",
@@ -67,8 +68,10 @@
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
+    "node-less-chokidar": "^0.4.1",
     "react-test-renderer": "^16.4.1",
-    "regenerator-runtime": "^0.12.0"
+    "regenerator-runtime": "^0.12.0",
+    "semantic-ui-less": "^2.4.1"
   },
   "babel": {
     "presets": [

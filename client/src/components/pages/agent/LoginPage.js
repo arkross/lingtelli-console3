@@ -106,7 +106,7 @@ class LoginPage extends React.Component {
 							{
 								key: 'continue',
 								content: t('login.kickPrompt.confirm'),
-								positive: true,
+								primary: true,
 								autoFocus: true,
 								onClick: this.onKick
 							},
@@ -154,7 +154,7 @@ class LoginPage extends React.Component {
 								/>
 								{errors.password && <InlineError text={errors.password} />}
 							</Form.Field>
-							<Button fluid color='teal'>{t('login.loginBtn')}</Button>
+							<Button fluid primary>{t('login.loginBtn')}</Button>
 						</Form>
 					</Segment>
 					<Link to='/login'>Member Login</Link>
