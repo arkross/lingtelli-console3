@@ -105,7 +105,7 @@ class Plan extends React.Component {
 		]
 		const selectedPlan = paidtypes.find(el => el.id === idToDelete) || {name: ''}
 		return <div>
-			<NavLink to='/agent/plan/create' className='ui button green'><Icon name='plus' /> Create</NavLink>
+			<NavLink to='/agent/plan/create' className='ui button positive'><Icon name='plus' /> Create</NavLink>
 			<br /><br />
 			<Table size='small'>
 				<Table.Header>

@@ -5,8 +5,8 @@ import { compose } from 'recompose'
 import { translate, Trans} from 'react-i18next'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import toJS from '../utils/ToJS'
-import { updateBot, fetchBot } from '../../actions/bot'
+import toJS from '../../utils/ToJS'
+import { updateBot, fetchBot } from '../../../actions/bot'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 class WebIntegration extends Component {
@@ -163,7 +163,7 @@ class WebIntegration extends Component {
 
 	getWebTutorial = () => {
 		const { t } = this.props
-		const step1 = require(`../../assets/img/chatbot/en-us/web/script.PNG`)
+		const step1 = require(`../../../assets/img/chatbot/en-us/web/script.PNG`)
 		return <Image src={step1} />
 	}
 
@@ -302,7 +302,7 @@ ${str}</script>
 						<FormField control={Input} label={t('chatbot.setting.web.headerBackgroundColor')} type='text' onChange={this.handlePreviewFormChange.bind(null, 'headerBackgroundColor')} value={headerBackgroundColor} placeholder={'#0084FF'} />
 						<FormField control={Input} label={t('chatbot.setting.web.headerTextColor')} type='text' onChange={this.handlePreviewFormChange.bind(null, 'headerTextColor')} value={headerTextColor} placeholder={'#FFFFFF'} />
 						<FormField control={Input} label={t('chatbot.setting.web.chatLabel')} type='text' onChange={this.handlePreviewFormChange.bind(null, 'chatLabel')} value={chatLabel} />
-						<Button content={t('chatbot.setting.web.preview')} icon='eye' color='green' onClick={this.handlePreview} />
+						<Button content={t('chatbot.setting.web.preview')} icon='eye' primary onClick={this.handlePreview} />
 					</Form>
 				</Grid.Column>
 				<Grid.Column>

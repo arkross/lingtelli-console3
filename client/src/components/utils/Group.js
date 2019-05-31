@@ -69,14 +69,15 @@ class Group extends React.Component {
 		return (
 			<div className="group">
 				<Icon
-					name="remove"
+					name="trash alternate"
+					color='red'
 					onClick={(e) => onDelete(e, ix) }
 					className='delete-group-icon pull-right clickable'
 				/>
 				<Grid stackable doubling>
 					<Grid.Row columns='equal'>
 						<Grid.Column>
-							<Button floated='left' color='blue' icon='add' content={t('chatbot.faq.question')} onClick={this.onCreate} className="block create-question" />
+							<Button floated='left' primary icon='plus' content={t('chatbot.faq.question')} onClick={this.onCreate} className="block create-question" />
 							<div style={{clear: 'both'}} />
 							{
 								questions && _.map(questions, (item, ix) =>
@@ -93,7 +94,7 @@ class Group extends React.Component {
 							}
 						</Grid.Column>
 						<Grid.Column>
-							<Button floated='right' color='blue' icon='add' content={t('chatbot.faq.answer')} onClick={this.onCreateAnswer} className="block create-question" />
+							<Button floated='right' primary icon='add' content={t('chatbot.faq.answer')} onClick={this.onCreateAnswer} className="block create-question" />
 							<div style={{clear: 'both'}} />
 							{
 								answers && _.map(answers, (item, ix) =>

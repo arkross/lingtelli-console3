@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { fetchBots, updateBot, deleteBot } from 'actions/bot'
-import { showInfo } from '../../actions/message'
+import { showInfo } from 'actions/message'
 import BotConfigForm from 'components/forms/BotConfigForm'
 import {translate} from 'react-i18next'
 

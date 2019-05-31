@@ -5,10 +5,10 @@ import { compose } from 'recompose'
 import { translate, Trans} from 'react-i18next'
 import { connect } from 'react-redux'
 import { withRouter, NavLink } from 'react-router-dom'
-import toJS from '../utils/ToJS'
+import toJS from '../../utils/ToJS'
 import { updateBot } from 'actions/bot'
 
-import APIDocPage from './APIDocPage'
+import APIDocPage from '../APIDocPage'
 
 class APIIntegration extends Component {
 
@@ -117,7 +117,7 @@ class APIIntegration extends Component {
 			<Grid.Row>
 				<Grid.Column>
 					<Header as='h4'>Vendor ID</Header>
-					<Input type='text' readOnly value={vendor_id}>
+					<Input type='text' readOnly value={vendor_id || ''}>
 						<input size={40} />
 					</Input>
 				</Grid.Column>

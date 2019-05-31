@@ -6,7 +6,7 @@ import toJS from 'components/utils/ToJS'
 import { fetchMatching } from 'actions/bot'
 import { NavLink } from 'react-router-dom'
 import { Header, Table, Container, Dimmer, Loader, Icon, Menu, Form, Dropdown, Input } from 'semantic-ui-react'
-import LingPagination from '../utils/LingPagination'
+import LingPagination from '../../utils/LingPagination'
 import qs from 'query-string'
 import _ from 'lodash'
 
@@ -93,68 +93,61 @@ class RecomLogPage extends Component {
 			{value: 'OTHER', text: t('chatbot.history.platforms.other')}
 		]
 		
-		return <Fragment>
-			<Menu secondary>
-				<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis`} exact>{t('chatbot.analysis.text')}</NavLink>
-				<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis/history`}>{t('chatbot.history.text')}</NavLink>
-				<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis/recommendations`}>{t('chatbot.recommendations.text')}</NavLink>
-			</Menu>
-			<Container fluid>
-				<Dimmer inverted active={loading} />
-				<Loader active={loading} />
-				<Form onSubmit={this.onFilterSubmit}>
-					<Form.Group>
-						<Form.Field>
-							<label>{t('chatbot.recommendations.filter')}</label>
-							<Dropdown selection options={platformOptions} placeholder={t('chatbot.recommendations.platform')} value={platform} onChange={this.onFilterChange} />
-						</Form.Field>
-						<Form.Field>
-							<label>{t('chatbot.history.uid')}</label>
-							<Input placeholder={t('chatbot.recommendations.uid')} value={uid} onChange={this.onInputUidChange} />
-						</Form.Field>
-					</Form.Group>
-				</Form>
-				{ (data && data.count) ? 
-				<div>
-					<Table celled>
-						<Table.Header>
-							<Table.Row>
-								<Table.HeaderCell>
-									{t('chatbot.recommendations.ori_question')}
-								</Table.HeaderCell>
-								<Table.HeaderCell>
-									{t('chatbot.recommendations.selected_question')}
-								</Table.HeaderCell>
-								<Table.HeaderCell>
-									{t('chatbot.recommendations.platform')}
-								</Table.HeaderCell>
-								<Table.HeaderCell>
-									{t('chatbot.recommendations.uid')}
-								</Table.HeaderCell>
-							</Table.Row>
-						</Table.Header>
-						<Table.Body>
-							{_.map(data.results, el => <Table.Row key={el.id}>
-								<Table.Cell>{el.ori_question}</Table.Cell>
-								<Table.Cell>{el.select_question}</Table.Cell>
-								<Table.Cell>{el.platform}</Table.Cell>
-								<Table.Cell>{el.user_id}</Table.Cell>
-							</Table.Row>)}
-						</Table.Body>
-					</Table>
-					{
-						totalPages > 0 &&
-							<LingPagination
-								history={history}
-								location={location}
-								activePage={activePage}
-								onPageChange={this.onPageChanged}
-								totalPages={totalPages}
-							/>
-					}
-				</div> : <Header as='h4' textAlign='center'>{t('chatbot.history.empty')}</Header>}
-			</Container>
-		</Fragment>
+		return <div className={`analysis-container`}>
+			<Dimmer inverted active={loading} />
+			<Loader active={loading} />
+			<Form onSubmit={this.onFilterSubmit}>
+				<Form.Group>
+					<Form.Field>
+						<label>{t('chatbot.recommendations.filter')}</label>
+						<Dropdown selection options={platformOptions} placeholder={t('chatbot.recommendations.platform')} value={platform} onChange={this.onFilterChange} />
+					</Form.Field>
+					<Form.Field>
+						<label>{t('chatbot.history.uid')}</label>
+						<Input placeholder={t('chatbot.recommendations.uid')} value={uid} onChange={this.onInputUidChange} />
+					</Form.Field>
+				</Form.Group>
+			</Form>
+			{ (data && data.count) ? 
+			<div>
+				<Table celled>
+					<Table.Header>
+						<Table.Row>
+							<Table.HeaderCell>
+								{t('chatbot.recommendations.ori_question')}
+							</Table.HeaderCell>
+							<Table.HeaderCell>
+								{t('chatbot.recommendations.selected_question')}
+							</Table.HeaderCell>
+							<Table.HeaderCell>
+								{t('chatbot.recommendations.platform')}
+							</Table.HeaderCell>
+							<Table.HeaderCell>
+								{t('chatbot.recommendations.uid')}
+							</Table.HeaderCell>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{_.map(data.results, el => <Table.Row key={el.id}>
+							<Table.Cell>{el.ori_question}</Table.Cell>
+							<Table.Cell>{el.select_question}</Table.Cell>
+							<Table.Cell>{el.platform}</Table.Cell>
+							<Table.Cell>{el.user_id}</Table.Cell>
+						</Table.Row>)}
+					</Table.Body>
+				</Table>
+				{
+					totalPages > 0 &&
+						<LingPagination
+							history={history}
+							location={location}
+							activePage={activePage}
+							onPageChange={this.onPageChanged}
+							totalPages={totalPages}
+						/>
+				}
+			</div> : <Header as='h4' textAlign='center'>{t('chatbot.history.empty')}</Header>}
+		</div>
 	}
 }
 

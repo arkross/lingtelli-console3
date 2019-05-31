@@ -1,9 +1,9 @@
 import React from 'react';
-import InlineMessage from '../messages/InlineMessage';
+import InlineMessage from '../../messages/InlineMessage';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
-import { createBot, fetchAllBotDetails } from '../../actions/bot'
+import { createBot, fetchAllBotDetails } from '../../../actions/bot'
 import { fetchPackages } from 'actions/user';
 import {
 	Form,
@@ -202,9 +202,7 @@ class CreateBotPage extends React.Component {
 				<Responsive as={Grid} minWidth={Responsive.onlyTablet.minWidth}>
 					<Grid.Row columns='equal'>
 						<Grid.Column>
-							<Label color={botCount < bot_limit ? 'green' : 'red'} size='large' basic>
-								{t('chatbot.create.bot_count')} : {botCount} / {botLimitText}
-							</Label>
+							{t('chatbot.create.bot_count')}: {botCount}/{botLimitText}
 						</Grid.Column>
 						<Grid.Column>
 							<Button
@@ -222,9 +220,7 @@ class CreateBotPage extends React.Component {
 				<Responsive as={Grid} maxWidth={Responsive.onlyMobile.maxWidth}>
 					<Grid.Row>
 						<Grid.Column>
-							<Label color={botCount < bot_limit ? 'green' : 'red'} size='large' basic>
-								{t('chatbot.create.bot_count')} : {botCount} / {botLimitText}
-							</Label>
+							{t('chatbot.create.bot_count')}: {botCount}/{botLimitText}
 							<br /><br />
 							<Button
 								disabled={botCount >= bot_limit}

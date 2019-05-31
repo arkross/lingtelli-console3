@@ -224,7 +224,7 @@ class BatchTestPage extends Component {
 	render() {
 		const { t, info } = this.props
 		const { records, showExpected, showPostback, isRunning, isParsingCSV, openDescriptionModal } = this.state
-		const img = require('../../assets/img/chatbot/csvdemo.png')
+		const img = require('../../../assets/img/chatbot/csvdemo.png')
 
 		const total = records.length
 		const errors = records.filter(record => (record.isRun && record.response.type === 'error')).length

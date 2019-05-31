@@ -95,7 +95,7 @@ class TaskbotsPage extends React.Component {
 		]
 		
 		return <div>
-			<NavLink to='/agent/taskbots/create' className='ui button green'><Icon name='plus' /> Create</NavLink>
+			<NavLink to='/agent/taskbots/create' className='ui button positive'><Icon name='plus' /> Create</NavLink>
 			<Button content='Save Changes' floated='right' primary icon='save' disabled={changes.length === 0} onClick={this.onSubmit} />
 			<Table>
 				<Table.Header>

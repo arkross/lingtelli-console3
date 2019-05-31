@@ -115,7 +115,7 @@ class CreatePlanPage extends React.Component {
 				fluid multiple selection options={ddOptions} 
 				value={data.third_party}
 				onChange={this.onFormChange} />
-			<Button onClick={this.onSubmit} content='Create Plan' icon={'plus'} color='green' />
+			<Button onClick={this.onSubmit} content='Create Plan' icon={'plus'} primary />
 		</Form>
 	}
 }

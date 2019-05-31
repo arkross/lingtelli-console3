@@ -14,7 +14,7 @@
     "kickAlert": {
       "header": "Session 已过期",
       "content": "您已被登出。稍微回到登录页面。",
-      "ok": "好"
+      "ok": "好的"
     }
   },
   "resetPass": {
@@ -40,6 +40,9 @@
     }
   },
   "demo": {
+    "you": "您",
+    "bot":"机器人",
+    "error": "这是错误反应",
     "button": "测试聊天机器人",
     "title": "测试机器人",
     "input": "请输入讯息 ",
@@ -93,6 +96,8 @@
     "copied": "已复制",
     "success": "机器人资料储存成功!",
     "setting": {
+      "title": "设定",
+      "general": "基础",
       "text": "基础设定",
       "unavailable": "您的方案无法启用此服务",
       "line": {
@@ -221,12 +226,14 @@
       }
     },
     "analysis": {
+      "title": "总览",
       "text": "统计分析",
       "questions": "每日问题的数量",
       "unhandled": "无法处理的问题",
       "label": "问答数",
       "top_5": "最常见的5个问题",
       "timeRange": "时间",
+      "statistics_30": "最近30天的统计",
       "options": {
         "_7": "7天内对话",
         "_14": "14天内对话",
@@ -234,6 +241,7 @@
       }
     },
     "faq": {
+      "title": "问答",
       "text": "问答集设定",
       "export": "下载CSV",
       "import": "上传CSV",

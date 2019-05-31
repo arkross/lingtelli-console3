@@ -10,17 +10,15 @@ import {
 	Container,
 	Dimmer,
 	Loader,
-	Menu,
 	Button,
 	Input,
 	Form,
 	Dropdown
 } from 'semantic-ui-react';
-import { NavLink } from 'react-router-dom'
 import toJS from 'components/utils/ToJS'
 import qs from 'query-string'
-import LingPagination from '../utils/LingPagination'
-import { fetchHistory, fetchExportHistory } from '../../actions/bot'
+import LingPagination from '../../utils/LingPagination'
+import { fetchHistory, fetchExportHistory } from '../../../actions/bot'
 
 class HistoryPage extends React.Component {
 	constructor(props) {
@@ -30,12 +28,17 @@ class HistoryPage extends React.Component {
 			platform: params.platform || 'ALL',
 			uid: params.uid || '',
 			activePage: params.page || 1,
+			exportLoading: false,
+			loading: false,
 			columnReversed: false
 		}
 	}
 
 	fetchData = (platform, uid, activePage) => {
-		this.props.fetchHistory(this.props.activeBot, platform || this.state.platform, uid || this.state.uid, activePage || this.state.activePage)
+		this.setState({ loading: true })
+		this.props.fetchHistory(this.props.activeBot, platform || this.state.platform, uid || this.state.uid, activePage || this.state.activePage).finally(() => {
+			this.setState({ loading: false })
+		})
 	}
 
 	componentDidMount() {
@@ -89,18 +92,6 @@ class HistoryPage extends React.Component {
 		: []
 	}
 
-	onSwitchClick = e => {
-		e.preventDefault()
-		this.setState({ columnReversed: !this.state.columnReversed })
-	}
-
-	onExportClick = e => {
-		e.preventDefault()
-		this.props.fetchExportHistory(this.props.activeBot, this.state.platform, this.state.uid).then(data => {
-			FileDownload(data, `${this.props.info.robot_name}_history.csv`)
-		})
-	}
-
 	changeUrlQuery = data => {
 		const params = this.props.location ? qs.parse(this.props.location.search) : {}
 		params.platform = data.platform || params.platform || 'ALL'
@@ -108,6 +99,20 @@ class HistoryPage extends React.Component {
 		this.props.history.push({
 			search: `?${qs.stringify(params)}`
 		})
+	}
+
+	onExportClick = e => {
+		e.preventDefault()
+		this.setState({ exportLoading: true })
+		this.props.fetchExportHistory(this.props.activeBot, this.state.platform, this.state.uid).then(data => {
+			this.setState({ exportLoading: false })
+			FileDownload(data, `${this.props.info.robot_name}_history.csv`)
+		})
+	}
+
+	onSwitchClick = e => {
+		e.preventDefault()
+		this.setState({ columnReversed: !this.state.columnReversed })
 	}
 
 	onFilterChange = (e, { value }) => {
@@ -130,8 +135,8 @@ class HistoryPage extends React.Component {
 	}
 
 	render = () => {
-		const { activePage, columnReversed, platform, uid } = this.state
-		const { histories, t, loading, location, activeBot } = this.props
+		const { activePage, columnReversed, platform, uid, exportLoading, loading } = this.state
+		const { histories, t, location, activeBot } = this.props
 
 		const platformOptions = [
 			{value: 'ALL', text: t('chatbot.history.platforms.all')},
@@ -143,70 +148,63 @@ class HistoryPage extends React.Component {
 		]
 
 		const centerStyle = {
-			width: '35%',
+			width: '100%',
+			textAlign: 'center',
 			margin: 'auto'
 		}
 
 		const perPage = 50
 		const totalPage = Math.ceil(histories.count / perPage)
-		return (<Fragment>
-			<Menu secondary>
-					<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis`} exact>{t('chatbot.analysis.text')}</NavLink>
-					<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis/history`}>{t('chatbot.history.text')}</NavLink>
-					<NavLink className='item' to={`/dashboard/bot/${activeBot}/analysis/recommendations`}>{t('chatbot.recommendations.text')}</NavLink>
-				</Menu>
-			<Container fluid className='history-container'>
-				<Loader active={loading} />
-				<Dimmer inverted active={loading} />
-				<Form onSubmit={this.onFilterSubmit}>
-					<Form.Group>
-						<Form.Field>
-							<label>{t('chatbot.history.filter')}</label>
-							<Dropdown selection options={platformOptions} placeholder={t('chatbot.history.platform')} value={platform} onChange={this.onFilterChange} />
-						</Form.Field>
-						<Form.Field>
-							<label>{t('chatbot.history.uid')}</label>
-							<Input placeholder={t('chatbot.history.uid')} value={uid} onChange={this.onInputUidChange} />
-						</Form.Field>
-					</Form.Group>
-				</Form>
-				{(!histories.results || !histories.count) && <Header as='h4' textAlign='center'>{t('chatbot.history.empty')}</Header>} 
-				{(!!histories.results && !!histories.count) &&
-				<div>
-					<Button icon='download' floated='right' content={t('chatbot.faq.export')} onClick={this.onExportClick} />
-					<Button icon='exchange' primary floated='right' content={t('chatbot.history.toggle')} onClick={this.onSwitchClick} />
-					<br /><br />
-					<Table celled>
-						<Table.Header>
-							<Table.Row>
-								<Table.HeaderCell style={{width: '30%'}}>{columnReversed ? t('chatbot.history.bot') : t('chatbot.history.user')}</Table.HeaderCell>
-								<Table.HeaderCell style={{width: '30%'}}>{columnReversed ? t('chatbot.history.user') : t('chatbot.history.bot')}</Table.HeaderCell>
-								<Table.HeaderCell style={{width: '20%'}}>{t('chatbot.history.datetime')}</Table.HeaderCell>
-								<Table.HeaderCell style={{width: '10%'}}>{t('chatbot.history.platform')}</Table.HeaderCell>
-								<Table.HeaderCell style={{width: '10%'}}>{t('chatbot.history.uid')}</Table.HeaderCell>
-							</Table.Row>
-						</Table.Header>
-						<Table.Body>
-							{this.createHistoryElements()}
-						</Table.Body>
-					</Table>
-					{
-						totalPage > 0 &&
-							<div className='pagination-container' style={centerStyle}>
-								<LingPagination
-									history={this.props.history}
-									location={location}
-									activePage={activePage}
-									onPageChange={this.onPageChanged}
-									totalPages={totalPage}
-								/>
-							</div>
-					}
-				</div>}
-			</Container>
-			</Fragment>
-		);
-	};
+		return <div className={`analysis-container`}>
+			<Loader active={loading} />
+			<Dimmer inverted active={loading} />
+			<Form onSubmit={this.onFilterSubmit}>
+				<Form.Group>
+					<Form.Field>
+						<label>{t('chatbot.history.filter')}</label>
+						<Dropdown selection options={platformOptions} placeholder={t('chatbot.history.platform')} value={platform} onChange={this.onFilterChange} />
+					</Form.Field>
+					<Form.Field>
+						<label>{t('chatbot.history.uid')}</label>
+						<Input placeholder={t('chatbot.history.uid')} value={uid} onChange={this.onInputUidChange} />
+					</Form.Field>
+				</Form.Group>
+			</Form>
+			{(!histories.results || !histories.count) && <Header as='h4' textAlign='center'>{t('chatbot.history.empty')}</Header>} 
+			{(!!histories.results && !!histories.count) &&
+			<div>
+				<Button icon='download' primary loading={exportLoading} floated='right' content={t('chatbot.faq.export')} onClick={this.onExportClick} />
+				<Button icon='exchange' floated='right' content={t('chatbot.history.toggle')} onClick={this.onSwitchClick} />
+				<br /><br />
+				<Table celled>
+					<Table.Header>
+						<Table.Row>
+							<Table.HeaderCell style={{width: '30%'}}>{columnReversed ? t('chatbot.history.bot') : t('chatbot.history.user')}</Table.HeaderCell>
+							<Table.HeaderCell style={{width: '30%'}}>{columnReversed ? t('chatbot.history.user') : t('chatbot.history.bot')}</Table.HeaderCell>
+							<Table.HeaderCell style={{width: '20%'}}>{t('chatbot.history.datetime')}</Table.HeaderCell>
+							<Table.HeaderCell style={{width: '10%'}}>{t('chatbot.history.platform')}</Table.HeaderCell>
+							<Table.HeaderCell style={{width: '10%'}}>{t('chatbot.history.uid')}</Table.HeaderCell>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{this.createHistoryElements()}
+					</Table.Body>
+				</Table>
+				{
+					totalPage > 0 &&
+						<div className='pagination-container' style={centerStyle}>
+							<LingPagination
+								history={this.props.history}
+								location={location}
+								activePage={activePage}
+								onPageChange={this.onPageChanged}
+								totalPages={totalPage}
+							/>
+						</div>
+				}
+			</div>}
+		</div>
+	}
 }
 
 const mapStateToProps = (state, ownProps) => ({

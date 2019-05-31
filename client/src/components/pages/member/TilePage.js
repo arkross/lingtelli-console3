@@ -41,7 +41,7 @@ class TilePage extends Component {
 
 		const thisWeek = moment().subtract(7, 'days')
 		const botData = _.map(bots, el => {
-			const midReport = _.chain(el.report)
+			const midReport = _.chain(el.report ? el.report['7'] : [])
 				.filter(o => moment(o.date, 'YYYY/MM/DD').isAfter(thisWeek))
 				.reduce((acc, o) => ({
 					total_chat: acc.total_chat + o.total_chat,
@@ -60,7 +60,7 @@ class TilePage extends Component {
 			}, el)
 		})
 
-		return <Responsive as={Card.Group} className='tile-dashboard' centered>
+		return <Card.Group className='tile-dashboard' centered>
 			{_.map(botData, el => <Card key={`${el.id}bot`} href={`${baseUrl}/bot/${el.id}`} onClick={e => {
 				e.preventDefault()
 				return onCardClick(`${baseUrl}/bot/${el.id}`)
@@ -107,7 +107,7 @@ class TilePage extends Component {
 					</Header>
 				</Card.Content>
 			</Card>
-		</Responsive>
+		</Card.Group>
 	}
 }
 

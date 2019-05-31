@@ -46,8 +46,9 @@ class AnalysisWidget extends Component {
 	
 	render = () => {
 		
-		const { t, info: {report} } = this.props
+		const { t, info: {report: reportAll} } = this.props
 		moment.locale(localStorage.i18nextLng.toLowerCase())
+		const report = (reportAll && reportAll[7]) ? reportAll[7] : []
 
 		const today = moment()
 		const yesterday = moment().subtract(1, 'day')

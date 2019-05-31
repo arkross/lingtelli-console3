@@ -123,7 +123,7 @@ class Member extends React.Component {
 				<Input type='text' icon='search' value={search} onChange={this.onSearchChange} name='username' placeholder='Search Username' style={{float: 'left'}} />
 				<Button style={{display: 'none'}} />
 			</Form> */}
-			<Button content='Save Changes' color='blue' icon='save' floated='right' disabled={changes.length === 0} onClick={this.onSaveButtonClick} loading={loading} />
+			<Button content='Save Changes' primary icon='save' floated='right' disabled={changes.length === 0} onClick={this.onSaveButtonClick} loading={loading} />
 			<br /><br />
 			<Segment basic loading={loading}>
 			<Table size='small'>

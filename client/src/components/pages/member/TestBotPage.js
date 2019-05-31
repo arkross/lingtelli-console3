@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import { connect } from 'react-redux'
-import { Input, Container, Header, List, Icon, Form, Popup} from 'semantic-ui-react'
+import { Input, Container, Header, List, Icon, Form, Popup, Message, Segment, Comment} from 'semantic-ui-react'
 import { compose } from 'recompose';
 import { translate } from 'react-i18next'
 import { NavLink } from 'react-router-dom'
@@ -33,7 +33,9 @@ class TestBotPage extends Component {
 				}]
 			})
 		}
-		this.chatMessages.scrollTop = this.chatMessages.scrollHeight
+		if (this.chatMessages) {
+			this.chatMessages.scrollTop = this.chatMessages.scrollHeight
+		}
 	}
 
 	componentDidMount() {
@@ -160,33 +162,35 @@ class TestBotPage extends Component {
 
 		moment.locale(localStorage.i18nextLng.toLowerCase())
 		let keyCounter = 0
-		return <Container text className='chat-container'>
-			<Header as='h3'>
-				{info.robot_name}
-				<Popup trigger={<NavLink style={{float: 'right', color: '#fff', fontWeight: 'normal', fontSize: '0.8em'}} to={`/dashboard/bot/${info.id}/batch`}>
+		return <div>
+			<Message attached>
+				<Popup trigger={<NavLink style={{float: 'right'}} to={`/dashboard/bot/${info.id}/batch`}>
 					{t('chatbot.batch.text')}
 				</NavLink>} content={t('chatbot.batch.popup')} />
-			</Header>
-			<div ref={el => {this.chatMessages = el}} className='chat-messages-container'>
+				<div className='header'>{info.robot_name}</div>
+			</Message>
+			<div className='ui attached segment' ref={el => {this.chatMessages = el}} style={{height: '500px', overflowY: 'scroll'}}>
+				<Comment.Group as='div'>
 				{
 					_.map(messages, message => {
 						if (message.type === 'list' || (message.type === 'answer' && message.data.buttons) || message.type === 'no_answer') {
-							return <RecommendationBalloon t={t} oriQue={message.oriQue} date={message.date} title={message.data.title || message.data.text} data={message.data.buttons} key={keyCounter++} onSelect={this.onRecommendationSelected} />
+							return <RecommendationBalloon type={message.type} t={t} oriQue={message.oriQue} date={message.date} title={message.data.title || message.data.text} data={message.data.buttons} key={keyCounter++} onSelect={this.onRecommendationSelected} />
 						}
 						else {
-							return <TextBalloon key={keyCounter++} date={message.date} sender={message.sender}>{message.data.title || message.data.text}</TextBalloon>
+							return <TextBalloon key={keyCounter++} type={message.type} date={message.date} sender={message.sender}>{message.data.title || message.data.text}</TextBalloon>
 						}
 					})
 				}
+				</Comment.Group>
 			</div>
-			<form onSubmit={this.onFormSubmit} className='chat-input-container'>
-				<Input icon placeholder={t('demo.input')}>
+			<Form onSubmit={this.onFormSubmit} className='attached bottom message' >
+				<Input fluid icon placeholder={t('demo.input')}>
 					<input type='text' ref={el => {this.messageField = el}} onChange={this.onTextboxChange} autoFocus={ ! cancelAutoFocus} value={currentMessage} />
 					<Icon name='send' link={!!currentMessage} onClick={this.onClickSend} />
 				</Input>
 				<button type="submit" style={{'display': 'none'}}/>
-			</form>
-		</Container>
+			</Form>
+		</div>
 	}
 }
 
@@ -202,35 +206,37 @@ export default compose(
 	toJS
 )(TestBotPage)
 
-class TextBalloon extends Component {
+class TextBalloonInner extends Component {
 	render() {
-		const { date, sender, children } = this.props
-		return <div className={'text-balloon-wrapper ' + (sender ? sender : 'user')}>
-			<div className='flexer'>
-				<div className='text-balloon-text'>
-					{children}
-				</div>
-				<div className='text-balloon-date' title={moment(date).format('YYYY-MM-DD HH:mm:ss')}>
-					{moment(date).fromNow()}
-				</div>
-			</div>
-		</div>
+		const { date, sender, children, t, actions, type } = this.props
+		return <Comment>
+			<Comment.Avatar as={Icon} name={sender === 'bot' ? 'android' : 'user'} size='large' />
+			<Comment.Content>
+				<Comment.Author as='span'>{sender === 'bot' ? t('demo.bot') : t('demo.you')} {type === 'error' ? <Icon title={t('demo.error')} name='remove' color='red' /> : ''}</Comment.Author>
+				<Comment.Metadata as='div' title={moment(date).format('YYYY-MM-DD HH:mm:ss')}><div>{moment(date).fromNow()}</div></Comment.Metadata>
+				<Comment.Text>{children}</Comment.Text>
+				{actions}
+			</Comment.Content>
+		</Comment>
 	}
 }
+
+const TextBalloon = compose(
+	translate()
+)(TextBalloonInner)
 
 class RecommendationBalloon extends Component {
 	handleClick = obj => {
 		return this.props.onSelect(obj)
 	}
 	render() {
-		const { date, data, title, t} = this.props
+		const { date, data, title, t, type} = this.props
 		let counter = 0 // temporary key
 		const links = _.map(data, question => <List.Item as='a' key={question.id + counter++} onClick={this.handleClick.bind(this, question)}>
 			{question.text}
 		</List.Item>)
-		return <TextBalloon sender='bot' date={date}>
+		return <TextBalloon sender='bot' type={type} date={date} actions={<Segment compact><List divided>{links}</List></Segment>}>
 			<div className='recommendation-title'>{title}</div>
-			<List divided>{links}</List>
 		</TextBalloon>
 	}
 }

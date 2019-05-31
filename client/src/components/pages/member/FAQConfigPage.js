@@ -9,7 +9,7 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import { translate, Trans } from 'react-i18next'
 import { fetchGroups, fetchGroup, deleteGroup } from 'actions/group'
-import { updateBot } from '../../actions/bot'
+import { updateBot } from '../../../actions/bot'
 import {
 	Icon,
 	Segment,
@@ -18,7 +18,7 @@ import {
 	Button,
 	Input
 } from 'semantic-ui-react'
-import LingPagination from '../utils/LingPagination'
+import LingPagination from '../../utils/LingPagination'
 import qs from 'query-string'
 import toJS from 'components/utils/ToJS'
 
@@ -43,7 +43,10 @@ class FAQConfigPage extends React.Component {
 	}
 
 	_fetchGroups = (page=1, keyword='') => {
-		return this.props.fetchData(page, keyword)
+		this.setState({ loading: true })
+		return this.props.fetchGroups(this.props.activeBot, page, keyword).finally(() => {
+			this.setState({ loading: false })
+		})
 	}
 
 	componentDidMount = () => {
@@ -100,8 +103,8 @@ class FAQConfigPage extends React.Component {
 	}
 
 	render = () => {
-		const { length, loading, activeBot, t, history, location } = this.props
-		const { groups, activePage, keyword, openDeleteModal, pageInput } = this.state
+		const { length, activeBot, t, history, location } = this.props
+		const { groups, activePage, keyword, openDeleteModal, pageInput, loading } = this.state
 
 		const totalPages = Math.ceil(length / PER_PAGE)
 		const displayGroups = groups

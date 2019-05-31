@@ -3,22 +3,33 @@ import { compose } from 'recompose'
 import { connect } from 'react-redux'
 import _ from 'lodash'
 import Dropzone from "react-dropzone"
-import { fetchGroups, uploadGroups, trainGroups } from "../../../actions/group"
-import { Button, Icon, Form, Input, Grid, Message, Header, Pagination, Table, Divider, Label } from 'semantic-ui-react'
+import { Button, Icon, Form, Input, Grid, Message, Header, Pagination, Table, Divider, Label, Modal } from 'semantic-ui-react'
 import FileDownload from "react-file-download"
-import groupApis from "apis/group"
-import { deleteGroup } from '../../../actions/group'
-import { updateTaskbot, fetchTaskbots, deleteTaskbot } from '../../../actions/taskbot'
-import { createQuestion, updateQuestion, deleteQuestion } from '../../../actions/question'
-import { updateAnswer, createAnswer } from '../../../actions/answer'
+import {
+	fetchTemplates,
+	fetchTemplate,
+	updateTemplate,
+	deleteTemplate,
+	fetchTemplateFAQGroups,
+	fetchTemplateFAQGroup,
+	createTemplateFAQGroup,
+	createTemplateAnswer,
+	createTemplateQuestion,
+	updateTemplateAnswer,
+	updateTemplateQuestion,
+	deleteTemplateAnswer,
+	deleteTemplateQuestion,
+	deleteTemplateFAQGroup,
+	exportFAQ,
+	uploadFAQ
+} from '../../../actions/template'
 import toJS from 'components/utils/ToJS'
 import { translate, Trans } from 'react-i18next'
 import DeletionModal from '../../modals/TaskbotDeletionModal'
 import LingPagination from '../../utils/LingPagination'
 import qs from 'query-string'
-import TestBotPage from '../member/TestBotPage'
 
-class TaskbotDetailPage extends React.Component {
+class TemplateDetailPage extends React.Component {
 
 	constructor(props) {
 		super(props)
@@ -29,11 +40,9 @@ class TaskbotDetailPage extends React.Component {
 			success: '',
 			openDeleteModal: false,
 			addGroupLoading: false,
-			trainLoading: false,
 			importLoading: false,
 			exportLoading: false,
-			data: props.bot || {
-				vendor_id: '',
+			data: props.template || {
 				robot_name: '',
 				greeting_msg: '',
 				failed_msg: '',
@@ -45,24 +54,27 @@ class TaskbotDetailPage extends React.Component {
 	}
 
 	componentDidMount() {
-		this.fetchTaskbots()
+		this.fetchTemplates()
 	}
 
-	fetchTaskbots = () => {
-		return this.props.fetchTaskbots().then(() => {
-			if ( ! this.props.bot) {
-				this.props.history.push('/agent/taskbots')
+	fetchTemplates = () => {
+		return this.props.fetchTemplate(this.props.match.params.id).then(() => {
+			if ( ! this.props.template) {
+				this.props.history.push('/agent/templates')
 			} else {
-				this.fetchGroups()
+				this.fetchTemplateFAQGroups()
 			}
 		})
 	}
 
-	fetchGroups = (activePage = null) => {
-		return this.props.fetchGroups(this.props.bot.id, activePage || this.state.activePage, '').then(() => {
-			this.setState( { data: this.props.bot, loading: false, faq: this.props.groups })
+	fetchTemplateFAQGroups = (activePage = null) => {
+		
+		return this.props.fetchTemplateFAQGroups(this.props.template.id, activePage || this.state.activePage, '').then(() => {
+			const { template: { group }} = this.props
+			const groups = (group && group.results) ? group.results : []
+			this.setState( { data: this.props.template, loading: false, faq: groups })
 		}, err => {
-			this.setState({ data: this.props.bot, loading: false, faq: []})
+			this.setState({ data: this.props.template, loading: false, faq: []})
 		})
 	}
 
@@ -77,14 +89,15 @@ class TaskbotDetailPage extends React.Component {
 
 	onExport = (id, e) => {
 		this.setState({ exportLoading: true })
-		groupApis.export(id)
+		this.props.exportFAQ(id)
 			.then(data => FileDownload(data, 'export.csv'),
 			() => this.setState({ errors: 'Export FAQ Error' }))
 			.finally(() => this.setState({ exportLoading: false }));
 	}
 
 	onDrop = (id, acceptedFiles, rejectedFiles) => {
-		const { t, uploadGroups } = this.props
+		const { t, uploadFAQ, template: { group } } = this.props
+		const groups = group && group.results ? group.results : []
 
 		if (acceptedFiles.length) {
 			const files = new FormData()
@@ -92,11 +105,10 @@ class TaskbotDetailPage extends React.Component {
 
 			this.setState({ importLoading: true })
 
-			return uploadGroups(id, files)
+			return uploadFAQ(id, files)
 				.then(() => {
-					this.props.trainGroups(this.props.bot.id)
-					return this.props.fetchGroups(this.props.bot.id, this.state.activePage, '').then(() => {
-						this.setState({ success: 'Import FAQ Successful', errors: null, faq: this.props.groups, importLoading: false })
+					return this.props.fetchTemplateFAQGroups(this.props.template.id, this.state.activePage, '').then(() => {
+						this.setState({ success: 'Import FAQ Successful', errors: null, faq: groups, importLoading: false })
 					})
 				})
 				.catch( res =>
@@ -105,28 +117,26 @@ class TaskbotDetailPage extends React.Component {
 		}
 	}
 
-	onTrain = id => {
-		const { t, trainGroups } = this.props
-
-		this.setState({ trainLoading: true })
-
-		return trainGroups(id)
-			.then(() => this.setState({ trainLoading: false, success: 'Training Successful' }))
-			.catch(() => this.setState({ trainLoading: false, errors: 'Training Failed' }))
-	}
-
 	onSubmit = e => {
+		e.preventDefault()
 		this.setState({ loading: true })
-		return this.props.updateTaskbot(this.props.match.params.id, this.state.data).then(() => {
-			this.setState({ loading: false })
-			this.props.history.push('/agent/taskbots')
+		return this.props.updateTemplate(this.props.match.params.id, {
+			robot_name: this.state.data.robot_name,
+			greeting_msg: this.state.data.greeting_msg,
+			failed_msg: this.state.data.failed_msg,
+			postback_title: this.state.data.postback_title
+		}).then(() => {
+			this.setState({ loading: false, success: 'Bot updated succesfully' })
+			// this.props.history.push('/agent/templates')
+		}, err => {
+			this.setState({ loading: false, error: 'Failed to update bot'})
 		})
 	}
 
 	onDelete = () => {
 		const { bot, history } = this.props
-		return this.props.deleteTaskbot(bot.id).then(() => {
-			history.push('/agent/taskbots')
+		return this.props.deleteTemplate(bot.id).then(() => {
+			history.push('/agent/templates')
 		})
 	}
 
@@ -147,10 +157,10 @@ class TaskbotDetailPage extends React.Component {
 	onAddGroupClick = () => {
 		const { data } = this.state
 		this.setState({ addGroupLoading: true })
-		return groupApis.create(data.id).then(result => {
-			return this.props.createAnswer(this.props.bot.id, result.id).then(() => {
-				return this.props.createQuestion(this.props.bot.id, result.id).then(() => {
-					return this.fetchGroups().then(() => {
+		return this.props.createTemplateFAQGroup(data.id).then(result => {
+			return this.props.createTemplateAnswer(this.props.template.id, result.id, ' ').then(() => {
+				return this.props.createTemplateQuestion(this.props.template.id, result.id, ' ').then(() => {
+					return this.fetchTemplateFAQGroups().then(() => {
 						this.setState({ addGroupLoading: false })
 					})
 				})
@@ -160,7 +170,13 @@ class TaskbotDetailPage extends React.Component {
 
 	onPageChanged = (e, { activePage }) => {
 		this.setState({ activePage })
-		this.fetchGroups(activePage)
+		this.fetchTemplateFAQGroups(activePage)
+	}
+
+	onConfirmDelete = e => {
+		this.props.deleteTemplate(this.props.match.params.id).then(() => {
+			this.props.history.push('/agent/templates')
+		})
 	}
 
 	onDeleteGroup = (groupId, e) => {
@@ -168,8 +184,8 @@ class TaskbotDetailPage extends React.Component {
 		this.setState({
 			faq: _.set(_.cloneDeep(this.state.faq), [localIndex, 'deleteLoading'], true)
 		})
-		return this.props.deleteGroup(this.props.bot.id, groupId).then(() => {
-			return this.fetchGroups()
+		return this.props.deleteTemplateFAQGroup(this.props.template.id, groupId).then(() => {
+			return this.fetchTemplateFAQGroups()
 		}, err => {
 			this.setState({
 				faq: _.set(_.cloneDeep(this.state.faq), [localIndex, 'deleteLoading'], false)
@@ -178,7 +194,7 @@ class TaskbotDetailPage extends React.Component {
 	}
 
 	onAddQuestionClick = (groupId, e) => {
-		return this.props.createQuestion(this.props.bot.id, groupId).then(() => this.fetchGroups())
+		return this.props.createTemplateQuestion(this.props.template.id, groupId).then(() => this.fetchTemplateFAQGroups())
 	}
 
 	onCellInputChange = (type, id, e, { groupid, value }) => {
@@ -201,13 +217,13 @@ class TaskbotDetailPage extends React.Component {
 				faq: _.set(_.cloneDeep(this.state.faq), [localIndex, 'newState', type], 'loading')
 			})
 			if (type === 'question') {
-				promise = this.props.createQuestion(this.props.bot.id, groupId, newContent)
+				promise = this.props.createTemplateQuestion(this.props.template.id, groupId, newContent)
 			}
 			else if (type === 'answer') {
-				promise = this.props.createAnswer(this.props.bot.id, groupId, newContent)
+				promise = this.props.createTemplateAnswer(this.props.template.id, groupId, newContent)
 			}
 			return promise.then(() => {
-				return this.fetchGroups()
+				return this.fetchTemplateFAQGroups()
 			}, err => {
 				this.setState({
 					faq: _.set(_.cloneDeep(this.state.faq), [localIndex, 'newState', type], 'error')
@@ -238,16 +254,14 @@ class TaskbotDetailPage extends React.Component {
 		let promise = new Promise(() => {})
 		if (type === 'question') {
 			if (item.content) {
-				promise = this.props.updateQuestion(this.props.bot.id, {
-					id,
+				promise = this.props.updateTemplateQuestion(this.props.template.id, id, {
 					content: item.content
 				})
 			} else {
-				promise = this.props.deleteQuestion(this.props.bot.id, id)
+				promise = this.props.deleteTemplateQuestion(this.props.template.id, id)
 			}
 		} else if (type === 'answer') {
-			promise = this.props.updateAnswer(this.props.bot.id, {
-					id,
+			promise = this.props.updateTemplateAnswer(this.props.template.id, id, {
 					content: item.content
 			})
 		}
@@ -256,7 +270,7 @@ class TaskbotDetailPage extends React.Component {
 		}, err => {
 			this.setState({ faq: _.set(_.cloneDeep(this.state.faq), [localIndex, type, localSubIndex, 'state'], 'error') })
 		}).finally(() => {
-			return this.fetchGroups()
+			return this.fetchTemplateFAQGroups()
 		})
 
 	}
@@ -273,11 +287,14 @@ class TaskbotDetailPage extends React.Component {
 	render() {
 		const { data, errors, success, openDeleteModal, faq, activePage,
 			addGroupLoading,
-			trainLoading,
 			importLoading,
 			exportLoading
 		} = this.state
-		const { t, bot, group, location, history } = this.props
+		const { t, template, template: {group}, location, history } = this.props
+		let groups = []
+		if (group && group.results) {
+			groups = group.results
+		}
 
 		const perPage = 10
 		const totalPages = Math.ceil((group ? group.count : faq.length) / perPage)
@@ -292,16 +309,7 @@ class TaskbotDetailPage extends React.Component {
 			</Grid.Row>
 			<Grid.Row divided>
 				<Grid.Column>
-					<Form>
-						<Form.Field
-							id='vendor_id'
-							name='vendor_id'
-							label='Vendor ID'
-							control={Input}
-							transparent
-							value={data.vendor_id || '(empty)'}
-							onClick={this.onVendorClick}
-							readOnly />
+					<Form onSubmit={this.onSubmit}>
 						<Form.Field
 							id='robot_name'
 							name='robot_name'
@@ -333,14 +341,24 @@ class TaskbotDetailPage extends React.Component {
 						<Label><Icon name='language' size='large' />{t(`chatbot.language.${data.language}`)}</Label><br /><br/>
 						<Button onClick={this.onSubmit} content='Update' icon={'save'} primary />
 						<Button onClick={this.onOpenDeleteModal} negative icon='trash' content='Delete' />
-						<DeletionModal
-							title={t('chatbot.delete.title')}
+						<Modal
+							header='Deleting Template'
 							open={openDeleteModal}
 							onClose={this.onCloseDeleteModal}
-							onSuccess={this.onDelete}
-							message={<Trans i18nKey='chatbot.delete.warning'><strong>{data.robot_name}</strong></Trans>}
-							buttonText={t('chatbot.delete.title')}
-							botId={data.id}
+							content='Are you sure you want to delete this template?'
+							actions={[
+								{
+									key: 'confirm',
+									onClick: this.onConfirmDelete,
+									content: 'OK',
+									negative: true
+								},
+								{
+									key: 'cancel',
+									onClick: this.onCloseDeleteModal,
+									content: 'Cancel'
+								}
+							]}
 						/>
 					</Form>
 					<Divider />
@@ -354,10 +372,9 @@ class TaskbotDetailPage extends React.Component {
 						ref={(node) => { this.dropzoneRef = node }}
 					>
 					</Dropzone>
-					<Button icon='plus' content='Add Group' onClick={this.onAddGroupClick} positive loading={addGroupLoading} />
-					<Button loading={importLoading} onClick={() => this.dropzoneRef.open()} secondary icon><Icon name='upload' /> Import</Button>
-					<Button loading={exportLoading} onClick={this.onExport.bind(null, data.id)} secondary icon><Icon name='download' /> Export</Button>
-					<Button loading={trainLoading} onClick={this.onTrain.bind(null, data.id)} icon><Icon name='flask' /> Train</Button>
+					<Button loading={importLoading} onClick={() => this.dropzoneRef.open()} color='orange' icon><Icon name='upload' /> Import</Button>
+					<Button loading={exportLoading} onClick={this.onExport.bind(null, data.id)} color='violet' icon><Icon name='download' /> Export</Button>
+					<Button icon='plus' content='Add Group' onClick={this.onAddGroupClick} color='green' loading={addGroupLoading} />
 				</Grid.Column>
 				<Grid.Column>
 					{totalPages > 0 && <LingPagination
@@ -428,7 +445,7 @@ class TaskbotDetailPage extends React.Component {
 									</Fragment>) }
 								</Table.Cell>
 								<Table.Cell>
-									<Button icon='trash outline alternate' negative onClick={this.onDeleteGroup.bind(null, item.group)} loading={item.deleteLoading} />
+									<Button icon='remove' color='red' onClick={this.onDeleteGroup.bind(null, item.group)} loading={item.deleteLoading} />
 								</Table.Cell>
 							</Table.Row>
 						)}</Table.Body>
@@ -447,37 +464,31 @@ class TaskbotDetailPage extends React.Component {
 					/>}
 				</Grid.Column>
 			</Grid.Row>
-			<Grid.Row>
-				<Grid.Column>
-					<Divider />
-					<TestBotPage info={bot} cancelAutoFocus={true} />
-				</Grid.Column>
-			</Grid.Row>
 		</Grid>
 	}
 }
 
 const mapStateToProps = (state, props) => ({
-	bot: state.getIn(['agent', 'bots']).find(el => (el.get('id') + '') === (props.match.params.id + '')) || {},
-	groups: state.getIn(['bot', 'bots', props.match.params.id, 'group', 'results']),
-	group: state.getIn(['bot', 'bots', props.match.params.id, 'group'])
+	template: state.get('template').find(el => (el.get('id') + '') === (props.match.params.id + '')) || {}
 })
 
 export default compose(
 	connect(mapStateToProps, {
-		updateTaskbot,
-		fetchTaskbots,
-		trainGroups,
-		fetchGroups,
-		uploadGroups,
-		deleteTaskbot,
-		createQuestion,
-		updateQuestion,
-		deleteQuestion,
-		deleteGroup,
-		createAnswer,
-		updateAnswer
+		createTemplateFAQGroup,
+		updateTemplate,
+		fetchTemplate,
+		fetchTemplates,
+		fetchTemplateFAQGroups,
+		uploadFAQ,
+		exportFAQ,
+		deleteTemplate,
+		createTemplateQuestion,
+		updateTemplateQuestion,
+		deleteTemplateQuestion,
+		deleteTemplateFAQGroup,
+		createTemplateAnswer,
+		updateTemplateAnswer
 	}),
 	translate(),
 	toJS
-)(TaskbotDetailPage)
+)(TemplateDetailPage)

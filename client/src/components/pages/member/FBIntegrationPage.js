@@ -5,9 +5,9 @@ import { compose } from 'recompose'
 import { translate, Trans} from 'react-i18next'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import toJS from '../utils/ToJS'
+import toJS from '../../utils/ToJS'
 import { facebookRead } from 'actions/bot'
-import botAPI from '../../apis/bot'
+import botAPI from '../../../apis/bot'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 class FBIntegration extends Component {
@@ -101,13 +101,13 @@ class FBIntegration extends Component {
 		const {t} = this.props
 
 		const curlang = localStorage.i18nextLng.toLowerCase()
-		const step4 = require(`../../assets/img/chatbot/${curlang}/facebook/04_my_apps.PNG`)
-		const step5 = require(`../../assets/img/chatbot/${curlang}/facebook/05_messenger.PNG`)
-		const step6 = require(`../../assets/img/chatbot/${curlang}/facebook/06_token_generation.PNG`)
-		const step9 = require(`../../assets/img/chatbot/${curlang}/facebook/09_webhook.PNG`)
-		const step12 = require(`../../assets/img/chatbot/${curlang}/facebook/12_subscription.PNG`)
-		const step13 = require(`../../assets/img/chatbot/${curlang}/facebook/13_subscribe.PNG`)
-		const step14 = require(`../../assets/img/chatbot/${curlang}/facebook/14_review.PNG`)
+		const step4 = require(`../../../assets/img/chatbot/${curlang}/facebook/04_my_apps.PNG`)
+		const step5 = require(`../../../assets/img/chatbot/${curlang}/facebook/05_messenger.PNG`)
+		const step6 = require(`../../../assets/img/chatbot/${curlang}/facebook/06_token_generation.PNG`)
+		const step9 = require(`../../../assets/img/chatbot/${curlang}/facebook/09_webhook.PNG`)
+		const step12 = require(`../../../assets/img/chatbot/${curlang}/facebook/12_subscription.PNG`)
+		const step13 = require(`../../../assets/img/chatbot/${curlang}/facebook/13_subscribe.PNG`)
+		const step14 = require(`../../../assets/img/chatbot/${curlang}/facebook/14_review.PNG`)
 
 		return <List ordered relaxed>
 			<List.Item>{t('chatbot.setting.facebook.steps._1')}</List.Item>
