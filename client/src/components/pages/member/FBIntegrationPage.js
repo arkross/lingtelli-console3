@@ -129,12 +129,10 @@ class FBIntegration extends Component {
 	}
 
 	render() {
-		const { supportPlatforms, t, match, user, user: {packages} } = this.props
-		const { info, info: {third_party}, copied, loading, show} = this.state
-		const currentPlatforms = _.filter(supportPlatforms, plat => third_party.indexOf(plat.id) >= 0)
+		const { t, user, user: {packages} } = this.props
+		const { info, copied, loading, show} = this.state
 
 		const facebookWebhook = `https://${process.env.REACT_APP_WEBHOOK_HOST}/facebook/${info.vendor_id}`
-		const facebookActive = !!_.find(currentPlatforms, plat => plat.name === 'Facebook')
 
 		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)		
 		const isActivable = (currentPaidtype && currentPaidtype.third_party.find(el => el.name === 'Facebook'))
@@ -143,7 +141,7 @@ class FBIntegration extends Component {
 		<Grid.Row columns='equal'>
 			<Grid.Column><Header>Facebook</Header></Grid.Column>
 			<Grid.Column floated='right'>
-			{facebookActive ? 
+			{isActivable ? 
 				<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>
 			: <Label color='grey' basic style={{ float: 'right'}}><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label>}
 			</Grid.Column>
@@ -169,7 +167,7 @@ class FBIntegration extends Component {
 						name='token'
 						id='access_token_field'
 						label={t('chatbot.setting.facebook.token')}
-						disabled={!facebookActive}
+						disabled={!isActivable}
 						value={info.facebook ? info.facebook.token : ''}
 						onChange={this.handleChange.bind(this, 'facebook')}
 					/>
@@ -178,11 +176,11 @@ class FBIntegration extends Component {
 						name='verify_str'
 						id='verify_token_field'
 						label={t('chatbot.setting.facebook.verify')}
-						disabled={!facebookActive}
+						disabled={!isActivable}
 						value={info.facebook ? info.facebook.verify_str : ''}
 						onChange={this.handleChange.bind(this, 'facebook')}
 					/>
-					<Button loading={loading} primary disabled={!facebookActive}>
+					<Button loading={loading} primary disabled={!isActivable}>
 						<Icon name='save' />
 						{t('chatbot.update')}
 					</Button>

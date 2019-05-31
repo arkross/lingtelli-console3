@@ -24,6 +24,8 @@ class DashboardPage extends Component {
 
 	async componentDidMount() {
 		await this.props.fetchDetail()
+		await this.props.fetchPlatforms()
+		await this.props.fetchPackages()
 		await this.props.fetchAllBotDetails(this.props.user.paid_type)
 		this.searchBots('')
 	}

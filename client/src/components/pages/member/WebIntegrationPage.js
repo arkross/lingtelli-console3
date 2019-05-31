@@ -223,13 +223,11 @@ ${str}</script>
 	}
 
 	render() {
-		const { supportPlatforms, t, user, user: {packages} } = this.props
-		const { info, info: { third_party }, domains, newDomain, newDomainLoading, copied, loading, show, robotIcon, chatIcon, headerTextColor, headerBackgroundColor, chatLabel } = this.state
-		const currentPlatforms = _.filter(supportPlatforms, plat => third_party.indexOf(plat.id) >= 0)
+		const { t, user, user: {packages} } = this.props
+		const { domains, newDomain, newDomainLoading, copied, loading, show, robotIcon, chatIcon, headerTextColor, headerBackgroundColor, chatLabel } = this.state
 
 		const webScript = this.generateScript()
  
-		const webActive = !!_.find(currentPlatforms, plat => plat.name == 'Web')
 		const srcDoc = `<!doctype html><html><head></head><body>${webScript}</body></html>`
 
 		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)
@@ -239,7 +237,7 @@ ${str}</script>
 			<Grid.Row columns='equal'>
 				<Grid.Column><Header>Web Chat Plugin</Header></Grid.Column>
 				<Grid.Column floated='right'>
-				{webActive ? 
+				{isActivable ? 
 					<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>
 				: <Label color='grey' style={{ float: 'right'}} basic><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label>}
 				</Grid.Column>
@@ -251,7 +249,7 @@ ${str}</script>
 						<TextArea rows={5} style={{fontFamily: 'monospace', backgroundColor: '#eee'}} value={webScript}></TextArea>
 						<br /><br />
 						<CopyToClipboard text={webScript}>
-							<Button disabled={!webActive} onClick={this.handleCopy} primary>
+							<Button disabled={!isActivable} onClick={this.handleCopy} primary>
 								<Icon name='copy' />
 								{ ! copied ? t('chatbot.copy') : t('chatbot.copied')}
 							</Button>

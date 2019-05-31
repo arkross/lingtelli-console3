@@ -120,12 +120,10 @@ class LineIntegration extends Component {
 	}
 
 	render() {
-		const { supportPlatforms, t, match, user, user: {packages} } = this.props
-		const { info, info: {third_party}, loading, show} = this.state
-		const currentPlatforms = _.filter(supportPlatforms, plat => third_party.indexOf(plat.id) >= 0)
+		const { t, user, user: {packages} } = this.props
+		const { info, loading, show} = this.state
 		
 		const lineWebhook = `${process.env.REACT_APP_WEBHOOK_HOST}/line/${info.vendor_id}`
-		const lineActive = !!_.find(currentPlatforms, plat => plat.name == 'Line')
 
 		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)
 		const isActivable = currentPaidtype && currentPaidtype.third_party.find(el => el.name === 'Line')
@@ -134,7 +132,7 @@ class LineIntegration extends Component {
 		<Grid.Row columns='equal'>
 			<Grid.Column><Header>LINE</Header></Grid.Column>
 			<Grid.Column floated='right'>
-				{!lineActive ?
+				{!isActivable ?
 				<Label basic color='grey' style={{ float: 'right' }}><Icon name='exclamation' /> {t('chatbot.setting.unavailable')}</Label> :
 				<Label color='green' style={{ float: 'right'}}><Icon name='check' /> {t('chatbot.integration.activated')}</Label>}
 			</Grid.Column>
@@ -160,7 +158,7 @@ class LineIntegration extends Component {
 						name='secret'
 						id='secret_field'
 						label={t('chatbot.setting.line.secret')}
-						disabled={!lineActive}
+						disabled={!isActivable}
 						value={info.line ? info.line.secret : ''}
 						onChange={this.handleChange.bind(this, 'line')}
 					/>
@@ -169,11 +167,11 @@ class LineIntegration extends Component {
 						name='token'
 						id='token_field'
 						label={t('chatbot.setting.line.token')}
-						disabled={!lineActive}
+						disabled={!isActivable}
 						value={info.line ? info.line.token : ''}
 						onChange={this.handleChange.bind(this, 'line')}
 					/>
-					<Button loading={loading} primary disabled={!lineActive}>
+					<Button loading={loading} primary disabled={!isActivable}>
 						<Icon name='save' />
 						{t('chatbot.update')}
 					</Button>
