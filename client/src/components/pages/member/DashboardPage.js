@@ -85,7 +85,7 @@ class DashboardPage extends Component {
 					{
 						key: 'ok',
 						content: t('login.kickAlert.ok'),
-						positive: true,
+						primary: true,
 						autoFocus: true,
 						onClick: this.handleRefresh
 					}

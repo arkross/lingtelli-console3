@@ -82,7 +82,7 @@ class ContentPage extends Component {
 				{info.robot_name}
 			</NavLink>
 			<Menu.Item>
-				<Menu.Header>{t('chatbot.analysis.title')}</Menu.Header>
+				<Menu.Header><Icon name='chart line' /> {t('chatbot.analysis.title')}</Menu.Header>
 				<Menu.Menu>
 					<NavLink className='item' onClick={this.closeSidebar} to={`/dashboard/bot/${info.id}/analysis`}>
 						{t('chatbot.analysis.text')}
@@ -96,7 +96,7 @@ class ContentPage extends Component {
 				</Menu.Menu>
 			</Menu.Item>
 			<Menu.Item>
-				<Menu.Header>{t('chatbot.faq.title')}</Menu.Header>
+				<Menu.Header><Icon name='tasks' /> {t('chatbot.faq.title')}</Menu.Header>
 				<Menu.Menu>
 					{isTask ? '' : <NavLink className='item' onClick={this.closeSidebar} to={`/dashboard/bot/${info.id}/faq`}>{t('chatbot.faq.text')}</NavLink>}
 					<NavLink className='item' onClick={this.closeSidebar} to={`/dashboard/bot/${info.id}/test`}>{t('chatbot.test.text')}</NavLink>
@@ -104,7 +104,7 @@ class ContentPage extends Component {
 				</Menu.Menu>
 			</Menu.Item>
 			<Menu.Item>
-				<Menu.Header>{t('chatbot.setting.title')}</Menu.Header>
+				<Menu.Header><Icon name='settings' /> {t('chatbot.setting.title')}</Menu.Header>
 				<Menu.Menu>
 					<NavLink className='item' onClick={this.closeSidebar} to={`/dashboard/bot/${info.id}/setting`}>{t('chatbot.setting.general')}</NavLink>
 					{ isHidden ? '' : <NavLink className='item' onClick={this.closeSidebar} to={`/dashboard/bot/${info.id}/integration/facebook`}>{t('chatbot.integration.facebook')}</NavLink>}
