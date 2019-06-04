@@ -92,7 +92,7 @@ class Question extends React.Component {
 
 	render = () => {
 		const { id, content, originalContent, editable, loading, showCheck, updateLoading } = this.state;
-		const { t, ix, onDelete } = this.props;
+		const { t, ix, onDelete, deletable } = this.props;
 
 		return (
 			<Form
@@ -111,7 +111,8 @@ class Question extends React.Component {
 				>
 					<input ref={ input => this.input = input } />
 					<Button icon={showCheck ? 'check' : 'save'} loading={updateLoading} color='green' disabled={originalContent === content} />
-					<Button icon='trash alternate outline' loading={loading} color='red' className='question-delete' onClick={ e => this.onDelete(e, ix) } />
+					{deletable ?
+					<Button icon='trash alternate outline' loading={loading} color='red' className='question-delete' onClick={ e => this.onDelete(e, ix) } /> : ''}
 				</Form.Input>
 			</Form>
 		)
