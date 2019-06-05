@@ -53,6 +53,7 @@ class Chatbot(models.Model):
         hide_status: Hiding the bot when user paid type downgraded.
         choose_answer: The way of choosing answer to reply.
         domain: For webscript to check if can be used in this domain.
+        language: The language the bot is using.
     '''
 
     robot_name = models.CharField(max_length=100, blank=False, null=False)

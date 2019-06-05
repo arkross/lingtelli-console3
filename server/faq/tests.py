@@ -9,6 +9,7 @@ from chatbot.models import Chatbot
 from paidtype.models import PaidType
 from thirdparty.models import ThirdParty
 from faq.models import FAQGroup, Answer, Question
+from module.models import Module, ModuleFAQGroup, ModuleAnswer, ModuleQuestion
 
 
 class FAQGroupTest(TestCase):
@@ -910,3 +911,152 @@ class QuestionTest(TestCase):
         # Task bot
         response_task = c.delete(task_que_uri, **self.agent_header)
         self.assertEqual(response_task.status_code, 204)
+
+
+class SaveFieldToFAQTest(TestCase):
+    ''' Save field data to faq
+
+    Update the module_faq data with fields and save to chatbot
+
+    POST only
+    '''
+
+    def setUp(self):
+        # Initial paid type an third party
+        trial_data = {
+            'pk': 1,
+            'name': 'Trail',
+            'duration': '0_0',
+            'bot_amount': '1',
+            'faq_amount': '50',
+            'user_type': 'M'
+        }
+
+        staff_data = {
+            'pk': 2,
+            'name': 'Staff',
+            'duration': '0_0',
+            'bot_amount': '0',
+            'faq_amount': '0',
+            'user_type': 'S'
+        }
+
+        demo_data = {
+            'pk': 4,
+            'name': 'demo'
+        }
+        trial_obj = PaidType.objects.create(**trial_data)
+        staff_obj = PaidType.objects.create(**staff_data)
+        demo_obj = ThirdParty.objects.create(**demo_data)
+        trial_obj.third_party.add(demo_obj)
+
+        # Create new member account
+        user_data = {'username': 'cosmo.hu@lingtelli.com',
+                     'password': 'thisispassword',
+                     'first_name': 'cosmo'}
+        self.user_obj = User.objects.create_user(**user_data)
+
+        # Create account info
+        acc_data = {'user': self.user_obj, 'paid_type': trial_obj,
+                    'confirmation_code': 'confirmationcode',
+                    'code_reset_time': '2019-12-12 00:00:00'}
+        AccountInfo.objects.create(**acc_data)
+
+        # Create new agent account
+        agent_data = {'username': 'superuser', 'password': 'agentpassword',
+                      'is_staff': True}
+        self.agent_obj = User.objects.create(**agent_data)
+
+        # Create agent account info
+        acc_data = {'user': self.agent_obj, 'paid_type': staff_obj,
+                    'confirmation_code': 'confirmationcode',
+                    'code_reset_time': '2019-12-12 00:00:00'}
+        AccountInfo.objects.create(**acc_data)
+
+        # Login User
+        token_obj = Token.objects.create(user=self.user_obj)
+        self.accesstoken = token_obj.key
+
+        # Login Agent
+        agent_token_obj = Token.objects.create(user=self.agent_obj)
+        self.agent_token = agent_token_obj.key
+
+        # Initial header
+        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.accesstoken}
+        self.agent_header =\
+            {'HTTP_AUTHORIZATION': 'Bearer ' + self.agent_token}
+
+        # Initial bot
+        bot_data = {'robot_name': 'test', 'user': self.user_obj}
+        self.bot_obj = Chatbot.objects.create(**bot_data)
+
+        # Inital module
+        self.module_obj = Module.objects.create(robot_name='test')
+
+        # Initial module faq group
+        module_faq_obj = ModuleFAQGroup.objects.create(module=self.module_obj)
+
+        # Initial module question
+        ModuleQuestion.objects.create(content='Hi how are you? {1:name}',
+                                      module=self.module_obj,
+                                      group=module_faq_obj)
+
+        # Initial module answer
+        ModuleAnswer.objects.create(content='I am {2:mood}',
+                                    module=self.module_obj,
+                                    group=module_faq_obj)
+
+        # Initial update faq with field uri
+        self.update_field_faq_uri = '/chatbot/' + str(self.bot_obj.id) + \
+            '/field_faq/'
+
+    def test_no_auth(self):
+        ''' Create faq by module_faq not authorized
+        '''
+
+        c = Client()
+        field_data = {'fields': {'name': 'Jack Ma', 'mood': 'happpy'},
+                      'module_id': self.module_obj.id}
+
+        response = c.post(self.update_field_faq_uri, json.dumps(field_data),
+                          content_type='application/json')
+        self.assertEqual(response.status_code, 401)
+
+    def test_not_existed(self):
+        ''' Create faq from module_faq bot or module not found
+        '''
+
+        c = Client()
+
+        # Bot not found
+        field_data = {'fields': {'name': 'Jack Ma', 'mood': 'happpy'},
+                      'module_id': self.module_obj.id}
+        bot_not_found_uri = '/chatbot/1000/field_faq/'
+        response = c.post(bot_not_found_uri, json.dumps(field_data),
+                          content_type='application/json', **self.header)
+        self.assertEqual(response.status_code, 404)
+
+        # Module not found
+        field_data = {'fields': {'name': 'Jack Ma', 'mood': 'happpy'},
+                      'module_id': 1000}
+        response = c.post(self.update_field_faq_uri, json.dumps(field_data),
+                          content_type='application/json', **self.header)
+        self.assertEqual(response.status_code, 404)
+
+    def test_create_faq_with_module(self):
+        ''' Create faq from module_faq with field updated
+        '''
+
+        c = Client()
+        field_data = {'fields': {'name': 'Jack Ma', 'mood': 'happpy'},
+                      'module_id': self.module_obj.id}
+
+        # Member
+        response = c.post(self.update_field_faq_uri, json.dumps(field_data),
+                          content_type='application/json', **self.header)
+        self.assertEqual(response.status_code, 201)
+
+        # Agent
+        response = c.post(self.update_field_faq_uri, json.dumps(field_data),
+                          content_type='application/json', **self.agent_header)
+        self.assertEqual(response.status_code, 201)

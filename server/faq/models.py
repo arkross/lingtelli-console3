@@ -14,6 +14,11 @@ NORMAL. If not, should not allow create additional answer.
 
 class FAQGroup(models.Model):
     '''Question and answer group
+
+    Args:
+        chatbot: Chatbot object.
+        csv_group: Getting groups for uploading faq with csv file.
+        hide_status: For hiding faqs when having downgrade.
     '''
 
     chatbot = models.ForeignKey(Chatbot, related_name='faqgroup_chatbot',
@@ -35,7 +40,7 @@ class FAQStatus(models.Model):
         status: The conversation has successed or failed.
     '''
 
-    chatbot = models.ForeignKey(Chatbot, related_name='faqstatus_chatbot', 
+    chatbot = models.ForeignKey(Chatbot, related_name='faqstatus_chatbot',
                                 on_delete=models.CASCADE)
     qa_pair = models.CharField(max_length=100, blank=False, null=False)
     success = models.BooleanField(default=True)
@@ -48,7 +53,7 @@ class FAQStatus(models.Model):
 
 
 class Answer(models.Model):
-    '''Answer for questions
+    '''Answer set
 
     Args:
         content: Answer content.
