@@ -94,7 +94,6 @@ class RecomLogPage extends Component {
 		]
 		
 		return <div className={`analysis-container`}>
-			<Dimmer inverted active={loading} />
 			<Loader active={loading} />
 			<Form onSubmit={this.onFilterSubmit}>
 				<Form.Group>

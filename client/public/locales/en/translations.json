@@ -17,6 +17,10 @@
       "ok": "OK"
     }
   },
+  "loader": {
+    "authenticating": "Authenticating",
+    "fetching": "Fetching Data"
+  },
   "resetPass": {
     "title": "Reset Password",
     "email": "Email Address",
@@ -32,7 +36,15 @@
     "account": "Account",
     "logout": "Logout",
     "bot": "Chatbots",
-    "create": "Create",
+    "new": {
+      "title": "New",
+      "botManual": "Chatbot",
+      "botTemplate": "Chatbot from Template"
+    },
+    "create": "Create New",
+    "fromTemplate": "Create From Template",
+    "basic": "Basic Settings",
+    "fields": "Fields",
     "facebook": "Facebook",
     "line": "LINE",
     "web": "Web",
@@ -50,6 +62,21 @@
     "title": "Demo Bot",
     "input": "message...",
     "warning": "Please choose a chatbot for test first."
+  },
+  "fromTemplate": {
+    "chooseTemplate": "Choose a Template",
+    "useTemplate": "Use Template",
+    "qaCount": "Q&A group count",
+    "enterBasicInfo": "Enter Basic Information",
+    "enterQADetails": "Fill in Q&A Details",
+    "next": "Next",
+    "prev": "Previous",
+    "finish": "Finish",
+    "success": "Chatbot created successfully!",
+    "successSubmit": "View Chatbot Q&A",
+    "fail": "Failed to create chatbot.",
+    "failSubmit": "Close",
+    "noFields": "This Template has no fields. Please proceed to finish."
   },
   "chatbot": {
     "name": "Chatbot Name",
@@ -239,6 +266,7 @@
       "question": "Add Question",
       "answer": "Add Answer",
       "search": "Search Answer",
+      "delete": "Delete",
       "form": {
         "question": "Click for Question",
         "answer": "Click for Answer"
@@ -510,7 +538,7 @@
     "activation_date": "Activated At",
     "expiration_date": "Expired At",
     "bot_limit": "Chatbots",
-    "faq_limit": "FAQ Groups",
+    "faq_limit": "Q&A Groups",
     "edit": "Edit Account Details",
     "success": "Account updated successfully!",
     "confirmation": {

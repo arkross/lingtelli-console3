@@ -29,8 +29,10 @@ class BotConfigForm extends React.Component {
 		openModal: { type: null, open: false }
 	}
 
-	componentWillReceiveProps(nextProps) {
-		this.setState({ info: nextProps.info });
+	static getDerivedStateFromProps(props) {
+		return {
+			info: props.info
+		}
 	}
 
 	// CreateBotForm: deploy platform listener

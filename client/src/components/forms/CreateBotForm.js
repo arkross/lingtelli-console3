@@ -22,10 +22,8 @@ class CreateBotForm extends React.Component {
     errors: this.props.errors
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      errors: nextProps.errors
-    });
+  static getDerivedStateFromProps(props) {
+    return {errors: props.errors}
   }
 
   componentWillMount() {

@@ -7,7 +7,7 @@ import toJS	from '../../utils/ToJS'
 
 class LingBreadcrumbs extends React.Component {
 	render() {
-		const {pathname, t, bots} = this.props
+		const {pathname, t, bots, templates} = this.props
 		const paths = _.map(pathname.split('/').slice(1), (el, key, arr) => {
 	
 			// First key
@@ -18,10 +18,26 @@ class LingBreadcrumbs extends React.Component {
 			}
 
 			if (arr[key - 2] === 'bot') {
+
+				if (arr[key - 1] === 'fromTemplate' && !isNaN(parseFloat(el))) {
+					const template = _.find(templates, template => template.id === parseFloat(el))
+					return {
+						key,
+						content: (<Link to={`/${arr.slice(0, key + 1).join('/')}`}>{template ? template.robot_name : el}</Link>)
+					}
+				}
+
 				return {
 					key,
 					content: t(`chatbot.${el}.text`),
 					active: key === arr.length -1
+				}
+			}
+
+			if (el === 'fromTemplate') {
+				return {
+					key,
+					content: (<Link to={'/dashboard/bot/fromTemplate'}>{t('menu.fromTemplate')}</Link>)
 				}
 			}
 		
@@ -46,7 +62,7 @@ class LingBreadcrumbs extends React.Component {
 				content: t(`menu.${el}`),
 				active: (key === arr.length - 1)
 			}
-		
+
 			return {
 				key,
 				content: (<Link to={`${arr.slice(0, key + 1).join('/')}`}>{t(`menu.${el}`)}</Link>),
@@ -59,7 +75,8 @@ class LingBreadcrumbs extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-	bots: state.getIn(['bot', 'bots'])
+	bots: state.getIn(['bot', 'bots']),
+	templates: state.getIn(['template'])
 })
 
 export default connect(mapStateToProps)(toJS(LingBreadcrumbs))

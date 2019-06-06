@@ -23,6 +23,7 @@ import TilePage from './TilePage'
 import BotListPage from './BotListPage'
 import AboutPage from './AboutPage'
 import CreateBotPage from './CreateBotPage'
+import CreateFromTemplatePage from './CreateFromTemplatePage'
 import toJS from 'components/utils/ToJS'
 
 class NoSidePage extends Component {
@@ -62,6 +63,7 @@ class NoSidePage extends Component {
 				<Route path={`/dashboard`} exact render={props => <TilePage {...props} onUpdate={this.updateBots} isUpdate={this.isUpdate} />} />
 				<Route path={`/dashboard/account`} render={props => <Container text><AboutPage onResetPassword={this.onResetPassword} {...props} /></Container>} />
 				<Route path={`/dashboard/bot/create`} render={props => <Container text><CreateBotPage {...props} /></Container>} />
+				<Route path={`/dashboard/bot/fromTemplate`} render={props => <CreateFromTemplatePage {...props} />} />
 				<Route render={props => <Redirect to='/' />} />
 			</Switch>
 		</div>

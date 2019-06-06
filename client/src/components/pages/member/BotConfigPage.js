@@ -40,6 +40,7 @@ class BotConfigPage extends React.Component {
     const { deleteBot, history, showInfo, t} = this.props
     deleteBot(activeBot)
       .then( () => {
+        this.props.fetchBots()
         showInfo(t('chatbot.delete.success'))
         history.push('/dashboard')
       }, err => {

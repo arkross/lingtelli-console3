@@ -3,7 +3,7 @@ import { compose } from 'recompose'
 import { connect } from 'react-redux'
 import _ from 'lodash'
 import Dropzone from "react-dropzone"
-import { Button, Icon, Form, Input, Grid, Message, Header, Pagination, Table, Divider, Label, Modal } from 'semantic-ui-react'
+import { Button, Icon, Form, Input, Grid, Message, Header, Pagination, Table, Divider, Label, Modal, List } from 'semantic-ui-react'
 import FileDownload from "react-file-download"
 import {
 	fetchTemplates,
@@ -384,6 +384,20 @@ class TemplateDetailPage extends React.Component {
 						onPageChange={this.onPageChanged}
 						totalPages={totalPages}
 					/>}
+				</Grid.Column>
+			</Grid.Row>
+			<Grid.Row columns={1}>
+				<Grid.Column>
+					<Message info>
+						<Message.Header>Template variable</Message.Header>
+						<List bulleted>
+							<List.Item>Format: {`{sequence:variableName}`}</List.Item>
+							<List.Item>Example: {`{1:公司}, {2:地址}, {3:姓名}`}</List.Item>
+							<List.Item>Space characters are <strong>not</strong> allowed.</List.Item>
+							<List.Item>Sequence must be a whole number starting from 1.</List.Item>
+							<List.Item>If there are multiple different variable names with the same sequence, order will be determined from the appearance in QA list.</List.Item>
+						</List>
+					</Message>
 				</Grid.Column>
 			</Grid.Row>
 			<Grid.Row columns={1}>
