@@ -27,7 +27,8 @@ export default (state = initState, action = {}) => {
 		case types.FETCH_TEMPLATE_FAQ_GROUP:
 			const idx = state.getIn([action.templateId + '', 'group', 'results']).findIndex(el => el.get('group') === action.groupId)
 			return state.setIn([action.templateId + '', 'group', 'results', idx], fromJS(action.data))
-		
+		case types.FETCH_TEMPLATE_FIELDS:
+			return state.setIn([action.templateId + '', 'fields'], fromJS(action.data.fields))
 		default: return state
 	}
 }

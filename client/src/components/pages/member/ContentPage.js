@@ -78,19 +78,19 @@ class ContentPage extends Component {
 		.map(el => Object.assign({value: `${match.url}/${el.id}`, key: el.id}, el))
 
 		const menuChildren = <Fragment>
-			<NavLink className='item header' to={`/dashboard/bot/${info.id}`}>
+			<NavLink className='item header' to={match.url}>
 				{info.robot_name}
 			</NavLink>
 			<Menu.Item>
 				<Menu.Header><Icon name='chart line' /> {t('chatbot.analysis.title')}</Menu.Header>
 				<Menu.Menu>
-					<NavLink className='item' onClick={this.closeSidebar} to={`/dashboard/bot/${info.id}/analysis`}>
+					<NavLink className='item' onClick={this.closeSidebar} to={`${match.url}/analysis`}>
 						{t('chatbot.analysis.text')}
 					</NavLink>
-					<NavLink className='item' onClick={this.closeSidebar} to={`/dashboard/bot/${info.id}/history`}>
+					<NavLink className='item' onClick={this.closeSidebar} to={`${match.url}/history`}>
 						{t('chatbot.history.text')}
 					</NavLink>
-					<NavLink className='item' onClick={this.closeSidebar} to={`/dashboard/bot/${info.id}/recommendations`}>
+					<NavLink className='item' onClick={this.closeSidebar} to={`${match.url}/recommendations`}>
 						{t('chatbot.recommendations.text')}
 					</NavLink>
 				</Menu.Menu>
@@ -98,19 +98,19 @@ class ContentPage extends Component {
 			<Menu.Item>
 				<Menu.Header><Icon name='tasks' /> {t('chatbot.faq.title')}</Menu.Header>
 				<Menu.Menu>
-					{isTask ? '' : <NavLink className='item' onClick={this.closeSidebar} to={`/dashboard/bot/${info.id}/faq`}>{t('chatbot.faq.text')}</NavLink>}
-					<NavLink className='item' onClick={this.closeSidebar} to={`/dashboard/bot/${info.id}/test`}>{t('chatbot.test.text')}</NavLink>
-					<NavLink className='item' onClick={this.closeSidebar} to={`/dashboard/bot/${info.id}/batch`}>{t('chatbot.batch.text')}</NavLink>
+					{isTask ? '' : <NavLink className='item' onClick={this.closeSidebar} to={`${match.url}/faq`}>{t('chatbot.faq.text')}</NavLink>}
+					<NavLink className='item' onClick={this.closeSidebar} to={`${match.url}/test`}>{t('chatbot.test.text')}</NavLink>
+					<NavLink className='item' onClick={this.closeSidebar} to={`${match.url}/batch`}>{t('chatbot.batch.text')}</NavLink>
 				</Menu.Menu>
 			</Menu.Item>
 			<Menu.Item>
 				<Menu.Header><Icon name='settings' /> {t('chatbot.setting.title')}</Menu.Header>
 				<Menu.Menu>
-					<NavLink className='item' onClick={this.closeSidebar} to={`/dashboard/bot/${info.id}/setting`}>{t('chatbot.setting.general')}</NavLink>
-					{ isHidden ? '' : <NavLink className='item' onClick={this.closeSidebar} to={`/dashboard/bot/${info.id}/integration/facebook`}>{t('chatbot.integration.facebook')}</NavLink>}
-					{ isHidden ? '' : <NavLink className='item' onClick={this.closeSidebar} to={`/dashboard/bot/${info.id}/integration/line`}>{t('chatbot.integration.line')}</NavLink>}
-					<NavLink className='item' onClick={this.closeSidebar} to={`/dashboard/bot/${info.id}/integration/web`}>{t('chatbot.integration.web')}</NavLink>
-					<NavLink className='item' onClick={this.closeSidebar} to={`/dashboard/bot/${info.id}/integration/api`}>{t('chatbot.integration.api')}</NavLink>
+					<NavLink className='item' onClick={this.closeSidebar} to={`${match.url}/setting`}>{t('chatbot.setting.general')}</NavLink>
+					{ isHidden ? '' : <NavLink className='item' onClick={this.closeSidebar} to={`${match.url}/integration/facebook`}>{t('chatbot.integration.facebook')}</NavLink>}
+					{ isHidden ? '' : <NavLink className='item' onClick={this.closeSidebar} to={`${match.url}/integration/line`}>{t('chatbot.integration.line')}</NavLink>}
+					<NavLink className='item' onClick={this.closeSidebar} to={`${match.url}/integration/web`}>{t('chatbot.integration.web')}</NavLink>
+					<NavLink className='item' onClick={this.closeSidebar} to={`${match.url}/integration/api`}>{t('chatbot.integration.api')}</NavLink>
 				</Menu.Menu>
 			</Menu.Item>
 		</Fragment>

@@ -170,7 +170,10 @@ export const fetchReport = (activeBot, days, platform = '', uid = '') => dispatc
  */
 export const createBot = data => dispatch =>
 	api.create(data)
-		.then(() => dispatch(createTheBot()))
+		.then(data => {
+			dispatch(createTheBot())
+			return data
+		})
 
 /**
  * Updates bot info
@@ -190,6 +193,9 @@ export const updateBot = (botId, data) => dispatch =>
 export const deleteBot = botId => dispatch =>
 	api.delete(botId)
 		.then(() => dispatch(deleteTheBot()))
+
+export const fieldFaq = (botId, templateId, fields) => dispatch =>
+	api.field_faq(botId, templateId, fields).then(data => data)
 
 export const facebookRead = botId => dispatch =>
 	api.facebook.read(botId)

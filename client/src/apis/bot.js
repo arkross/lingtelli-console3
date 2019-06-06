@@ -51,6 +51,11 @@ export default {
 	  */
 	create: async data => (await axios.post(`${API_HOST}/chatbot/`, data)).data,
 
+	field_faq: async (id, moduleId, fields) => (await axios.post(`${API_HOST}/chatbot/${id}/field_faq/`, {
+		module_id: moduleId,
+		fields
+	})).data,
+
 	/**
 	 * Updates bot basic info
 	 * @async
