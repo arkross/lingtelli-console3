@@ -20,6 +20,14 @@
   "loader": {
     "authenticating": "Authenticating",
     "fetching": "Fetching Data",
+    "details": {
+      "user": "Fetching user data",
+      "platform": "Fetching platform data",
+      "packages": "Fetching plan data",
+      "templates": "Fetching templates data",
+      "bot": "Fetching chatbots data",
+      "completed": "Fetching data complete!"
+    },
     "failure": {
       "header": "Failed to fetch data",
       "content": "An error has occured. Please refresh the page. If it still does not work, please contact the administrator."
