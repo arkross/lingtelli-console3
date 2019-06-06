@@ -65,7 +65,7 @@ THIRD_PARTY = [
     'rest_framework.authtoken',
 ]
 
-OUR_APP =[
+OUR_APP = [
     'account',
     'chatbot',
     'thirdparty',
@@ -74,6 +74,7 @@ OUR_APP =[
     'history',
     'report',
     'taskbot',
+    'module',
 ]
 
 INSTALLED_APPS = INITIAL + THIRD_PARTY + OUR_APP
