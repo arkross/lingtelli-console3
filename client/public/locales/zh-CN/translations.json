@@ -19,7 +19,11 @@
   },
   "loader": {
     "authenticating": "认证中",
-    "fetching": "载入中"
+    "fetching": "载入中",
+    "failure": {
+      "header": "发生了错误",
+      "content": "很抱歉，这网站发生了错误。请重新载入几次。如果还发生错误请联络管理人员。"
+    }
   },
   "resetPass": {
     "title": "重设密码",

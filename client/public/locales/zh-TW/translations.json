@@ -19,7 +19,11 @@
   },
   "loader": {
     "authenticating": "認證中",
-    "fetching": "載入中"
+    "fetching": "載入中",
+    "failure": {
+      "header": "載入失敗",
+      "content": "非常抱歉, 此網站發生了錯誤. 請再刷新看看. 如果還發生錯誤請洽管理人員."
+    }
   },
   "resetPass": {
     "title": "重設密碼",

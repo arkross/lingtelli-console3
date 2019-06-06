@@ -4,6 +4,8 @@ import { Dimmer, Loader } from 'semantic-ui-react';
 import { logout, logoutDirectly } from 'actions/auth';
 import { logout as agentLogout } from 'actions/agent'
 import { connect } from 'react-redux';
+import { compose } from 'recompose'
+import { translate } from 'react-i18next'
 import { hideAllMessages} from './actions/message'
 import PropTypes from 'prop-types';
 import LoginPage from 'components/pages/LoginPage';
@@ -78,13 +80,13 @@ class App extends React.Component {
   }
 
   render = () => {
-    const { location } = this.props;
+    const { location, t } = this.props;
     const { loading } = this.state;
 
     if (loading) {
       return (
         <Dimmer active>
-           <Loader content='Authenticating' size='large' />
+           <Loader content={t('loader.authenticating')} size='large' />
         </Dimmer>
       )
     }
@@ -118,4 +120,7 @@ App.propTypes = {
   }).isRequired
 }
 
-export default connect(null, { logout, logoutDirectly, agentLogout, hideAllMessages })(App)
+export default compose(
+  connect(null, { logout, logoutDirectly, agentLogout, hideAllMessages }),
+  translate()
+)(App)

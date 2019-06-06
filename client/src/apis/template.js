@@ -13,7 +13,11 @@ export default {
 
 	delete: async templateId => (await axios.delete(`${API_HOST}/module/${templateId}/`)).data,
 
-	fetchGroups: async templateId => (await axios.get(`${API_HOST}/module/${templateId}/faq/`)).data,
+	fetchGroups: async (templateId, page) => (await axios.get(`${API_HOST}/module/${templateId}/faq/`, {
+		params: {
+			page
+		}
+	})).data,
 
 	fetchGroup: async (templateId, groupId) => (await axios.get(`${API_HOST}/module/${templateId}/faq/${groupId}/`)).data,
 
