@@ -512,11 +512,12 @@ def update_faq_field(request, pk=None):
     if not mod_obj:
         return Response({'errors': _('Not found')},
                         status=HTTP_404_NOT_FOUND)
-    reg = r'{\w+:\w}'
+    reg = r'{\w+:\w+}'
     bot_obj = Chatbot.objects.filter(id=pk).first()
     if not bot_obj:
         return Response({'errors': _('Not found')},
                         status=HTTP_404_NOT_FOUND)
+    FAQGroup.objects.filter(chatbot=bot_obj).delete()
     mod_faq_qry = ModuleFAQGroup.objects.filter(module=mod_obj)
     for mod_faq in mod_faq_qry:
         faq_group_obj = FAQGroup.objects.create(chatbot=bot_obj)
@@ -527,19 +528,19 @@ def update_faq_field(request, pk=None):
 
         for mod_ans in mod_ans_qry:
             sentence = mod_ans.content
-            if '{' not in sentence:
-                continue
-            words = re.findall(reg, sentence)
-            for s in words:
-                s = s.replace('{', '')
-                s = s.replace('}', '')
-                sep_order_item = s.split(':')
-                order = sep_order_item[0]
-                item = sep_order_item[1]
-                if fields.get(item, None):
-                    replace_data = fields.get(item)
-                    replace_format = '{' + order + ':' + item + '}'
-                    sentence = sentence.replace(replace_format, replace_data)
+            if '{' in sentence:
+                words = re.findall(reg, sentence)
+                for s in words:
+                    s = s.replace('{', '')
+                    s = s.replace('}', '')
+                    sep_order_item = s.split(':')
+                    order = sep_order_item[0]
+                    item = sep_order_item[1]
+                    if fields.get(item, None):
+                        replace_data = fields.get(item)
+                        replace_format = '{' + order + ':' + item + '}'
+                        sentence = sentence.replace(replace_format,
+                                                    replace_data)
             new_ans_obj = Answer.objects.create(content=sentence,
                                                 chatbot=bot_obj,
                                                 group=faq_group_obj)
@@ -549,19 +550,19 @@ def update_faq_field(request, pk=None):
                                 status=HTTP_500_INTERNAL_SERVER_ERROR)
         for mod_que in mod_que_qry:
             sentence = mod_que.content
-            if '{' not in sentence:
-                continue
-            words = re.findall(reg, sentence)
-            for s in words:
-                s = s.replace('{', '')
-                s = s.replace('}', '')
-                sep_order_item = s.split(':')
-                order = sep_order_item[0]
-                item = sep_order_item[1]
-                if fields.get(item, None):
-                    replace_data = fields.get(item)
-                    replace_format = '{' + order + ':' + item + '}'
-                    sentence = sentence.replace(replace_format, replace_data)
+            if '{' in sentence:
+                words = re.findall(reg, sentence)
+                for s in words:
+                    s = s.replace('{', '')
+                    s = s.replace('}', '')
+                    sep_order_item = s.split(':')
+                    order = sep_order_item[0]
+                    item = sep_order_item[1]
+                    if fields.get(item, None):
+                        replace_data = fields.get(item)
+                        replace_format = '{' + order + ':' + item + '}'
+                        sentence = sentence.replace(replace_format,
+                                                    replace_data)
             new_que_obj = Question.objects.create(content=sentence,
                                                   chatbot=bot_obj,
                                                   group=faq_group_obj)

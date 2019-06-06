@@ -576,7 +576,11 @@ def get_fields(request, pk=None):
             s = s.replace('}', '')
             sep_order_item = s.split(':')
             if not keywords.get(sep_order_item[1], None):
-                keywords[sep_order_item[1]] = sep_order_item[0]
+                try:
+                    order_item = int(sep_order_item[0])
+                    keywords[sep_order_item[1]] = sep_order_item[0]
+                except:
+                    print('Order cannot be a string')
 
     for que in que_qry:
         if '{' not in que.content:
@@ -588,8 +592,12 @@ def get_fields(request, pk=None):
             s = s.replace('}', '')
             sep_order_item = s.split(':')
             if not keywords.get(sep_order_item[1], None):
-                keywords[sep_order_item[1]] = sep_order_item[0]
-    sorted_keys = sorted(keywords.items(), key=lambda kw: kw[1])
+                try:
+                    order_item = int(sep_order_item[0])
+                    keywords[sep_order_item[1]] = sep_order_item[0]
+                except:
+                    print('Order cannot be a string')
+    sorted_keys = sorted(keywords.items(), key=lambda kw: int(kw[1]))
     for key in sorted_keys:
         field_list.append(key[0])
     res = {}
