@@ -106,13 +106,18 @@ class MemberModuleSerializer(serializers.Serializer):
         user_obj = request.user
         acc_obj = AccountInfo.objects.filter(user=user_obj).first()
         faq_upper_limit = acc_obj.paid_type.faq_amount
+        bot_upper_limit = acc_obj.paid_type.bot_amount
         bots = Chatbot.objects.filter(user=user_obj)
-        faq_total = 0
-        for bot in bots:
-            faq_total += FAQGroup.objects.filter(chatbot=bot).count()
-        faq_left = int(faq_upper_limit) - faq_total
-        if faq_left >= int(module_data.get('faq_count')):
-            available = True
+        if bot_upper_limit == '0' or int(bot_upper_limit) - len(bots) > 0:
+            faq_total = 0
+            for bot in bots:
+                faq_total += FAQGroup.objects.filter(chatbot=bot).count()
+            if faq_upper_limit == '0':
+                available = True
+            else:
+                faq_left = int(faq_upper_limit) - faq_total
+                if faq_left >= int(module_data.get('faq_count')):
+                    available = True
         if not request.parser_context.get('kwargs'):
             res['id'] = module_data.get('id')
             res['robot_name'] = module_data.get('robot_name')
