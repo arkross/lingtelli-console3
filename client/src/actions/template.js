@@ -32,7 +32,7 @@ export const fetchTemplates = () => dispatch => api.fetchAll()
 export const fetchTemplate = templateId => dispatch => api.fetch(templateId)
 	.then(data => dispatch(actionFetchTemplate(templateId, data)))
 
-export const fetchTemplateFAQGroups = templateId => dispatch => api.fetchGroups(templateId)
+export const fetchTemplateFAQGroups = (templateId, page) => dispatch => api.fetchGroups(templateId, page)
 	.then(data => dispatch(actionFetchTemplateGroups(templateId, data)))
 
 export const fetchTemplateFAQGroup = (templateId, groupId) => dispatch => api.fetchGroup(templateId, groupId)

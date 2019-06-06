@@ -19,7 +19,11 @@
   },
   "loader": {
     "authenticating": "Authenticating",
-    "fetching": "Fetching Data"
+    "fetching": "Fetching Data",
+    "failure": {
+      "header": "Failed to fetch data",
+      "content": "An error has occured. Please refresh the page. If it still does not work, please contact the administrator."
+    }
   },
   "resetPass": {
     "title": "Reset Password",

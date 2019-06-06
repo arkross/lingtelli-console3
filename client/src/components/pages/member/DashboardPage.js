@@ -19,18 +19,25 @@ class DashboardPage extends Component {
 		this.state = {
 			searchBot: '',
 			bots: {},
-			pageLoading: true
+			pageLoading: true,
+			showFailModal: false
 		}
 	}
 
 	async componentDidMount() {
-		await this.props.fetchDetail()
-		await this.props.fetchPlatforms()
-		await this.props.fetchPackages()
-		await this.props.fetchAllTemplateDetails()
-		await this.props.fetchAllBotDetails(this.props.user.paid_type)
-		this.searchBots('')
-		this.setState({ pageLoading: false })
+		try {
+			await this.props.fetchDetail()
+			await this.props.fetchPlatforms()
+			await this.props.fetchPackages()
+			await this.props.fetchAllTemplateDetails()
+			await this.props.fetchAllBotDetails(this.props.user.paid_type)
+			this.searchBots('')
+			this.setState({ pageLoading: false })
+		} catch (err) {
+			this.setState({
+				showFailModal: true
+			})
+		}
 	}
 
 	searchBots = keyword => {
@@ -71,7 +78,7 @@ class DashboardPage extends Component {
 
 	render() {
 		const { user, t, match, messages } = this.props
-		const { bots, searchBot, pageLoading } = this.state
+		const { bots, searchBot, pageLoading, showFailModal } = this.state
 
 		const languageOptions = [
 			{ key: 'en', text: 'English', value: 'en-US' },
@@ -143,6 +150,20 @@ class DashboardPage extends Component {
 				<Route render={props => <Redirect to='/' />} />
 			</Switch>
 		</Fragment> : <Container>
+				<Modal
+					open={showFailModal}
+					header={t('loader.failure.header')}
+					content={t('loader.failure.content')}
+					actions={[
+						{
+							key: 'ok',
+							content: t('login.kickAlert.ok'),
+							primary: true,
+							autoFocus: true,
+							onClick: this.handleRefresh
+						}
+					]}
+				/>
 				<Loader active={pageLoading} content={t('loader.fetching')} size='large' />
 		</Container>}
 		</div>

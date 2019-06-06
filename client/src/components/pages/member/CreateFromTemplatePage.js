@@ -12,8 +12,6 @@ import {
 	Form,
 	Header,
 	Label,
-	Dimmer,
-	Transition,
 	Loader,
 	Modal,
 	Message,
@@ -44,7 +42,7 @@ class CreateFromTemplatePage extends Component {
 			const template = _.find(this.props.templates, template => template.id === parseFloat(id))
 			this.setState({
 				basicData: template,
-				fields: template.fields.reduce((acc, el) => ({...acc, [el]: ''}), {}),
+				fields: template ? template.fields.reduce((acc, el) => ({...acc, [el]: ''}), {}) : [],
 				loading: false
 			})
 		})
@@ -91,8 +89,13 @@ class CreateFromTemplatePage extends Component {
 	}
 
 	render() {
-		const { match, t, templates, location } = this.props
+		const { match, t, templates, user, packages, bots } = this.props
 		const { loading, openSuccessModal, openFailModal } = this.state
+
+		const currentPaidtype = _.find(packages, p => p.name === user.paid_type)
+		const bot_limit = (user.paid_type && currentPaidtype && currentPaidtype.bot_amount > 0) ? currentPaidtype.bot_amount : Infinity
+		const botLimitText = bot_limit === Infinity ? '∞' : bot_limit
+		const botCount = Object.keys(bots).length
 		
 		return <Fragment>
 			<Modal open={openSuccessModal} size='tiny' onClose={this.handleSuccessModalSubmit}>
@@ -108,7 +111,12 @@ class CreateFromTemplatePage extends Component {
 				</Modal.Actions>
 			</Modal>
 			<Switch>
-				<Route path={`${match.path}`} exact render={props => <TemplateStepOne t={t} {...props} templates={templates} />} />
+				<Route path={`${match.path}`} exact render={props => <TemplateStepOne
+					t={t} {...props}
+					templates={templates}
+					botCount={botCount}
+					botLimit={botLimitText}
+					/>} />
 				<Route path={`${match.path}/:templateId([0-9]+)`} render={props => <TemplateChosenWrapper t={t} {...props}
 					loading={loading}
 					selectTemplate={this.handleSelectTemplate}
@@ -116,7 +124,8 @@ class CreateFromTemplatePage extends Component {
 					fields={this.state.fields}
 					onBasicDataChange={this.handleBasicDataChange}
 					onFieldChange={this.handleFieldChange}
-					onSubmit={this.handleSubmit} templates={templates} />} />
+					onSubmit={this.handleSubmit} templates={templates}
+					/>} />
 				<Route render={props => <Redirect to={match.path} />} />
 			</Switch>
 		</Fragment>
@@ -126,7 +135,8 @@ class CreateFromTemplatePage extends Component {
 const mapStateToProps = (state) => ({
 	user: state.getIn(['user']),
 	templates: state.getIn(['template']),
-	bots: state.getIn(['bot', 'bots'])
+	bots: state.getIn(['bot', 'bots']),
+	packages: state.getIn(['user', 'packages'])
 })
 
 class TemplateStepOne extends Component {
@@ -135,9 +145,10 @@ class TemplateStepOne extends Component {
 		this.props.history.push(`${this.props.match.url}/${id}/basic`)
 	}
 	render() {
-		const { templates, t } = this.props
+		const { templates, t, botCount, botLimit } = this.props
 		return <Container text>
 			<Header>{t('fromTemplate.chooseTemplate')}</Header>
+			<Label>{t('chatbot.create.bot_count')}: {botCount}/{botLimit}</Label>
 			<List divided verticalAlign='middle' size='large'>
 			{_.map(templates, template => <List.Item key={template.id}>
 				<List.Content floated='right'>
@@ -160,7 +171,7 @@ class TemplateChosen extends Component {
 	}
 
 	render() {
-		const { match, t, templates, loading, location } = this.props
+		const { match, t, templates, loading } = this.props
 		return (!loading ?
 			<Switch>
 			<Route path={`${match.path}/basic`} exact render={props => <TemplateStepTwo
@@ -208,7 +219,7 @@ class TemplateStepTwo extends Component {
 	}
 
 	render() {
-		const { t, templates, match, basicData: data } = this.props
+		const { t, basicData: data } = this.props
 		
 		const { errors } = this.state
 		const allowedLanguages = ['tw', 'cn']
