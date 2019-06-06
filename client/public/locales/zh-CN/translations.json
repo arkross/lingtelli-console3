@@ -17,6 +17,10 @@
       "ok": "好的"
     }
   },
+  "loader": {
+    "authenticating": "认证中",
+    "fetching": "载入中"
+  },
   "resetPass": {
     "title": "重设密码",
     "email": "电子邮件地址",
@@ -53,7 +57,15 @@
     "account": "帐户设定",
     "logout": "登出",
     "bot": "机器人清单",
+    "new": {
+      "title": "建立",
+      "botManual": "机器人",
+      "botTemplate": "使用模板"
+    },
     "create": "创建",
+    "fromTemplate": "使用模板创建",
+    "basic": "基本设置",
+    "fields": "模板栏位",
     "facebook": "Facebook",
     "line": "LINE",
     "web": "网站",
@@ -61,6 +73,21 @@
     "thirdparty": "第三方",
     "recommendations": "推荐记录",
     "history": "对话记录"
+  },
+  "fromTemplate": {
+    "chooseTemplate": "挑选模板",
+    "useTemplate": "使用模板",
+    "qaCount": "问答集数量",
+    "enterBasicInfo": "填入基本资料",
+    "enterQADetails": "填入问答集栏位",
+    "next": "下一步",
+    "prev": "上一步",
+    "finish": "完成",
+    "success": "机器人建立成功",
+    "successSubmit": "前往问答集设定",
+    "fail": "机器人建立失败",
+    "failSubmit": "离开",
+    "noFields": "此模板没有可填的栏位。请继续完成建立。"
   },
   "chatbot": {
     "name": "机器人称呼",
@@ -250,6 +277,7 @@
       "question": "新增问题",
       "answer": "新增答案",
       "search": "搜寻答案",
+      "delete": "删除",
       "form": {
         "question": "点击输入问题",
         "answer": "点击输入答案"

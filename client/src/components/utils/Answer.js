@@ -3,7 +3,7 @@ import React from "react";
 import { compose } from "recompose";
 import { connect } from 'react-redux';
 import { translate } from "react-i18next";
-import { Input, Button, Icon, Form } from "semantic-ui-react";
+import { Input, Button, Icon, Form, TextArea } from "semantic-ui-react";
 import { updateAnswer } from "actions/answer";
 import toJS from './ToJS'
 
@@ -66,7 +66,7 @@ class Answer extends React.Component {
 
   onKeyPress = (e) => {
     if (e.keyCode === 13 || e.key === "Enter")
-      this.update();
+      this.update()
   }
 
   onSubmit = e => {
@@ -84,8 +84,8 @@ class Answer extends React.Component {
   }
 
   render = () => {
-    const { content, editable, originalContent, loading, updateLoading, showCheck } = this.state;
-    const { t, ix } = this.props;
+    const { content, originalContent, loading, updateLoading, showCheck } = this.state;
+    const { t, ix, deletable } = this.props;
 
     return (
       <Form
@@ -97,14 +97,12 @@ class Answer extends React.Component {
         <Form.Input
           action
           placeholder={t("chatbot.faq.form.answer")}
-          value={content}
-          onBlur={this.onBlur}
-          onChange={this.onChange}
           fluid
         >
-          <input ref={ input => this.input = input } />
+          <TextArea placeholder={t('chatbot.faq.form.answer')} value={content} onChange={this.onChange} onBlur={this.onBlur} />
           <Button icon={showCheck ? 'check' : 'save'} loading={updateLoading} disabled={originalContent === content} color='green' />
-          <Button icon='trash alternate outline' loading={loading} color='red' className='question-delete' onClick={ e => this.onDelete(e, ix) } />
+          {deletable ?
+          <Button icon='trash alternate outline' loading={loading} color='red' className='question-delete' onClick={ e => this.onDelete(e, ix) } /> : ''}
         </Form.Input>
       </Form>
     )
@@ -112,7 +110,7 @@ class Answer extends React.Component {
 }
 
 export default compose(
-  translate("translations"),
+  translate(),
   connect(null, { updateAnswer }),
   toJS
 )(Answer);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import InlineMessage from '../../messages/InlineMessage';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
@@ -31,6 +31,7 @@ class CreateBotPage extends React.Component {
 			failedMsg: false,
 			postbackMsg: false
 		},
+		newId: '',
 		data: {
 			robotName: '',
 			greetingMsg: '',
@@ -98,9 +99,7 @@ class CreateBotPage extends React.Component {
 			.then( () => {
 				this.setState({ loading: false })
 			}, err => {
-				console.log('Failed to load packages')
 				this.packages = <div />
-				return err.response.data.errors
 			})
 	}
 
@@ -117,13 +116,12 @@ class CreateBotPage extends React.Component {
 				postback_title: data.postbackMsg,
 				language: data.language
 			})
-			.then(() => {
-				this.setState({ loading: false, openModal: true })
+			.then(data => {
+				this.setState({ loading: false, openModal: true, newId: data.id })
 				this.modalButton.focus()
 			}, err => {
 				const error = err.message
 				this.setState({errors: {create: error}, loading: false})
-				console.log('Failed to create bot', error);
 			})
 		}
 	}
@@ -131,7 +129,8 @@ class CreateBotPage extends React.Component {
 	onCloseModal = (e) => {
 		e.preventDefault()
 		this.setState({openModal: false})
-		this.props.history.push('/')
+		this.props.fetchAllBotDetails(this.props.user.paid_type)
+		this.props.history.push(`/dashboard/bot/${this.state.newId}/faq`)
 	}
 
 	render = () => {
@@ -159,7 +158,7 @@ class CreateBotPage extends React.Component {
 		const allowedLanguages = ['tw', 'cn']
 
 		return (
-			<Segment>
+			<Fragment>
 				<Form>
 					<Form.Field error={errors.robotName ? true: false}>
 						<label htmlFor='field_robotName'>{t('chatbot.name')}</label>
@@ -244,7 +243,7 @@ class CreateBotPage extends React.Component {
 						<Button onClick={onClose} primary ref={(el => this.modalButton = el)}>{t('chatbot.create.close')}</Button>
 					</Modal.Actions>
 				</Modal>
-			</Segment>
+			</Fragment>
 		)
 	}
 }

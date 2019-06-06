@@ -157,7 +157,6 @@ class HistoryPage extends React.Component {
 		const totalPage = Math.ceil(histories.count / perPage)
 		return <div className={`analysis-container`}>
 			<Loader active={loading} />
-			<Dimmer inverted active={loading} />
 			<Form onSubmit={this.onFilterSubmit}>
 				<Form.Group>
 					<Form.Field>

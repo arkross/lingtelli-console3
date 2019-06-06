@@ -157,16 +157,11 @@ class TestBotPage extends Component {
 	render() {
 		const { info, t, cancelAutoFocus, info: {third_party}, supportPlatforms } = this.props
 		const { messages, currentMessage } = this.state
-		const currentPlatforms = _.filter(supportPlatforms, plat => third_party.indexOf(plat.id) >= 0)
-		const demoActive = !!_.find(currentPlatforms, plat => plat.name == 'Demo')
 
 		moment.locale(localStorage.i18nextLng.toLowerCase())
 		let keyCounter = 0
 		return <div>
-			<Message attached>
-				<Popup trigger={<NavLink style={{float: 'right'}} to={`/dashboard/bot/${info.id}/batch`}>
-					{t('chatbot.batch.text')}
-				</NavLink>} content={t('chatbot.batch.popup')} />
+			<Message attached color='black'>
 				<div className='header'>{info.robot_name}</div>
 			</Message>
 			<div className='ui attached segment' ref={el => {this.chatMessages = el}} style={{height: '500px', overflowY: 'scroll'}}>

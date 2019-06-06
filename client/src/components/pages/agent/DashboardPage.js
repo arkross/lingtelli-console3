@@ -124,7 +124,7 @@ class Dashboard extends React.Component {
 						{
 							key: 'ok',
 							content: t('login.kickAlert.ok'),
-							positive: true,
+							primary: true,
 							autoFocus: true,
 							onClick: () => {this.props.history.push('/agent/login')}
 						}

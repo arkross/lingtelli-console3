@@ -236,7 +236,6 @@ class BatchTestPage extends Component {
 			<Grid.Row>
 				<Grid.Column>
 					<Header style={{float: 'left'}}>{t('chatbot.batch.text')}</Header>
-					<NavLink style={{float: 'right'}} to={`/dashboard/bot/${info.id}/test`}>{t('chatbot.batch.basic')}</NavLink>
 				</Grid.Column>
 			</Grid.Row>
 			<Grid.Row>
@@ -264,7 +263,7 @@ class BatchTestPage extends Component {
 					</Header>
 					<Button icon='download' as='a' content={t('chatbot.faq.export')} onClick={this.handleExportClick} floated='right' />
 					<Label content={t('chatbot.batch.total')} detail={total} />
-					<Label content={t('chatbot.batch.executed')} detail={run} color='teal' />
+					<Label content={t('chatbot.batch.executed')} detail={run} />
 					<Label content={t('chatbot.batch.errors')} detail={errors} color='red' />
 					<Label content={t('chatbot.batch.matches')} detail={exact} color='green' />
 					<Label content={t('chatbot.batch.accuracy')} detail={d3.format('.1%')(accuracy)} color='green' />

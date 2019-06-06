@@ -24,6 +24,12 @@ export default {
 		old_password: data.old_password,
 		password: data.password
 	})).data,
+
+	getTemplates: async () => (await axios.get(`${API_HOST}/member/module/`)).data,
+
+	getTemplate: async id => (await axios.get(`${API_HOST}/member/module/${id}/`)).data,
+
+	getFields: async id => (await axios.get(`${API_HOST}/member/module/${id}/get_fields/`)).data,
   
 	resetPassword: async (id, data) => (await axios.put(`${API_HOST}/member/${id}/`, data)).data
 }

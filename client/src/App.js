@@ -84,7 +84,7 @@ class App extends React.Component {
     if (loading) {
       return (
         <Dimmer active>
-           <Loader content='Loading' size='large' />
+           <Loader content='Authenticating' size='large' />
         </Dimmer>
       )
     }
