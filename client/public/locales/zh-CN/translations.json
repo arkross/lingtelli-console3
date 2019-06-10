@@ -20,6 +20,14 @@
   "loader": {
     "authenticating": "认证中",
     "fetching": "载入中",
+    "details": {
+      "user": "载入账号资料",
+      "platform": "载入平台资料",
+      "packages": "载入方案资料",
+      "templates": "载入模板资料",
+      "bot": "载入机器人资料",
+      "completed": "载入完成"
+    },
     "failure": {
       "header": "发生了错误",
       "content": "很抱歉，这网站发生了错误。请重新载入几次。如果还发生错误请联络管理人员。"

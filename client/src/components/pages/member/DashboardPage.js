@@ -5,7 +5,7 @@ import { Route, Switch, Redirect, NavLink } from 'react-router-dom'
 import { translate } from 'react-i18next'
 import _ from 'lodash'
 import toJS from '../../utils/ToJS'
-import { Menu, Image, Container, Dropdown, Input, Modal, Label, Loader, Dimmer, Responsive } from 'semantic-ui-react'
+import { Menu, Image, Container, Dropdown, Input, Modal, Loader, Responsive, Progress } from 'semantic-ui-react'
 import { fetchAllBotDetails, fetchPlatforms } from '../../../actions/bot'
 import { fetchDetail, fetchPackages, fetchAllTemplateDetails } from '../../../actions/user'
 import { logout } from '../../../actions/auth'
@@ -20,17 +20,26 @@ class DashboardPage extends Component {
 			searchBot: '',
 			bots: {},
 			pageLoading: true,
+			loadingProgress: 0,
+			loadingMessage: props.t('loader.fetching'),
 			showFailModal: false
 		}
 	}
 
 	async componentDidMount() {
+		const { t } = this.props
 		try {
+			this.setState({ loadingMessage: t('loader.details.user') })
 			await this.props.fetchDetail()
+			this.setState({ loadingMessage: t('loader.details.platform'), loadingProgress: this.state.loadingProgress+1 })
 			await this.props.fetchPlatforms()
+			this.setState({ loadingMessage: t('loader.details.packages'), loadingProgress: this.state.loadingProgress+1 })
 			await this.props.fetchPackages()
+			this.setState({ loadingMessage: t('loader.details.templates'), loadingProgress: this.state.loadingProgress+1 })
 			await this.props.fetchAllTemplateDetails()
+			this.setState({ loadingMessage: t('loader.details.bot'), loadingProgress: this.state.loadingProgress+1 })
 			await this.props.fetchAllBotDetails(this.props.user.paid_type)
+			this.setState({ loadingMessage: t('loader.details.completed'), loadingProgress: this.state.loadingProgress+1 })
 			this.searchBots('')
 			this.setState({ pageLoading: false })
 		} catch (err) {
@@ -78,7 +87,7 @@ class DashboardPage extends Component {
 
 	render() {
 		const { user, t, match, messages } = this.props
-		const { bots, searchBot, pageLoading, showFailModal } = this.state
+		const { bots, searchBot, pageLoading, showFailModal, loadingMessage, loadingProgress } = this.state
 
 		const languageOptions = [
 			{ key: 'en', text: 'English', value: 'en-US' },
@@ -149,7 +158,7 @@ class DashboardPage extends Component {
 				<Route path={`${match.path}/bot/fromTemplate`} render={props => <NoSidePage {...props} />} />
 				<Route render={props => <Redirect to='/' />} />
 			</Switch>
-		</Fragment> : <Container>
+		</Fragment> : (!user.showLoggedOut ? <Container>
 				<Modal
 					open={showFailModal}
 					header={t('loader.failure.header')}
@@ -164,8 +173,9 @@ class DashboardPage extends Component {
 						}
 					]}
 				/>
-				<Loader active={pageLoading} content={t('loader.fetching')} size='large' />
-		</Container>}
+				<Loader active={pageLoading} size='large' />
+				<Progress value={loadingProgress} total={5} indicating color='black' label={loadingMessage} />
+		</Container> : '')}
 		</div>
 	}
 }
