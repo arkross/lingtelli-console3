@@ -997,7 +997,7 @@ class SaveFieldToFAQTest(TestCase):
         module_faq_obj = ModuleFAQGroup.objects.create(module=self.module_obj)
 
         # Initial module question
-        ModuleQuestion.objects.create(content='Hi how are you? {1:name}',
+        ModuleQuestion.objects.create(content='Hi how are you? {1:name:Nick}',
                                       module=self.module_obj,
                                       group=module_faq_obj)
 
