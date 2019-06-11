@@ -255,6 +255,18 @@
       "platform": "平台",
       "uid": "使用者ID",
       "filter": "过滤",
+      "response": {
+        "title": "反应",
+        "helpful": "有用",
+        "unhelpful": "无用",
+        "empty": "无资料"
+      },
+      "actions": {
+        "title": "操作",
+        "label": "加入至问答集",
+        "new": "创建问答组",
+        "existing": "已有的问答组"
+      },
       "platforms": {
         "fb": "Facebook",
         "line": "LINE",

@@ -15,6 +15,7 @@ import {
 	Loader,
 	Modal,
 	Message,
+	Input,
 } from 'semantic-ui-react';
 import _ from 'lodash'
 import toJS from 'components/utils/ToJS'
@@ -42,7 +43,7 @@ class CreateFromTemplatePage extends Component {
 			const template = _.find(this.props.templates, template => template.id === parseFloat(id))
 			this.setState({
 				basicData: template,
-				fields: template ? template.fields.reduce((acc, el) => ({...acc, [el]: ''}), {}) : [],
+				fields: template ? template.fields.reduce((acc, el) => ({...acc, ...el}), {}) : [],
 				loading: false
 			})
 		})
@@ -96,7 +97,7 @@ class CreateFromTemplatePage extends Component {
 		const bot_limit = (user.paid_type && currentPaidtype && currentPaidtype.bot_amount > 0) ? currentPaidtype.bot_amount : Infinity
 		const botLimitText = bot_limit === Infinity ? '∞' : bot_limit
 		const botCount = Object.keys(bots).length
-		
+
 		return <Fragment>
 			<Modal open={openSuccessModal} size='tiny' onClose={this.handleSuccessModalSubmit}>
 				<Modal.Content>{t('fromTemplate.success')}</Modal.Content>
@@ -291,13 +292,10 @@ class TemplateStepThree extends Component {
 			<Header>{t('fromTemplate.enterQADetails')}</Header>
 			{(fields && _.keys(fields).length) ?
 			<Form>
-				{_.map(fields, (value, key) => <Form.Input
-					key={key}
-					name={key}
-					label={key}
-					value={value}
-					onChange={this.handleChange}
-				/>)}
+				{_.map(fields, (value, key) => <Form.Field key={key}>
+					<label htmlFor={`${key}_field`}>{key}</label>
+					<Input id={`${key}_field`} name={key} value={value} onChange={this.handleChange} />
+				</Form.Field>)}
 			</Form> : <Message info>{t('fromTemplate.noFields')}</Message>}
 		</Container>
 	}

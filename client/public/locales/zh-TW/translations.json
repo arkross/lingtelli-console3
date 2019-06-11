@@ -258,6 +258,18 @@
       "platform": "平台",
       "uid": "使用者ID",
       "filter": "過濾",
+      "response": {
+        "title": "反饋",
+        "helpful": "有用",
+        "unhelpful": "無用",
+        "empty": "無資料"
+      },
+      "actions": {
+        "title": "操作",
+        "label": "加入至問答集",
+        "new": "新增問答組",
+        "existing": "已有的問答組"
+      },
       "platforms": {
         "fb": "Facebook",
         "line": "LINE",
