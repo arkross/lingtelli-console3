@@ -3,7 +3,7 @@ import { compose } from 'recompose'
 import { connect } from 'react-redux'
 import _ from 'lodash'
 import Dropzone from "react-dropzone"
-import { Button, Icon, Form, Input, Grid, Message, Header, Pagination, Table, Divider, Label, Modal, List } from 'semantic-ui-react'
+import { Button, Icon, Form, Input, Grid, Message, Header, Pagination, Table, Divider, Label, Modal, List, TextArea } from 'semantic-ui-react'
 import FileDownload from "react-file-download"
 import {
 	fetchTemplates,
@@ -239,9 +239,14 @@ class TemplateDetailPage extends React.Component {
 		})
 	}
 
-	onCellKeyDown = (type, id, groupId, e) => {
+	onNewCellInputBlur = (type, groupId, e) => {
+		e.keyCode = 13
+		this.onNewCellKeyDown(type, groupId, e)
+	}
+
+	onCellKeyDown = (type, groupId, e) => {
 		if (e.keyCode == 13) {
-			return this.onCellBlur(type, id, groupId, e)
+			return this.onCellBlur(type, groupId, e)
 		}
 	}
 
@@ -261,9 +266,13 @@ class TemplateDetailPage extends React.Component {
 				promise = this.props.deleteTemplateQuestion(this.props.template.id, id)
 			}
 		} else if (type === 'answer') {
-			promise = this.props.updateTemplateAnswer(this.props.template.id, id, {
+			if (localSubIndex > 0 && !item.content) {
+				promise = this.props.deleteTemplateAnswer(this.props.template.id, id)
+			} else {
+				promise = this.props.updateTemplateAnswer(this.props.template.id, id, {
 					content: item.content
-			})
+				})
+			}
 		}
 		return promise.then(() => {
 			this.setState({ faq: _.set(_.cloneDeep(this.state.faq), [localIndex, type, localSubIndex, 'state'], 'success') })
@@ -391,8 +400,9 @@ class TemplateDetailPage extends React.Component {
 					<Message info>
 						<Message.Header>Template variable</Message.Header>
 						<List bulleted>
-							<List.Item>Format: {`{sequence:variableName}`}</List.Item>
-							<List.Item>Example: {`{1:公司}, {2:地址}, {3:姓名}`}</List.Item>
+							<List.Item>Format: {`{sequence:variableName:defaultValue}`}</List.Item>
+							<List.Item>Example: {`{1:公司:語智網}, {2:地址}, {3:姓名}`}</List.Item>
+							<List.Item>Default value can be omitted.</List.Item>
 							<List.Item>Space characters are <strong>not</strong> allowed.</List.Item>
 							<List.Item>Sequence must be a whole number starting from 1.</List.Item>
 							<List.Item>If there are multiple different variable names with the same sequence, order will be determined from the appearance in QA list.</List.Item>
@@ -407,8 +417,8 @@ class TemplateDetailPage extends React.Component {
 						<Table.Header>
 							<Table.Row>
 								<Table.HeaderCell style={{width: '2rem'}}>Group</Table.HeaderCell>
-								<Table.HeaderCell>Question</Table.HeaderCell>
-								<Table.HeaderCell>Answer</Table.HeaderCell>
+								<Table.HeaderCell style={{width: '40%'}}>Question</Table.HeaderCell>
+								<Table.HeaderCell style={{maxWidth: '40%'}}>Answer</Table.HeaderCell>
 								<Table.HeaderCell style={{width: '2rem'}}>Action</Table.HeaderCell>
 							</Table.Row>
 						</Table.Header>
@@ -416,7 +426,10 @@ class TemplateDetailPage extends React.Component {
 						<Table.Body>{ displayGroups.map(item =>
 							<Table.Row key={item.group}>
 								<Table.Cell>{item.group}</Table.Cell>
-								<Table.Cell>
+								<Table.Cell
+									error={item.question && !!item.question.find(que => que.state === 'error')}
+									positive={item.question && !!item.question.find(que => que.state === 'success')}
+								>
 								{item.question && !!item.question.length && item.question.map(que => 
 									<Fragment key={que.id}>
 										<Input
@@ -442,21 +455,29 @@ class TemplateDetailPage extends React.Component {
 										onKeyDown={this.onNewCellKeyDown.bind(null, 'question', item.group)}
 									/>
 								</Table.Cell>
-								<Table.Cell>
+								<Table.Cell
+									error={item.answer && !!item.answer.find(ans => ans.state === 'error')}
+									positive={item.answer && !!item.answer.find(ans => ans.state === 'success')}
+								>
 								{item.answer && !!item.answer.length && item.answer.map(ans => 
-									<Fragment key={ans.id}>
-										<Input
-											fluid
-											loading={ans.state === 'loading'}
-											error={ans.state === 'error'}
+									<Form key={ans.id}>
+										<TextArea
 											icon={ans.state === 'success' ? 'check' : null}
 											groupid={item.group}
 											onChange={this.onCellInputChange.bind(null, 'answer', ans.id)}
 											onBlur={this.onCellBlur.bind(null, 'answer', ans.id, item.group)}
-											onKeyDown={this.onCellKeyDown.bind(null, 'answer', ans.id, item.group)}
 											value={ans.content}
 										/>
-									</Fragment>) }
+									</Form>) }
+									<Form>
+										<TextArea
+											rows={1}
+											placeholder='New Answer'
+											value={item.newContent ? (item.newContent.answer || '') : ''}
+											onChange={this.onNewCellInputChange.bind(null, 'answer', item.group)}
+											onBlur={this.onNewCellInputBlur.bind(null, 'answer', item.group)}
+										/>
+									</Form>
 								</Table.Cell>
 								<Table.Cell>
 									<Button icon='remove' color='red' onClick={this.onDeleteGroup.bind(null, item.group)} loading={item.deleteLoading} />
@@ -501,7 +522,8 @@ export default compose(
 		deleteTemplateQuestion,
 		deleteTemplateFAQGroup,
 		createTemplateAnswer,
-		updateTemplateAnswer
+		updateTemplateAnswer,
+		deleteTemplateAnswer
 	}),
 	translate(),
 	toJS

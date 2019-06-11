@@ -244,6 +244,18 @@
       "platform": "Platform",
       "uid": "User ID",
       "filter": "Filter",
+      "response": {
+        "title": "Response",
+        "helpful": "Helpful",
+        "unhelpful": "Unhelpful",
+        "empty": "No Data"
+      },
+      "actions": {
+        "title": "Actions",
+        "label": "Add to Q&A List",
+        "new": "New Group",
+        "existing": "Existing Group"
+      },
       "platforms": {
         "fb": "Facebook",
         "line": "LINE",

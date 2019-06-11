@@ -205,7 +205,7 @@ class TextBalloonInner extends Component {
 	render() {
 		const { date, sender, children, t, actions, type } = this.props
 		return <Comment>
-			<Comment.Avatar as={Icon} name={sender === 'bot' ? 'android' : 'user'} size='large' />
+			<Comment.Avatar color={sender === 'bot' ? 'black': null} as={Icon} name={sender === 'bot' ? 'android' : 'user'} size='large' />
 			<Comment.Content>
 				<Comment.Author as='span'>{sender === 'bot' ? t('demo.bot') : t('demo.you')} {type === 'error' ? <Icon title={t('demo.error')} name='remove' color='red' /> : ''}</Comment.Author>
 				<Comment.Metadata as='div' title={moment(date).format('YYYY-MM-DD HH:mm:ss')}><div>{moment(date).fromNow()}</div></Comment.Metadata>
