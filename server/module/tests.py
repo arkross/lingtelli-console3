@@ -305,12 +305,12 @@ class ModuleFAQTest(TestCase):
         module_faq_obj = ModuleFAQGroup.objects.create(module=self.module_obj)
 
         # Initial module question
-        ModuleQuestion.objects.create(content='Hi I am {1:name}',
+        ModuleQuestion.objects.create(content='Hi I am {1:name:Nick}',
                                       module=self.module_obj,
                                       group=module_faq_obj)
 
         # Initial module answer
-        ModuleAnswer.objects.create(content='Hi {1:name}, Im {2:name_2}',
+        ModuleAnswer.objects.create(content='Hi {1:name:Jack}, Im {2:name_2:}',
                                     module=self.module_obj,
                                     group=module_faq_obj)
 
@@ -424,18 +424,22 @@ class ModuleFAQTest(TestCase):
 
     def test_member_get_field(self):
         ''' Return a list of fields for member to fill
+        Will check answer first. The example will assign with same key from
+        question.
         '''
 
         c = Client()
         order_list = ['name', 'name_2']
+        order_ex = ['Nick', '']
 
         response = c.get(self.get_field_uri, **self.header)
         self.assertEqual(response.status_code, 200)
         res_data = json.loads(response.content)
         self.assertIn('fields', res_data)
         fields = res_data.get('fields')
-        for i in range(len(fields)):
-            self.assertEqual(order_list[i], fields[i])
+        for i in range(len(order_list)):
+            self.assertIn(order_list[i], fields[i])
+            self.assertEqual(order_ex[i], fields[i][order_list[i]])
 
 
 class ModuleAnswerTest(TestCase):

@@ -555,6 +555,21 @@ def export_module_faq(request, pk=None):
 @permission_classes([IsAuthenticated])
 def get_fields(request, pk=None):
     ''' Get keyword fields in faq and return to the client
+
+    Response format example:
+    {
+        "fields": [
+            {
+                "item1": "the example for item one"
+            },
+            {
+                "itemt2": ""
+            },
+            {
+                "item3": "another example for item3"
+            }
+        ]
+    }
     '''
 
     module_obj = Module.objects.filter(id=pk).first()
@@ -563,7 +578,7 @@ def get_fields(request, pk=None):
 
     field_list = []
     keywords = {}
-    reg = r'{\w+:\w+}'
+    reg = r'{\w+:\w+:*\w*}'
     ans_qry = ModuleAnswer.objects.filter(module=module_obj)
     que_qry = ModuleQuestion.objects.filter(module=module_obj)
     for ans in ans_qry:
@@ -578,9 +593,16 @@ def get_fields(request, pk=None):
             if not keywords.get(sep_order_item[1], None):
                 try:
                     order_item = int(sep_order_item[0])
-                    keywords[sep_order_item[1]] = sep_order_item[0]
+                    keywords[sep_order_item[1]] = {'order': sep_order_item[0],
+                                                   'ex': ''}
                 except:
                     print('Order cannot be a string')
+            if len(sep_order_item) >= 3:
+                ex = sep_order_item[2] if sep_order_item[2] \
+                    != '' else keywords[sep_order_item[1]]['ex']
+            else:
+                ex = keywords[sep_order_item[1]]['ex']
+            keywords[sep_order_item[1]]['ex'] = ex
 
     for que in que_qry:
         if '{' not in que.content:
@@ -588,18 +610,28 @@ def get_fields(request, pk=None):
         sentence = que.content
         words = re.findall(reg, sentence)
         for s in words:
+            ex = ''
             s = s.replace('{', '')
             s = s.replace('}', '')
             sep_order_item = s.split(':')
             if not keywords.get(sep_order_item[1], None):
                 try:
                     order_item = int(sep_order_item[0])
-                    keywords[sep_order_item[1]] = sep_order_item[0]
+                    keywords[sep_order_item[1]] = {'order': sep_order_item[0],
+                                                   'ex': ''}
                 except:
                     print('Order cannot be a string')
-    sorted_keys = sorted(keywords.items(), key=lambda kw: int(kw[1]))
+            if len(sep_order_item) >= 3:
+                ex = sep_order_item[2] if sep_order_item[2] \
+                    != '' else keywords[sep_order_item[1]]['ex']
+            else:
+                ex = keywords[sep_order_item[1]]['ex']
+            keywords[sep_order_item[1]]['ex'] = ex
+    sorted_keys = sorted(keywords, key=lambda kw: int(keywords[kw]['order']))
     for key in sorted_keys:
-        field_list.append(key[0])
+        field_obj = {}
+        field_obj[key] = keywords[key]['ex']
+        field_list.append(field_obj)
     res = {}
     res['fields'] = field_list
     return Response(res, status=HTTP_200_OK)
