@@ -179,6 +179,7 @@ class TemplateChosen extends Component {
 				basicData={this.props.basicData}
 				onBasicDataChange={this.props.onBasicDataChange} {...props} t={t} templates={templates} />} />
 			<Route path={`${match.path}/fields`} exact render={props => <TemplateStepThree
+				basicData={this.props.basicData}
 				fields={this.props.fields}
 				onFieldChange={this.props.onFieldChange}
 				onSubmit={this.props.onSubmit} {...props} t={t} templates={templates} />} />
@@ -287,8 +288,16 @@ class TemplateStepTwo extends Component {
 }
 
 class TemplateStepThree extends Component {
+	constructor(props) {
+		super(props)
+		_.forEach(props.basicData, field => {
+			if ( ! field) {
+				this.handlePrev()
+			}
+		})
+	}
 	handlePrev = e => {
-		e.preventDefault()
+		e && e.preventDefault()
 		this.props.history.push(`${this.props.match.url.replace('/fields', '')}/basic`)
 	}
 	handleNext = e => {
@@ -305,7 +314,7 @@ class TemplateStepThree extends Component {
 			<Button floated='right' primary icon='check' labelPosition='right' content={t('fromTemplate.finish')} onClick={this.handleNext} />
 			<Header>{t('fromTemplate.enterQADetails')}</Header>
 			{(fields && _.keys(fields).length) ?
-			<Form>
+			<Form style={{paddingBottom: '100px'}}>
 				{_.map(fields, (value, key) => <Form.Field key={key}>
 					<label htmlFor={`${key}_field`}>{key}</label>
 					<Input id={`${key}_field`} name={key} value={value} onChange={this.handleChange} />
