@@ -512,7 +512,7 @@ def update_faq_field(request, pk=None):
     if not mod_obj:
         return Response({'errors': _('Not found')},
                         status=HTTP_404_NOT_FOUND)
-    reg = r'{\w+:\w+}'
+    reg = r'{\w+:[\D\S]:*[^{}]*}'
     bot_obj = Chatbot.objects.filter(id=pk).first()
     if not bot_obj:
         return Response({'errors': _('Not found')},
@@ -536,11 +536,17 @@ def update_faq_field(request, pk=None):
                     sep_order_item = s.split(':')
                     order = sep_order_item[0]
                     item = sep_order_item[1]
+                    replace_format = '{' + order + ':' + item + '}'
+                    if len(sep_order_item) > 2:
+                        ex = sep_order_item[2]
+                        replace_format = \
+                            '{' + order + ':' + item + ':' + ex + '}'
                     if fields.get(item, None):
                         replace_data = fields.get(item)
-                        replace_format = '{' + order + ':' + item + '}'
                         sentence = sentence.replace(replace_format,
                                                     replace_data)
+                    else:
+                        sentence = sentence.replace(replace_format, '')
             new_ans_obj = Answer.objects.create(content=sentence,
                                                 chatbot=bot_obj,
                                                 group=faq_group_obj)
@@ -558,11 +564,17 @@ def update_faq_field(request, pk=None):
                     sep_order_item = s.split(':')
                     order = sep_order_item[0]
                     item = sep_order_item[1]
+                    replace_format = '{' + order + ':' + item + '}'
+                    if len(sep_order_item) > 2:
+                        ex = sep_order_item[2]
+                        replace_format = \
+                            '{' + order + ':' + item + ':' + ex + '}'
                     if fields.get(item, None):
                         replace_data = fields.get(item)
-                        replace_format = '{' + order + ':' + item + '}'
                         sentence = sentence.replace(replace_format,
                                                     replace_data)
+                    else:
+                        sentence = sentence.replace(replace_format, '')
             new_que_obj = Question.objects.create(content=sentence,
                                                   chatbot=bot_obj,
                                                   group=faq_group_obj)
