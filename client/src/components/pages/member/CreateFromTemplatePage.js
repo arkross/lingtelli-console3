@@ -210,9 +210,27 @@ class TemplateStepTwo extends Component {
 		return this.props.onBasicDataChange(e)
 	}
 
+	handleValidation = () => {
+		let result = true
+		let newState = {}
+		const { basicData } = this.props
+		_.forEach(this.state.errors, (field, key) => {
+			if ( ! basicData[key]) {
+				result = false
+				newState[key] = true
+			} else {
+				newState[key] = false
+			}
+		})
+		this.setState({ errors: newState })
+		return result
+	}
+
 	handleNext = e => {
 		e.preventDefault()
-		this.props.history.push(`${this.props.match.url.replace('/basic', '')}/fields`)
+		if (this.handleValidation()) {
+			this.props.history.push(`${this.props.match.url.replace('/basic', '')}/fields`)
+		}
 	}
 
 	handlePrev = e => {
@@ -230,27 +248,23 @@ class TemplateStepTwo extends Component {
 			<Button icon='arrow right' labelPosition='right' floated='right' content={t('fromTemplate.next')} onClick={this.handleNext} />
 			<Header>{t('fromTemplate.enterBasicInfo')}</Header>
 			<Form>
-				<Form.Field>
+				<Form.Field required error={errors.robot_name}>
 					<label htmlFor='field_robot_name'>{t('chatbot.name')}</label>
-					<input type='text' name='robot_name' id='field_robot_name' placeholder={t('chatbot.placeholder.name')} maxLength={15} onChange={onChange} value={data.robot_name}/>
-					{errors.robot_name && <Label color='red' pointing>{errors.robot_name}</Label>}
+					<input type='text' name='robot_name' id='field_robot_name' placeholder={t('chatbot.placeholder.name')} maxLength={15} onChange={onChange} value={data.robot_name} required/>
 				</Form.Field>
-				<Form.Field>
+				<Form.Field required error={errors.greeting_msg}>
 					<label htmlFor='field_greeting_msg'>{t('chatbot.greetingMsg')}</label>
-					<input type='text' name='greeting_msg' id='field_greeting_msg' placeholder={t('chatbot.placeholder.greetingMsg')} maxLength={50} onChange={onChange} value={data.greeting_msg} />
-					{errors.greeting_msg && <Label color='red' pointing>{errors.greeting_msg}</Label>}
+					<input type='text' name='greeting_msg' id='field_greeting_msg' placeholder={t('chatbot.placeholder.greetingMsg')} maxLength={50} onChange={onChange} value={data.greeting_msg} required />
 				</Form.Field>
-				<Form.Field>
+				<Form.Field required error={errors.failed_msg}>
 					<label htmlFor='field_failed_msg'>{t('chatbot.failedMsg')}</label>
-					<input type='text' name='failed_msg' id='field_failed_msg' placeholder={t('chatbot.placeholder.failedMsg')} maxLength={50} onChange={onChange} value={data.failed_msg} />
-					{errors.failed_msg && <Label color='red' pointing>{errors.failed_msg}</Label>}
+					<input type='text' name='failed_msg' id='field_failed_msg' placeholder={t('chatbot.placeholder.failedMsg')} maxLength={50} onChange={onChange} value={data.failed_msg} required />
 				</Form.Field>
-				<Form.Field>
+				<Form.Field required error={errors.postback_title}>
 					<label htmlFor='field_postback_title'>{t('chatbot.postbackMsg')}</label>
-					<input type='text' name='postback_title' id='field_postback_title' placeholder={t('chatbot.placeholder.postbackMsg')} maxLength={50} onChange={onChange} value={data.postback_title} />
-					{errors.postback_msg && <Label color='red' pointing>{errors.postback_msg}</Label>}
+					<input type='text' name='postback_title' id='field_postback_title' placeholder={t('chatbot.placeholder.postbackMsg')} maxLength={50} onChange={onChange} value={data.postback_title} required />
 				</Form.Field>
-				<Form.Field>
+				<Form.Field required>
 					<Form.Group grouped>
 						<label>{t('chatbot.selectLanguage')}</label>
 						{
