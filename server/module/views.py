@@ -578,7 +578,7 @@ def get_fields(request, pk=None):
 
     field_list = []
     keywords = {}
-    reg = r'{\w+:\w+:*\w*}'
+    reg = r'{\w+:[\D\S]:*[^{}]*}'
     ans_qry = ModuleAnswer.objects.filter(module=module_obj)
     que_qry = ModuleQuestion.objects.filter(module=module_obj)
     for ans in ans_qry:
