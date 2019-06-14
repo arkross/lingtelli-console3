@@ -533,7 +533,7 @@ def update_faq_field(request, pk=None):
                 for s in words:
                     s = s.replace('{', '')
                     s = s.replace('}', '')
-                    sep_order_item = s.split(':')
+                    sep_order_item = s.split(':', 2)
                     order = sep_order_item[0]
                     item = sep_order_item[1]
                     replace_format = '{' + order + ':' + item + '}'
@@ -561,7 +561,7 @@ def update_faq_field(request, pk=None):
                 for s in words:
                     s = s.replace('{', '')
                     s = s.replace('}', '')
-                    sep_order_item = s.split(':')
+                    sep_order_item = s.split(':', 2)
                     order = sep_order_item[0]
                     item = sep_order_item[1]
                     replace_format = '{' + order + ':' + item + '}'

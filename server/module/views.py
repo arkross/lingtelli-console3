@@ -589,7 +589,7 @@ def get_fields(request, pk=None):
         for s in words:
             s = s.replace('{', '')
             s = s.replace('}', '')
-            sep_order_item = s.split(':')
+            sep_order_item = s.split(':', 2)
             if not keywords.get(sep_order_item[1], None):
                 try:
                     order_item = int(sep_order_item[0])
@@ -613,7 +613,7 @@ def get_fields(request, pk=None):
             ex = ''
             s = s.replace('{', '')
             s = s.replace('}', '')
-            sep_order_item = s.split(':')
+            sep_order_item = s.split(':', 2)
             if not keywords.get(sep_order_item[1], None):
                 try:
                     order_item = int(sep_order_item[0])
