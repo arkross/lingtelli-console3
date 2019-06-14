@@ -512,7 +512,7 @@ def update_faq_field(request, pk=None):
     if not mod_obj:
         return Response({'errors': _('Not found')},
                         status=HTTP_404_NOT_FOUND)
-    reg = r'{\w+:\w+:*\w*}'
+    reg = r'{\w+:[\D\S]:*[^{}]*}'
     bot_obj = Chatbot.objects.filter(id=pk).first()
     if not bot_obj:
         return Response({'errors': _('Not found')},
