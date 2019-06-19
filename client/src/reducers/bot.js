@@ -45,14 +45,14 @@ export default function bot(state = initState, action = {}) {
 			.filter(el => el.date)
 			.sortBy(el => moment(el.date, 'YYYY/MM/DD').valueOf())
 			.value()
-		const check = state.getIn(['bots', action.id + '', 'report'])
+		const check = state.getIn(['bots', action.id + '', 'report', action.days])
 		const totalStat = _.chain(action.report)
 			.find(el => !el.date)
 			.value()
 		if (check) {
 			return state.withMutations(s => s
-				.setIn(['bots', action.id + '', 'reportStat'], fromJS(totalStat))
-				.updateIn(['bots', action.id + '', 'report'], curState => curState
+				.setIn(['bots', action.id + '', 'reportStat', action.days], fromJS(totalStat))
+				.updateIn(['bots', action.id + '', 'report', action.days], curState => curState
 					.concat(fromJS(newData))
 					.groupBy(el => el.get('date'))
 					.map(el => el.last())
@@ -60,8 +60,8 @@ export default function bot(state = initState, action = {}) {
 			)
 		}
 		return state.withMutations(s => s
-			.setIn(['bots', action.id + '', 'report'], fromJS(newData))
-			.setIn(['bots', action.id + '', 'reportStat'], fromJS(totalStat)))
+			.setIn(['bots', action.id + '', 'report', action.days], fromJS(newData))
+			.setIn(['bots', action.id + '', 'reportStat', action.days], fromJS(totalStat)))
 	case types.FETCH_GROUPS:
 		return state.setIn(['bots', action.id + '', 'group'], fromJS(action.data))
 	case types.FETCH_GROUP_LENGTH:

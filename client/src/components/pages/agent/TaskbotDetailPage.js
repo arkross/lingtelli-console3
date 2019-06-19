@@ -16,7 +16,7 @@ import { translate, Trans } from 'react-i18next'
 import DeletionModal from '../../modals/TaskbotDeletionModal'
 import LingPagination from '../../utils/LingPagination'
 import qs from 'query-string'
-import TestBotPage from '../TestBotPage'
+import TestBotPage from '../member/TestBotPage'
 
 class TaskbotDetailPage extends React.Component {
 
@@ -210,7 +210,7 @@ class TaskbotDetailPage extends React.Component {
 				return this.fetchGroups()
 			}, err => {
 				this.setState({
-					faq: _.set(_.cloneDeep(this.stat.faq), [localIndex, 'newState', type], 'error')
+					faq: _.set(_.cloneDeep(this.state.faq), [localIndex, 'newState', type], 'error')
 				})
 			})
 		}
@@ -354,10 +354,10 @@ class TaskbotDetailPage extends React.Component {
 						ref={(node) => { this.dropzoneRef = node }}
 					>
 					</Dropzone>
-					<Button loading={importLoading} onClick={() => this.dropzoneRef.open()} color='orange' icon><Icon name='upload' /> Import</Button>
-					<Button loading={exportLoading} onClick={this.onExport.bind(null, data.id)} color='violet' icon><Icon name='download' /> Export</Button>
-					<Button loading={trainLoading} color='brown' onClick={this.onTrain.bind(null, data.id)} icon><Icon name='flask' /> Train</Button>
-					<Button icon='plus' content='Add Group' onClick={this.onAddGroupClick} color='green' loading={addGroupLoading} />
+					<Button icon='plus' content='Add Group' onClick={this.onAddGroupClick} positive loading={addGroupLoading} />
+					<Button loading={importLoading} onClick={() => this.dropzoneRef.open()} secondary icon><Icon name='upload' /> Import</Button>
+					<Button loading={exportLoading} onClick={this.onExport.bind(null, data.id)} secondary icon><Icon name='download' /> Export</Button>
+					<Button loading={trainLoading} onClick={this.onTrain.bind(null, data.id)} icon><Icon name='flask' /> Train</Button>
 				</Grid.Column>
 				<Grid.Column>
 					{totalPages > 0 && <LingPagination
@@ -428,7 +428,7 @@ class TaskbotDetailPage extends React.Component {
 									</Fragment>) }
 								</Table.Cell>
 								<Table.Cell>
-									<Button icon='remove' color='red' onClick={this.onDeleteGroup.bind(null, item.group)} loading={item.deleteLoading} />
+									<Button icon='trash outline alternate' negative onClick={this.onDeleteGroup.bind(null, item.group)} loading={item.deleteLoading} />
 								</Table.Cell>
 							</Table.Row>
 						)}</Table.Body>

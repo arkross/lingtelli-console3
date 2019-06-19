@@ -1,0 +1,80 @@
+/*******************************
+     User Global Variables
+*******************************/
+
+@headerFont: Roboto, 'Helvetica Neue', Arial, Helvetica, "Microsoft Yahei","微软雅黑", STXihei, "华文细黑", sans-serif;
+@pageFont: Roboto, 'Helvetica Neue', Arial, Helvetica, "Microsoft Yahei","微软雅黑", STXihei, "华文细黑", sans-serif;
+
+/*-------------------
+      Site Colors
+--------------------*/
+
+@color1: #F7F7F5;
+@color2: #AEB2BC;
+@color3: #B48053;
+@color4: #EF6589;
+@color5: #443336;
+
+/*---  Colors  ---*/
+@black            : @color5;
+@blue             : #2196F3;
+@green            : #6ba151;
+@grey             : #9E9E9E;
+@orange           : #eba23f;
+@pink             : #E91E63;
+@purple           : #9C27B0;
+@red              : #f44336;
+@teal             : #1de9b6;
+@yellow           : #FFEB3B;
+@brown :  @color3;
+
+/*---  Light Colors  ---*/
+@lightBlack       : @color3;
+@lightBlue        : #2979FF;
+@lightGreen       : #00E676;
+@lightOrange      : #FF9100;
+@lightPink        : #F50057;
+@lightPurple      : #D500F9;
+@lightRed         : #FF1744;
+@lightTeal        : #1DE9B6;
+@lightYellow      : #FFEA00;
+@lightBrown       : @color3;
+
+/*---   Neutrals  ---*/
+@fullBlack        : #000000;
+@darkGrey         : @color4;
+@lightGrey        : #EDEDE9;
+@offWhite         : #FAFAFA;
+@darkWhite        : #F0F0F0;
+@white            : @color1;
+
+/*-------------------
+    Brand Colors
+--------------------*/
+
+@pageBackground: #f7f7f5;
+
+@primaryColor        : @black;
+@secondaryColor      : @brown;
+
+@linkColor: @primaryColor;
+@focusedFormBorderColor: @lightBrown;
+@focusedFormMutedBorderColor: @lightBrown;
+
+@lightPrimaryColor   : @lightBlack;
+@lightSecondaryColor : @lightBrown;
+
+@selectedTextColor: @primaryColor;
+@hoveredTextColor: @primaryColor;
+@darkTextColor: @primaryColor;
+
+@warningColor: #e99119;
+@warningHeaderColor: #e99119;
+@warningBackgroundColor: #f6d4a4;
+@warningTextColor: #e99119;
+
+@negativeBackgroundColor: #fccbc7;
+
+@positiveBackgroundColor: #bfd8b2;
+@positiveTextColor: #6ba151;
+@positiveHeaderColor: #6ba151;

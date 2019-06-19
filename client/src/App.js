@@ -4,11 +4,14 @@ import { Dimmer, Loader } from 'semantic-ui-react';
 import { logout, logoutDirectly } from 'actions/auth';
 import { logout as agentLogout } from 'actions/agent'
 import { connect } from 'react-redux';
+import { compose } from 'recompose'
+import { translate } from 'react-i18next'
 import { hideAllMessages} from './actions/message'
 import PropTypes from 'prop-types';
 import LoginPage from 'components/pages/LoginPage';
 import RegisterPage from 'components/pages/RegisterPage';
-import DashBoardPage from 'components/pages/DashBoardPage';
+// import DashboardPage from 'components/pages/DashBoardPage';
+import DashboardPage from 'components/pages/member/DashboardPage'
 import ValidationPage from 'components/pages/ValidationPage';
 import ConfirmationPage from 'components/pages/ConfirmationPage';
 import NotFoundPage from 'components/pages/NotFoundPage'
@@ -77,13 +80,13 @@ class App extends React.Component {
   }
 
   render = () => {
-    const { location } = this.props;
+    const { location, t } = this.props;
     const { loading } = this.state;
 
     if (loading) {
       return (
         <Dimmer active>
-           <Loader content='Loading' size='large' />
+           <Loader content={t('loader.authenticating')} size='large' />
         </Dimmer>
       )
     }
@@ -102,7 +105,7 @@ class App extends React.Component {
         <UserRoute
           location={location}
           path='/dashboard'
-          component={DashBoardPage}
+          component={DashboardPage}
         />
         <Route location={location} path='/agent*' component={AgentApp} />
         <Route component={NotFoundPage} />
@@ -117,4 +120,7 @@ App.propTypes = {
   }).isRequired
 }
 
-export default connect(null, { logout, logoutDirectly, agentLogout, hideAllMessages })(App)
+export default compose(
+  connect(null, { logout, logoutDirectly, agentLogout, hideAllMessages }),
+  translate()
+)(App)

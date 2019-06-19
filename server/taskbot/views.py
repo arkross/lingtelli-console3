@@ -136,7 +136,7 @@ class TaskbotViewset(viewsets.ModelViewSet):
         return Response(status=HTTP_204_NO_CONTENT)
 
     @action(methods=['put'], detail=True,
-            permission_classes=[IsAuthenticated,IsAdminUser])
+            permission_classes=[IsAuthenticated, IsAdminUser])
     def delete_confirm(self, request, pk=None):
         '''Chatbot delete confirmation
 

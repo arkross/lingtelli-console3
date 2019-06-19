@@ -14,8 +14,6 @@
   overflow: hidden;
   padding: 5px;
   margin: 10px auto;
-  border-radius: 4px;
-  border: 1px solid #ccc;
 
   .ui.button.block {
     margin: 10px;
@@ -45,7 +43,7 @@
   }
   
   .question {
-    margin: 10px 5px;
+    margin: 10px 0;
   
     .ui.input {
       width: 88%;
@@ -53,7 +51,7 @@
   }
   
   .answer {
-    margin: 10px 5px;
+    margin: 10px 0;
   
     .ui.input {
       width: 88%;

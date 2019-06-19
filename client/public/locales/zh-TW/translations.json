@@ -14,7 +14,23 @@
     "kickAlert": {
       "header": "Session 已過期",
       "content": "您已被登出, 即將回到登入頁面.",
-      "ok": "好"
+      "ok": "好的"
+    }
+  },
+  "loader": {
+    "authenticating": "認證中",
+    "fetching": "載入中",
+    "details": {
+      "user": "載入帳號資料",
+      "platform": "載入平台資料",
+      "packages": "載入方案資料",
+      "templates": "載入範本資料",
+      "bot": "載入機器人資料",
+      "complete": "載入完成"
+    },
+    "failure": {
+      "header": "載入失敗",
+      "content": "非常抱歉, 此網站發生了錯誤. 請再刷新看看. 如果還發生錯誤請洽管理人員."
     }
   },
   "resetPass": {
@@ -28,10 +44,28 @@
     }
   },
   "demo": {
+    "you": "您",
+    "bot": "機器人",
+    "error": "這是錯誤反應",
     "button": "測試聊天機器人",
     "title": "測試機器人",
     "input": "請輸入訊息 ",
     "warning": "請選擇機器人"
+  },
+  "fromTemplate": {
+    "chooseTemplate": "挑選範本",
+    "useTemplate": "使用範本",
+    "qaCount": "問答集數量",
+    "enterBasicInfo": "填入基本資料",
+    "enterQADetails": "填入問答集欄位",
+    "next": "下一步",
+    "prev": "上一步",
+    "finish": "完成",
+    "success": "已完成新增機器人",
+    "successSubmit": "前往問答集設定",
+    "fail": "機器人新增失敗",
+    "failSubmit": "關閉",
+    "noFields": "此範本沒有可填的欄位. 請繼續完成新增機器人."
   },
   "menu": {
     "dashboard": "總覽",
@@ -39,6 +73,14 @@
     "logout": "登出",
     "bot": "機器人清單",
     "create": "新增",
+    "new": {
+      "title": "新增",
+      "botManual": "機器人",
+      "botTemplate": "使用範本"
+    },
+    "fromTemplate": "使用範本新增",
+    "basic": "基本設定",
+    "fields": "範本欄位",
     "facebook": "Facebook",
     "line": "LINE",
     "web": "網站",
@@ -81,6 +123,8 @@
     "copied": "已複製",
     "success": "機器人資料儲存成功!",
     "setting": {
+      "title": "設定",
+      "general": "基本",
       "text": "基本設定",
       "unavailable": "您的方案無法啟用此服務",
       "line": {
@@ -188,12 +232,14 @@
       "inactive": "未啟用"
     },
     "analysis": {
+      "title": "總覽",
       "text": "統計分析",
       "questions": "每日問題的數量",
       "unhandled": "無法處理的問題",
       "label": "問題數",
       "top_5": "最常見的5個問題",
       "timeRange": "時間",
+      "statistics_30": "最近30天的統計",
       "options": {
         "_7": "7天內對話",
         "_14": "14內對話",
@@ -212,6 +258,18 @@
       "platform": "平台",
       "uid": "使用者ID",
       "filter": "過濾",
+      "response": {
+        "title": "反饋",
+        "helpful": "有用",
+        "unhelpful": "無用",
+        "empty": "無資料"
+      },
+      "actions": {
+        "title": "操作",
+        "label": "加入至問答集",
+        "new": "新增問答組",
+        "existing": "已有的問答組"
+      },
       "platforms": {
         "fb": "Facebook",
         "line": "LINE",
@@ -222,6 +280,7 @@
       }
     },
     "faq": {
+      "title": "問答",
       "text": "問答設定",
       "export": "下載 CSV",
       "import": "上傳 CSV",
@@ -230,6 +289,7 @@
       "question": "新增問題",
       "answer": "新增答案",
       "search": "搜尋答案",
+      "delete": "刪除",
       "form": {
         "question": "點擊輸入問題",
         "answer": "點擊輸入答案"

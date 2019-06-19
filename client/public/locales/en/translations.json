@@ -17,6 +17,22 @@
       "ok": "OK"
     }
   },
+  "loader": {
+    "authenticating": "Authenticating",
+    "fetching": "Fetching Data",
+    "details": {
+      "user": "Fetching user data",
+      "platform": "Fetching platform data",
+      "packages": "Fetching plan data",
+      "templates": "Fetching templates data",
+      "bot": "Fetching chatbots data",
+      "completed": "Fetching data complete!"
+    },
+    "failure": {
+      "header": "Failed to fetch data",
+      "content": "An error has occured. Please refresh the page. If it still does not work, please contact the administrator."
+    }
+  },
   "resetPass": {
     "title": "Reset Password",
     "email": "Email Address",
@@ -32,7 +48,15 @@
     "account": "Account",
     "logout": "Logout",
     "bot": "Chatbots",
-    "create": "Create",
+    "new": {
+      "title": "New",
+      "botManual": "Chatbot",
+      "botTemplate": "Chatbot from Template"
+    },
+    "create": "Create New",
+    "fromTemplate": "Create From Template",
+    "basic": "Basic Settings",
+    "fields": "Fields",
     "facebook": "Facebook",
     "line": "LINE",
     "web": "Web",
@@ -43,10 +67,28 @@
     "history": "History"
   },
   "demo": {
+    "you": "You",
+    "bot": "Bot",
+    "error": "This is an error response",
     "button": "Test Bot",
     "title": "Demo Bot",
     "input": "message...",
     "warning": "Please choose a chatbot for test first."
+  },
+  "fromTemplate": {
+    "chooseTemplate": "Choose a Template",
+    "useTemplate": "Use Template",
+    "qaCount": "Q&A group count",
+    "enterBasicInfo": "Enter Basic Information",
+    "enterQADetails": "Fill in Q&A Details",
+    "next": "Next",
+    "prev": "Previous",
+    "finish": "Finish",
+    "success": "Chatbot created successfully!",
+    "successSubmit": "View Chatbot Q&A",
+    "fail": "Failed to create chatbot.",
+    "failSubmit": "Close",
+    "noFields": "This Template has no fields. Please proceed to finish."
   },
   "chatbot": {
     "name": "Chatbot Name",
@@ -82,7 +124,9 @@
     "copied": "Copied",
     "success": "Chatbot settings saved successfully!",
     "setting": {
-      "text": "Settings",
+      "title": "Settings",
+      "general": "General",
+      "text": "Basic Settings",
       "unavailable": "Unavailable in your current subscription.",
       "line": {
         "title": "Line Setting",
@@ -200,6 +244,18 @@
       "platform": "Platform",
       "uid": "User ID",
       "filter": "Filter",
+      "response": {
+        "title": "Response",
+        "helpful": "Helpful",
+        "unhelpful": "Unhelpful",
+        "empty": "No Data"
+      },
+      "actions": {
+        "title": "Actions",
+        "label": "Add to Q&A List",
+        "new": "New Group",
+        "existing": "Existing Group"
+      },
       "platforms": {
         "fb": "Facebook",
         "line": "LINE",
@@ -210,12 +266,14 @@
       }
     },
     "analysis": {
+      "title": "Overview",
       "text": "Analysis",
       "questions": "Total Questions",
       "unhandled": "Unhandled Questions",
       "label": "#Questions",
       "top_5": "Top 5 Questions",
       "timeRange": "Time Range",
+      "statistics_30": "Statistics for 30 days",
       "options": {
         "_7": "Last 7 days",
         "_14": "Last 14 days",
@@ -223,14 +281,16 @@
       }
     },
     "faq": {
-      "text": "FAQ",
+      "title": "Q&A",
+      "text": "Q&A List",
       "export": "Export CSV",
       "import": "Import CSV",
       "train": "Train Model",
-      "add": "Add New FAQ",
+      "add": "Add New Q&A",
       "question": "Add Question",
       "answer": "Add Answer",
       "search": "Search Answer",
+      "delete": "Delete",
       "form": {
         "question": "Click for Question",
         "answer": "Click for Answer"
@@ -502,7 +562,7 @@
     "activation_date": "Activated At",
     "expiration_date": "Expired At",
     "bot_limit": "Chatbots",
-    "faq_limit": "FAQ Groups",
+    "faq_limit": "Q&A Groups",
     "edit": "Edit Account Details",
     "success": "Account updated successfully!",
     "confirmation": {

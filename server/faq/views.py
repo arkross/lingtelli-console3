@@ -1,5 +1,6 @@
 import json
 import csv
+import re
 from io import StringIO
 from django.shortcuts import render
 from django.utils.translation import gettext as _
@@ -28,6 +29,7 @@ from .serializers import (FAQGrouptSerializer, AnswerSerializer,
 from .models import FAQGroup, Answer, Question
 from account.models import AccountInfo
 from chatbot.models import Chatbot
+from module.models import Module, ModuleFAQGroup, ModuleAnswer, ModuleQuestion
 
 
 class FAQGrouptViewset(viewsets.ModelViewSet):
@@ -481,3 +483,103 @@ def train_bot_faq(request, pk=None):
                         status=HTTP_500_INTERNAL_SERVER_ERROR)
     return Response({'success': _('Training bot succeeded')},
                     status=HTTP_200_OK)
+
+
+@csrf_exempt
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def update_faq_field(request, pk=None):
+    ''' Create faq data with field module faq
+
+    Special characters for identifying as field:
+    {1:item}
+    First is the order for showing fields. Second is the field name.
+    Please use curly brackets as special keywords.
+
+    Request format sample:
+    POST
+    {
+        "fields": {"item": "this is the value need to update"},
+        "module_id": 1
+    }
+    '''
+
+    req_data = json.loads(request.body)
+    fields = req_data.get('fields')
+    mod_id = req_data.get('module_id')
+    mod_obj = Module.objects.filter(id=mod_id).first()
+    if not mod_obj:
+        return Response({'errors': _('Not found')},
+                        status=HTTP_404_NOT_FOUND)
+    reg = r'{\w+:[\D\S]:*[^{}]*}'
+    bot_obj = Chatbot.objects.filter(id=pk).first()
+    if not bot_obj:
+        return Response({'errors': _('Not found')},
+                        status=HTTP_404_NOT_FOUND)
+    FAQGroup.objects.filter(chatbot=bot_obj).delete()
+    mod_faq_qry = ModuleFAQGroup.objects.filter(module=mod_obj)
+    for mod_faq in mod_faq_qry:
+        faq_group_obj = FAQGroup.objects.create(chatbot=bot_obj)
+        mod_ans_qry = ModuleAnswer.objects.filter(module=mod_obj,
+                                                  group=mod_faq)
+        mod_que_qry = ModuleQuestion.objects.filter(module=mod_obj,
+                                                    group=mod_faq)
+
+        for mod_ans in mod_ans_qry:
+            sentence = mod_ans.content
+            if '{' in sentence:
+                words = re.findall(reg, sentence)
+                for s in words:
+                    s = s.replace('{', '')
+                    s = s.replace('}', '')
+                    sep_order_item = s.split(':', 2)
+                    order = sep_order_item[0]
+                    item = sep_order_item[1]
+                    replace_format = '{' + order + ':' + item + '}'
+                    if len(sep_order_item) > 2:
+                        ex = sep_order_item[2]
+                        replace_format = \
+                            '{' + order + ':' + item + ':' + ex + '}'
+                    if fields.get(item, None):
+                        replace_data = fields.get(item)
+                        sentence = sentence.replace(replace_format,
+                                                    replace_data)
+                    else:
+                        sentence = sentence.replace(replace_format, '')
+            new_ans_obj = Answer.objects.create(content=sentence,
+                                                chatbot=bot_obj,
+                                                group=faq_group_obj)
+            if not new_ans_obj:
+                return Response({'errors':
+                                _('Something went wrong. Please try again')},
+                                status=HTTP_500_INTERNAL_SERVER_ERROR)
+        for mod_que in mod_que_qry:
+            sentence = mod_que.content
+            if '{' in sentence:
+                words = re.findall(reg, sentence)
+                for s in words:
+                    s = s.replace('{', '')
+                    s = s.replace('}', '')
+                    sep_order_item = s.split(':', 2)
+                    order = sep_order_item[0]
+                    item = sep_order_item[1]
+                    replace_format = '{' + order + ':' + item + '}'
+                    if len(sep_order_item) > 2:
+                        ex = sep_order_item[2]
+                        replace_format = \
+                            '{' + order + ':' + item + ':' + ex + '}'
+                    if fields.get(item, None):
+                        replace_data = fields.get(item)
+                        sentence = sentence.replace(replace_format,
+                                                    replace_data)
+                    else:
+                        sentence = sentence.replace(replace_format, '')
+            new_que_obj = Question.objects.create(content=sentence,
+                                                  chatbot=bot_obj,
+                                                  group=faq_group_obj)
+            if not new_que_obj:
+                return Response({'errors':
+                                _('Something went wrong. Please try again')},
+                                status=HTTP_500_INTERNAL_SERVER_ERROR)
+    return Response(status=HTTP_201_CREATED)

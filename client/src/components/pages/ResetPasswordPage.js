@@ -70,7 +70,7 @@ class ResetPasswordPage extends Component {
 							/>
 							{errors.email && <InlineError text={errors.email} />}
 						</Form.Field>
-						<Button fluid color='teal'>{t('resetPass.continue')}</Button>
+						<Button fluid primary>{t('resetPass.continue')}</Button>
 					</Form>
 					:
 					<Header as='h2' icon>

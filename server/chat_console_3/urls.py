@@ -26,6 +26,7 @@ from faq import views as faq_view
 from history import views as his_view
 from report import views as rep_view
 from taskbot import views as task_view
+from module import views as mod_view
 
 from django.contrib.auth.models import User
 
@@ -74,6 +75,17 @@ agent_bot_router.register(r'(?P<id>\d+)/matching', his_view.QuestionMatchHistory
 agent_bot_router.register(r'(?P<id>\d+)/line', bot_view.LineViewset)
 agent_bot_router.register(r'(?P<id>\d+)/facebook', bot_view.FacebookViewset)
 
+# Module related api. Only for agent.
+module_router = routers.DefaultRouter(trailing_slash=True)
+module_router.register('', mod_view.ModuleViewSet)
+module_router.register(r'(?P<id>\d+)/faq', mod_view.ModuleFAQViewSet)
+module_router.register(r'(?P<id>\d+)/answer', mod_view.ModuleAnswerViewSet)
+module_router.register(r'(?P<id>\d+)/question', mod_view.ModuleQuestionViewSet)
+
+# Member module related api.
+member_module_router = routers.DefaultRouter(trailing_slash=True)
+member_module_router.register('', mod_view.MemberModuleViewSet)
+
 # Both used api
 thirdparty_router = routers.DefaultRouter(trailing_slash=True)
 thirdparty_router.register('', third_view.ThirdpartyViewset)
@@ -89,6 +101,7 @@ urlpatterns = [
     path('chatbot/<int:pk>/upload/', faq_view.upload_faq_csv),
     path('chatbot/<int:pk>/export/', faq_view.export_faq_csv),
     path('chatbot/<int:pk>/train/', faq_view.train_bot_faq),
+    path('chatbot/<int:pk>/field_faq/', faq_view.update_faq_field),
     path('chatbot/', include(chatbot_router.urls), name='chatbot'),
     path('thirdparty/', include(thirdparty_router.urls), name='thirdparty'),
     path('paidtype/', include(paidtype_router.urls), name='paidtype'),
@@ -100,15 +113,20 @@ urlpatterns = [
     path('member/confirm/', acc_view.confirm_user),
     path('member/resend/', acc_view.resend_email),
     path('member/reset/', acc_view.reset_password),
+    path('member/module/<int:pk>/get_fields/', mod_view.get_fields),
+    path('member/module/', include(member_module_router.urls), name='member_module'),
     path('member/', include(member_router.urls), name='member_profile'),
 
     # Agent related urls
     path('agent/taskbot/<int:pk>/upload/', faq_view.upload_faq_csv),
     path('agent/taskbot/<int:pk>/export/', faq_view.export_faq_csv),
     path('agent/taskbot/<int:pk>/train/', faq_view.train_bot_faq),
+    path('agent/module/<int:pk>/upload/', mod_view.upload_module_faq),
+    path('agent/module/<int:pk>/export/', mod_view.export_module_faq),
     path('agent/login/', acc_view.agent_login),
     path('agent/logout/', acc_view.agent_logout),
     path('agent/member/', include(agent_member_router.urls), name='agent_member'),
     path('agent/taskbot/', include(agent_bot_router.urls), name='agent_taskbot'),
+    path('agent/module/', include(module_router.urls), name='module'),
     path('agent/', include(agent_router.urls), name='agent_profile'),
 ]

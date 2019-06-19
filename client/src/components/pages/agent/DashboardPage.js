@@ -7,7 +7,6 @@ import { translate } from 'react-i18next'
 import { Dimmer, Loader, Dropdown, Menu, Divider, Container, Message, Icon, Label, Header, Modal} from 'semantic-ui-react'
 import LingBreadcrumbs from 'components/utils/LingBreadcrumbs'
 import setAuthorizationHeader from 'utils/setAuthorizationHeader'
-import SideMenuPage from '../SideMenuPage'
 import DemoModal from '../../modals/DemoModal'
 import toJS from 'components/utils/ToJS'
 import { logout, fetchAgent } from 'actions/agent'
@@ -22,6 +21,9 @@ import CreatePlanPage from './CreatePlanPage'
 import TaskbotsPage from './TaskbotsPage'
 import CreateTaskbotPage from './CreateTaskbotPage'
 import TaskbotDetailPage from './TaskbotDetailPage'
+import TemplatesPage from './TemplatesPage'
+import CreateTemplatePage from './CreateTemplatePage'
+import TemplateDetailPage from './TemplateDetailPage'
 
 const options = [
 	{ key: 'en', text: 'English', value: 'en-US' },
@@ -105,6 +107,7 @@ class Dashboard extends React.Component {
 		const topMenuOptions = [
 			{text: 'Members', id: 'member'},
 			{text: 'Taskbots', id: 'taskbots'},
+			{text: 'Templates', id: 'templates'},
 			// {text: 'Profile', id: 'profile'},
 			{text: 'Plans', id: 'plan'}
 		]
@@ -121,7 +124,7 @@ class Dashboard extends React.Component {
 						{
 							key: 'ok',
 							content: t('login.kickAlert.ok'),
-							positive: true,
+							primary: true,
 							autoFocus: true,
 							onClick: () => {this.props.history.push('/agent/login')}
 						}
@@ -176,8 +179,11 @@ class Dashboard extends React.Component {
 				<Route location={location} path={`${match.path}/plan/create`} component={CreatePlanPage} />
 				<Route location={location} path={`${match.path}/member/:id`} exact component={TaskbotsPage} />
 				<Route location={location} path={`${match.path}/taskbots`} exact component={TaskbotsPage} />
+				<Route location={location} path={`${match.path}/templates`} exact component={TemplatesPage} />
 				<Route location={location} path={`${match.path}/taskbots/create`} exact component={CreateTaskbotPage} />
+				<Route location={location} path={`${match.path}/templates/create`} exact component={CreateTemplatePage} />
 				<Route location={location} path={`${match.path}/taskbots/:id`} exact component={TaskbotDetailPage} />
+				<Route location={location} path={`${match.path}/templates/:id`} exact component={TemplateDetailPage} />
 				<Route render={props => <Redirect to={`${match.path}/member`} />} />
 			</Switch>
 		</Container>

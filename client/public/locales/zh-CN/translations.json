@@ -14,7 +14,23 @@
     "kickAlert": {
       "header": "Session 已过期",
       "content": "您已被登出。稍微回到登录页面。",
-      "ok": "好"
+      "ok": "好的"
+    }
+  },
+  "loader": {
+    "authenticating": "认证中",
+    "fetching": "载入中",
+    "details": {
+      "user": "载入账号资料",
+      "platform": "载入平台资料",
+      "packages": "载入方案资料",
+      "templates": "载入模板资料",
+      "bot": "载入机器人资料",
+      "completed": "载入完成"
+    },
+    "failure": {
+      "header": "发生了错误",
+      "content": "很抱歉，这网站发生了错误。请重新载入几次。如果还发生错误请联络管理人员。"
     }
   },
   "resetPass": {
@@ -40,6 +56,9 @@
     }
   },
   "demo": {
+    "you": "您",
+    "bot":"机器人",
+    "error": "这是错误反应",
     "button": "测试聊天机器人",
     "title": "测试机器人",
     "input": "请输入讯息 ",
@@ -50,7 +69,15 @@
     "account": "帐户设定",
     "logout": "登出",
     "bot": "机器人清单",
+    "new": {
+      "title": "建立",
+      "botManual": "机器人",
+      "botTemplate": "使用模板"
+    },
     "create": "创建",
+    "fromTemplate": "使用模板创建",
+    "basic": "基本设置",
+    "fields": "模板栏位",
     "facebook": "Facebook",
     "line": "LINE",
     "web": "网站",
@@ -58,6 +85,21 @@
     "thirdparty": "第三方",
     "recommendations": "推荐记录",
     "history": "对话记录"
+  },
+  "fromTemplate": {
+    "chooseTemplate": "挑选模板",
+    "useTemplate": "使用模板",
+    "qaCount": "问答集数量",
+    "enterBasicInfo": "填入基本资料",
+    "enterQADetails": "填入问答集栏位",
+    "next": "下一步",
+    "prev": "上一步",
+    "finish": "完成",
+    "success": "机器人建立成功",
+    "successSubmit": "前往问答集设定",
+    "fail": "机器人建立失败",
+    "failSubmit": "离开",
+    "noFields": "此模板没有可填的栏位。请继续完成建立。"
   },
   "chatbot": {
     "name": "机器人称呼",
@@ -93,6 +135,8 @@
     "copied": "已复制",
     "success": "机器人资料储存成功!",
     "setting": {
+      "title": "设定",
+      "general": "基础",
       "text": "基础设定",
       "unavailable": "您的方案无法启用此服务",
       "line": {
@@ -211,6 +255,18 @@
       "platform": "平台",
       "uid": "使用者ID",
       "filter": "过滤",
+      "response": {
+        "title": "反应",
+        "helpful": "有用",
+        "unhelpful": "无用",
+        "empty": "无资料"
+      },
+      "actions": {
+        "title": "操作",
+        "label": "加入至问答集",
+        "new": "创建问答组",
+        "existing": "已有的问答组"
+      },
       "platforms": {
         "fb": "Facebook",
         "line": "LINE",
@@ -221,12 +277,14 @@
       }
     },
     "analysis": {
+      "title": "总览",
       "text": "统计分析",
       "questions": "每日问题的数量",
       "unhandled": "无法处理的问题",
       "label": "问答数",
       "top_5": "最常见的5个问题",
       "timeRange": "时间",
+      "statistics_30": "最近30天的统计",
       "options": {
         "_7": "7天内对话",
         "_14": "14天内对话",
@@ -234,6 +292,7 @@
       }
     },
     "faq": {
+      "title": "问答",
       "text": "问答集设定",
       "export": "下载CSV",
       "import": "上传CSV",
@@ -242,6 +301,7 @@
       "question": "新增问题",
       "answer": "新增答案",
       "search": "搜寻答案",
+      "delete": "删除",
       "form": {
         "question": "点击输入问题",
         "answer": "点击输入答案"
