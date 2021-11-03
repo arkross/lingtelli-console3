@@ -39,7 +39,7 @@
     "redux-immutable": "^4.0.0",
     "redux-thunk": "^2.2.0",
     "semantic-ui-react": "0.81.3",
-    "validator": "^9.2.0"
+    "validator": "^13.7.0"
   },
   "scripts": {
     "start-js": "react-app-env --env-file=env/development.env start",
